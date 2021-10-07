@@ -1,0 +1,77 @@
+name: docs
+
+# Controls when the workflow will run
+on:
+
+  # Allow the workflow to be reusable
+  workflow_call:
+    inputs:
+      requirements_path:
+        description: Path of the `requirements.txt` file which includes all dependencies needed for building of the
+          documentation, relative to the repository root.
+        required: false
+        default: docs/requirements.txt
+        type: string
+      docs_path:
+        description: Path of the documentation directory, relative to the repository root.
+        required: false
+        default: docs
+        type: string
+      system_dependencies:
+        description: Optional list of system dependencies to install via `apt` command, separated by spaces. Note that
+          each dependency must be available via standard Ubuntu 20.04 package repositories.
+        required: false
+        default: ''
+        type: string
+      repository:
+        description: The source repository name, in case it differs from the current one. Repository names should
+          follow the standard Github `owner/name` format.
+        required: false
+        default: ${{ github.repository }}
+        type: string
+      ref:
+        description: The source repository reference, in case it differs from the current one.
+        required: false
+        default: ${{ github.ref }}
+        type: string
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ inputs.repository }}
+        ref: ${{ inputs.ref }}
+
+    - name: Install System Dependencies
+      if: inputs.system_dependencies
+      shell: bash -eux {0}
+      run: |
+        sudo apt-get -q -y update
+        sudo apt-get -q -y install ${{ inputs.system_dependencies }}
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Setup Python Environment
+      shell: bash -eux {0}
+      run: python -m pip install -r ${{ inputs.requirements_path }}
+
+    # Run the docs build command, as per: https://docs.readthedocs.io/en/stable/builds.html
+    #
+    #   > When we build your Sphinx documentation, we run `sphinx-build -b <format> . _build/<format>`
+    #
+    # Additional flags "-W --keep-going" are added by `sphinx.fail_on_warning` configuration option, as per:
+    #   https://docs.readthedocs.io/en/stable/config-file/v2.html#sphinx-fail-on-warning
+    - name: Build Documentation
+      shell: bash -eux {0}
+      run: |
+        cd ${{ inputs.docs_path }}
+        rm -rf _build
+        sphinx-build -b html . _build/html -W --keep-going
+        test -f _build/html/index.html

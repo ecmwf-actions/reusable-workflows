@@ -1,0 +1,30 @@
+name: ci
+
+# Controls when the workflow will run
+on:
+
+  # Trigger the workflow on all pushes, except on tag creation
+  push:
+    branches:
+    - '**'
+    tags-ignore:
+    - '**'
+
+  # Allow workflow to be dispatched on demand
+  workflow_dispatch: ~
+
+jobs:
+  ci:
+    name: ci
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@main
+    with:
+      codecov_upload: true
+      notify_teams: true
+      build_package_inputs: |
+        self_coverage: true
+        dependencies: |
+          ecmwf/ecbuild
+          ecmwf/eckit
+        dependency_branch: develop
+    secrets:
+      incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}

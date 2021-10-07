@@ -1,0 +1,192 @@
+name: ci
+
+# Controls when the workflow will run
+on:
+
+  # Allow the workflow to be reusable
+  workflow_call:
+    inputs:
+
+      # Inputs for job steps.
+      skip_matrix_jobs:
+        description: A list of matrix jobs to skip. Job names should be the full form of `<compiler>@<platform>`.
+        required: false
+        type: string
+      deps_cache_key:
+        description: Optional dependency cache key to restore from. Note that the key should be platform agnostic, as
+          the `<compiler>@<platform>` suffix will be automatically appended. Upon extraction a file called `.env` from
+          the cache root directory will be loaded into the build environment, if it exists.
+        required: false
+        type: string
+      deps_cache_path:
+        description: Optional dependency cache path to restore to, falls back to `{{ runner.temp }}/deps`. Will be
+          considered only if `deps_cache_key` is supplied.
+        required: false
+        type: string
+      codecov_upload:
+        description: Whether to generate and upload code coverage to codecov service for main branches.
+        required: false
+        type: boolean
+      notify_teams:
+        description: Whether to notify about workflow status via Microsoft Teams. Note that you must supply
+          `incoming_webhook` secret if you switch on this feature.
+        required: false
+        type: boolean
+      repository:
+        description: The source repository name, in case it differs from the current one. Repository names should
+          follow the standard Github `owner/name` format.
+        required: false
+        default: ${{ github.repository }}
+        type: string
+      ref:
+        description: The source repository reference, in case it differs from the current one.
+        required: false
+        default: ${{ github.ref }}
+        type: string
+
+      # Inputs for build-package action.
+      build_package_inputs:
+        description: Optional inputs for the `build-package` action, provided as a YAML object value.
+        required: false
+        type: string
+
+    secrets:
+
+      # Secret for notify-teams action.
+      incoming_webhook:
+        description: Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in
+          Teams has the appropriate connector set up. It will only be used if `notify_teams` input is switched on.
+        required: false
+
+jobs:
+  setup:
+    name: setup
+    runs-on: ubuntu-20.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      inputs: ${{ steps.prepare-inputs.outputs.inputs }}
+    steps:
+    - name: Set Matrix
+      id: set-matrix
+      shell: bash -eux {0}
+      run: |
+        MATRIX=$(cat << 'EOS'
+        name:
+        - gnu-10@ubuntu-20.04
+        - clang-12@ubuntu-20.04
+        - gnu-10@ubuntu-18.04
+        - clang-9@ubuntu-18.04
+        - gnu-10@macos-10.15
+        - clang-12@macos-10.15
+        include:
+        - name: gnu-10@ubuntu-20.04
+          os: ubuntu-20.04
+          compiler: gnu-10
+          compiler_cc: gcc-10
+          compiler_cxx: g++-10
+          compiler_fc: gfortran-10
+        - name: clang-12@ubuntu-20.04
+          os: ubuntu-20.04
+          compiler: clang-12
+          compiler_cc: clang-12
+          compiler_cxx: clang++-12
+          compiler_fc: gfortran-10
+        - name: gnu-10@ubuntu-18.04
+          os: ubuntu-18.04
+          compiler: gnu-10
+          compiler_cc: gcc-10
+          compiler_cxx: g++-10
+          compiler_fc: gfortran-10
+        - name: clang-9@ubuntu-18.04
+          os: ubuntu-18.04
+          compiler: clang-9
+          compiler_cc: clang-9
+          compiler_cxx: clang++-9
+          compiler_fc: gfortran-9
+        - name: gnu-10@macos-10.15
+          os: macos-10.15
+          compiler: gnu-10
+          compiler_cc: gcc-10
+          compiler_cxx: g++-10
+          compiler_fc: gfortran-10
+        # Xcode compiler requires empty environment variables, so we pass null (~) here
+        - name: clang-12@macos-10.15
+          os: macos-10.15
+          compiler: clang-12
+          compiler_cc: ~
+          compiler_cxx: ~
+          compiler_fc: gfortran-10
+        EOS
+        )
+        SKIP_MATRIX_JOBS=$(cat << 'EOS'
+        ${{ inputs.skip_matrix_jobs }}
+        EOS
+        )
+        SELECT_NAME_COND="1 != 1"
+        SELECT_INCLUDE_COND="1 != 1"
+        for skip_job in $SKIP_MATRIX_JOBS; do SELECT_NAME_COND="$SELECT_NAME_COND or . == \"$skip_job\""; SELECT_INCLUDE_COND="$SELECT_INCLUDE_COND or .name == \"$skip_job\""; done
+        echo ::set-output name=matrix::$(echo "$MATRIX" | yq eval "del(.name[] | select($SELECT_NAME_COND)) | del(.include[] | select($SELECT_INCLUDE_COND))" --output-format json --indent 0 -)
+
+    - name: Prepare build-package Inputs
+      id: prepare-inputs
+      shell: bash -eux {0}
+      run: echo ::set-output name=inputs::$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.' --output-format json --indent 0 -)
+
+  test:
+    name: test
+    needs:
+    - setup
+    strategy:
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ inputs.repository }}
+        ref: ${{ inputs.ref }}
+
+    - name: Restore Dependency Cache
+      id: deps-cache
+      uses: actions/cache@v2
+      if: inputs.deps_cache_key
+      with:
+        path: ${{ inputs.deps_cache_path || format('{0}/deps', runner.temp) }}
+        key: ${{ inputs.deps_cache_key }}${{ matrix.compiler }}@${{ matrix.os }}
+
+    - name: Missing Dependency Cache
+      if: inputs.deps_cache_key && steps.deps-cache.outputs.cache-hit != 'true'
+      uses: cutenode/action-always-fail@v1
+
+    - name: Setup Dependency Environment
+      if: steps.deps-cache.outputs.cache-hit == 'true'
+      shell: bash -eux {0}
+      env:
+        DEPS_CACHE_PATH: ${{ inputs.deps_cache_path || format('{0}/deps', runner.temp) }}
+      run: |
+        [[ -f "${{ env.DEPS_CACHE_PATH }}/.env" ]] && cat "${{ env.DEPS_CACHE_PATH }}/.env" >> $GITHUB_ENV || echo "Environment file not found"
+
+    - name: Build & Test
+      id: build-test
+      uses: ecmwf-actions/build-package@v2
+      with: ${{ fromJSON(needs.setup.outputs.inputs) }}
+
+    - name: Codecov Upload
+      if: inputs.codecov_upload && steps.build-test.outputs.coverage_file && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+      uses: codecov/codecov-action@v2
+      with:
+        files: ${{ steps.build-test.outputs.coverage_file }}
+
+  notify:
+    name: notify
+    runs-on: ubuntu-20.04
+    needs:
+    - setup
+    - test
+    if: always() && inputs.notify_teams && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+    steps:
+    - name: Notify Teams
+      uses: ecmwf-actions/notify-teams@v1
+      with:
+        incoming_webhook: ${{ secrets.incoming_webhook }}
+        needs_context: ${{ toJSON(needs) }}
