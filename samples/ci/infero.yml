@@ -17,7 +17,6 @@ jobs:
   deps:
     name: deps
     strategy:
-      fail-fast: false  # debug
       matrix:
         name:
         - gnu-10@ubuntu-20.04
@@ -157,6 +156,9 @@ jobs:
     needs:
     - deps
     with:
+      skip_matrix_jobs: |
+        gnu-10@macos-10.15
+        clang-12@macos-10.15
       codecov_upload: true
       deps_cache_key: ${{ needs.deps.outputs.deps-cache-key }}
       deps_env_vars: ${{ needs.deps.outputs.deps-env-vars }}
