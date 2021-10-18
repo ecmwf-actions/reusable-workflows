@@ -79,25 +79,26 @@ jobs:
       TENSORFLOW_SRC_DIR: ${{ github.workspace }}/tensorflow
     outputs:
       deps-cache-key: ${{ steps.setup-environment.outputs.deps-cache-key }}
-      deps-env-vars: ${{ steps.setup-environment.outputs.deps-env-vars }}
     steps:
     - name: Setup Environment
       id: setup-environment
       shell: bash -eux {0}
       run: |
-        ONNXRUNTIME_PATH="${{ runner.temp }}/deps/onnxruntime"
-        TENSORFLOW_PATH="${{ runner.temp }}/deps/tensorflow"
-        TFLITE_PATH="${{ runner.temp }}/deps/tensorflow/tensorflow/lite/build"
-        DEPS_ENV_VARS="ONNXRUNTIME_PATH=$ONNXRUNTIME_PATH"$'\n'"TENSORFLOW_PATH=$TENSORFLOW_PATH"$'\n'"TFLITE_PATH=$TFLITE_PATH"
-        echo "$DEPS_ENV_VARS" >> $GITHUB_ENV
-        echo ::set-output name=deps-cache-key::"onnxruntime-${{ env.ONNXRUNTIME_VERSION }}-tensorflow-${{ env.TENSORFLOW_VERSION }}-"
-        echo ::set-output name=deps-env-vars::$(echo "$DEPS_ENV_VARS" | tr '\n' ':')
+        DEPS_PATH="${{ runner.temp }}/deps"
+        ONNXRUNTIME_PATH="$DEPS_PATH/onnxruntime"
+        TENSORFLOW_PATH="$DEPS_PATH/tensorflow"
+        TFLITE_PATH="$DEPS_PATH/tensorflow/tensorflow/lite/build"
+        DEPS_ENV="DEPS_PATH=$DEPS_PATH"$'\n'"ONNXRUNTIME_PATH=$ONNXRUNTIME_PATH"$'\n'"TENSORFLOW_PATH=$TENSORFLOW_PATH"$'\n'"TFLITE_PATH=$TFLITE_PATH"
+        mkdir -p $DEPS_PATH
+        echo "$DEPS_ENV" > $DEPS_PATH/.env
+        echo "$DEPS_ENV" >> $GITHUB_ENV
+        echo ::set-output name=deps-cache-key::"deps-onnxruntime-${{ env.ONNXRUNTIME_VERSION }}-tensorflow-${{ env.TENSORFLOW_VERSION }}-"
 
     - name: Check for Dependency Cache
       id: deps-cache
       uses: actions/cache@v2
       with:
-        path: ${{ runner.temp }}/deps
+        path: ${{ env.DEPS_PATH }}
         key: ${{ steps.setup-environment.outputs.deps-cache-key }}${{ matrix.compiler }}@${{ matrix.os }}
 
     - name: Checkout ONNX Runtime Repository
@@ -161,10 +162,9 @@ jobs:
         clang-12@macos-10.15
       codecov_upload: true
       deps_cache_key: ${{ needs.deps.outputs.deps-cache-key }}
-      deps_env_vars: ${{ needs.deps.outputs.deps-env-vars }}
       build_package_inputs: |
-        {
-          "cmake_options": "-DENABLE_MPI=OFF -DENABLE_TF_LITE=ON -DTENSORFLOWLITE_PATH=$TENSORFLOW_PATH -DTENSORFLOWLITE_ROOT=$TFLITE_PATH -DENABLE_ONNX=ON -DONNX_ROOT=$ONNXRUNTIME_PATH -DENABLE_TENSORRT=OFF",
-          "dependencies": "ecmwf/ecbuild\necmwf/eckit",
-          "dependency_branch": "develop"
-        }
+        cmake_options: -DENABLE_MPI=OFF -DENABLE_TF_LITE=ON -DTENSORFLOWLITE_PATH=$TENSORFLOW_PATH -DTENSORFLOWLITE_ROOT=$TFLITE_PATH -DENABLE_ONNX=ON -DONNX_ROOT=$ONNXRUNTIME_PATH -DENABLE_TENSORRT=OFF
+        dependencies: |
+          ecmwf/ecbuild
+          ecmwf/eckit
+        dependency_branch: develop
