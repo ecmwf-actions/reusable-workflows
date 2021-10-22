@@ -12,7 +12,10 @@ A collection of [reusable GitHub workflows] for ECMWF repositories.
 
 * [ci.yml](#ciyml): Continuous Integration workflow for ecbuild/CMake-based projects
 * [ci-python.yml](#ci-pythonyml): Continuous Integration and Continuous Deployment workflow for Python-based projects
+* [ci-node.yml](#ci-nodeyml): Continuous Integration workflow for NodeJS-based projects
 * [docs.yml](#docsyml): Workflow for testing Sphinx-based documentation
+
+[Samples]
 
 ## Supported Operating Systems
 
@@ -186,6 +189,71 @@ Password of the PyPI account.
 Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in Teams has the appropriate connector set up. It will only be used if [notify_teams](#notify_teams-1) input is switched on.  
 **Example:** `https://webhook.office.com/webhookb2/...`
 
+## ci-node.yml
+
+### Usage
+
+```yaml
+jobs:
+
+  # Calls a reusable CI NodeJS workflow to qa & test & deploy the current repository.
+  #   It will install dependencies and produce a code coverage report on success.
+  #   In case the job fails, a message will be posted to a Microsoft Teams channel.
+  ci:
+    name: ci
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@main
+    with:
+      codecov_upload: true
+      notify_teams: true
+    secrets:
+      incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
+```
+
+### Inputs
+
+#### `skip_matrix_jobs`
+
+A list of matrix jobs to skip. Job names should be the form of `<platform>`.  
+**Default:** `''`  
+**Type:** `string`
+
+#### `codecov_upload`
+
+Whether to generate and upload code coverage to [codecov service] for main branches.  
+**Default:** `false`  
+**Type:** `boolean`
+
+#### `notify_teams`
+
+Whether to notify about workflow status via Microsoft Teams. Note that you must supply [incoming_webhook](#incoming_webhook-2) secret if you switch on this feature.  
+**Default:** `false`  
+**Type:** `boolean`
+
+#### `node_version`
+
+The version of NodeJS interpreter to use.
+**Default:** `'12'`  
+**Type:** `boolean`
+
+#### `repository`
+
+The source repository name. Repository names should follow the standard Github `owner/name` format.  
+**Default:** `${{ github.repository }}`  
+**Type:** `string`
+
+#### `ref`
+
+The source repository reference.  
+**Default:** `${{ github.ref }}`  
+**Type:** `string`
+
+### Secrets
+
+#### `incoming_webhook`
+
+Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in Teams has the appropriate connector set up. It will only be used if [notify_teams](#notify_teams-2) input is switched on.  
+**Example:** `https://webhook.office.com/webhookb2/...`
+
 ## docs.yml
 
 ### Usage
@@ -241,5 +309,6 @@ This software is licensed under the terms of the Apache License Version 2.0 whic
 In applying this licence, ECMWF does not waive the privileges and immunities granted to it by virtue of its status as an intergovernmental organisation nor does it submit to any jurisdiction.
 
 [reusable GitHub workflows]: https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
+[Samples]: https://github.com/ecmwf-actions/reusable-workflows/tree/main/samples
 [codecov service]: https://codecov.io
 [inputs for the build-package]: https://github.com/ecmwf-actions/build-package#inputs
