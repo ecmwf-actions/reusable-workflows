@@ -23,6 +23,11 @@ on:
         required: false
         default: ''
         type: string
+      python_version:
+        description: The version of Python binary to use.
+        required: false
+        default: '3.9'
+        type: string
       repository:
         description: The source repository name, in case it differs from the current one. Repository names should
           follow the standard Github `owner/name` format.
@@ -39,8 +44,6 @@ jobs:
   test:
     name: test
     runs-on: ubuntu-20.04
-    env:
-      PYTHON_VERSION: 3.9
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
@@ -58,7 +61,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ env.PYTHON_VERSION }}
+        python-version: ${{ inputs.python_version }}
 
     - name: Setup Python Environment
       shell: bash -eux {0}

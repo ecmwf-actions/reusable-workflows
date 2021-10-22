@@ -154,6 +154,12 @@ Whether to notify about workflow status via Microsoft Teams. Note that you must 
 **Default:** `false`  
 **Type:** `boolean`
 
+#### `python_version`
+
+The version of Python binary to use.  
+**Default:** `'3.9'`  
+**Type:** `ring`
+
 #### `repository`
 
 The source repository name. Repository names should follow the standard Github `owner/name` format.  
@@ -289,6 +295,12 @@ Path of the documentation directory, relative to the repository root.
 Optional list of system dependencies to install via `apt` command, separated by spaces. Note that each dependency must be available via standard Ubuntu 20.04 package repositories.  
 **Default:** `''`  
 **Type:** `string`
+
+#### `python_version`
+
+The version of Python binary to use.  
+**Default:** `'3.9'`  
+**Type:** `ring`
 
 #### `repository`
 

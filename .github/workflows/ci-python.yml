@@ -24,6 +24,11 @@ on:
         required: false
         default: false
         type: boolean
+      python_version:
+        description: The version of Python binary to use.
+        required: false
+        default: '3.9'
+        type: string
       repository:
         description: The source repository name, in case it differs from the current one. Repository names should
           follow the standard Github `owner/name` format.
@@ -59,9 +64,6 @@ on:
           Teams has the appropriate connector set up. It will only be used if `notify_teams` input is switched on.
         required: false
 
-env:
-  PYTHON_VERSION: 3.9
-
 jobs:
   qa:
     name: qa
@@ -76,7 +78,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ env.PYTHON_VERSION }}
+        python-version: ${{ inputs.python_version }}
 
     - name: Install Python Dependencies
       run: |
@@ -187,7 +189,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ env.PYTHON_VERSION }}
+        python-version: ${{ inputs.python_version }}
 
     - name: Install Python Dependencies
       run: |
@@ -230,7 +232,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ env.PYTHON_VERSION }}
+        python-version: ${{ inputs.python_version }}
 
     - name: Setup Python Environment
       run: |
