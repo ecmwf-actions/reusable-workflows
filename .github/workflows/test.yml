@@ -194,7 +194,7 @@ jobs:
           ecmwf/eckit
         dependency_branch: develop
 
-  # Calls a reusable CI workflow to qa & test another repository.
+  # Calls a reusable CI Python workflow to qa & test another repository.
   ci-python:
     name: ci-python
     uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-python.yml@main
@@ -210,6 +210,14 @@ jobs:
           ecmwf/odc
         dependency_branch: develop
         self_build: false
+
+  # Calls a reusable CI Node workflow to qa & test another repository.
+  ci-node:
+    name: ci-node
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@main
+    with:
+      repository: ecmwf-actions/build-package
+      ref: develop
 
   # Calls a reusable CI workflow to build & check the documentation in another repository.
   #   It will install required system dependencies and test Read the Docs build process.
