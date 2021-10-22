@@ -118,9 +118,6 @@ jobs:
     - name: Install Dependencies
       run: npm install
 
-    - name: Code QA
-      run: npm run lint -- --no-fix
-
     - name: Test Build
       run: npm run build
 
