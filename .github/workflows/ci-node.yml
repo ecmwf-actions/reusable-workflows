@@ -99,6 +99,7 @@ jobs:
   test:
     name: test
     needs:
+    - qa
     - setup
     strategy:
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
