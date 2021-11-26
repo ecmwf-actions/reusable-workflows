@@ -14,6 +14,8 @@ on:
   workflow_dispatch: ~
 
 jobs:
+
+  # Prepares dependency cache for subsequent job.
   deps:
     name: deps
     strategy:
@@ -151,6 +153,7 @@ jobs:
 
   # Calls a reusable CI workflow to build & test the current repository.
   #   It will pull in all needed dependencies and produce a code coverage report on success.
+  #   We also pass the cache key of additional dependencies which were built in the previous job.
   ci:
     name: ci
     uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@feature/dependency-cache
