@@ -4,7 +4,13 @@
   "description": "A collection of [reusable GitHub workflows] for ECMWF repositories",
   "scripts": {
     "lint": "eslint --ext .yml --fix .github",
+    "lint-no-fix": "npm run lint -- --no-fix",
     "version": "auto-changelog && git add CHANGELOG.md"
+  },
+  "git": {
+    "pre-commit": [
+      "lint-no-fix"
+    ]
   },
   "license": "Apache-2.0",
   "repository": {
@@ -12,6 +18,7 @@
     "url": "git+https://github.com/ecmwf-actions/reusable-workflows"
   },
   "devDependencies": {
+    "@vercel/git-hooks": "^1.0.0",
     "auto-changelog": "^2.3.0",
     "eslint": "^8.3.0",
     "eslint-plugin-json-schema-validator": "^2.1.9",

@@ -30,7 +30,7 @@ jobs:
       run: npm install
 
     - name: Code QA
-      run: npm run lint -- --no-fix
+      run: npm run lint-no-fix
 
   # Calls a reusable CI workflow to build & test another repository.
   ci:
