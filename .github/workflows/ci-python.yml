@@ -100,6 +100,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       inputs: ${{ steps.prepare-inputs.outputs.inputs }}
+      inputs-for-ubuntu: ${{ steps.prepare-inputs.outputs.inputs-for-ubuntu }}
     steps:
     - name: Set Matrix
       id: set-matrix
@@ -165,11 +166,14 @@ jobs:
     - name: Prepare build-package Inputs
       id: prepare-inputs
       shell: bash -eux {0}
-      run: echo ::set-output name=inputs::$(echo "${{ inputs.build_package_inputs || '{}' }}" | yq eval "." --output-format json --indent 0 -)
+      run: |
+        echo ::set-output name=inputs::$(echo "${{ inputs.build_package_inputs || '{}' }}" | yq eval '.' --output-format json --indent 0 -)
+        echo ::set-output name=inputs-for-ubuntu::$(echo "${{ inputs.build_package_inputs || '{}' }}" | yq eval '. * {"os":"ubuntu-20.04","compiler":"gnu-10","compiler_cc":"gcc-10","compiler_cxx":"g++-10","compiler_fc":"gfortran-10"}' --output-format json --indent 0 -)
 
   test:
     name: test
     needs:
+    - qa
     - setup
     strategy:
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
@@ -200,10 +204,10 @@ jobs:
     - name: Verify Source Distribution
       shell: bash -eux {0}
       run: |
-        python setup.py sdist --dist-dir=${{ runner.temp }} --formats=gztar
-        python -m pip install ${{ runner.temp }}/$(python setup.py --name)-$(python setup.py --version).tar.gz
+        python setup.py sdist
+        python -m pip install dist/*
 
-    - name: Run Tests
+    - name: Run Tests with Repository Code
       env:
         LD_LIBRARY_PATH: ${{ steps.install-dependencies.outputs.lib_path }}
       shell: bash -eux {0}
@@ -220,6 +224,7 @@ jobs:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     needs:
     - qa
+    - setup
     - test
     runs-on: ubuntu-20.04
     steps:
@@ -237,30 +242,46 @@ jobs:
     - name: Setup Python Environment
       run: |
         python -m pip install --upgrade pip
-        python -m pip install setuptools wheel twine
+        python -m pip install setuptools wheel twine pytest
 
     # Checks if the release version matches version declared in the package.
-    #   Make sure to fail gracefully and continue on error, so we don't abort the complete workflow.
     - name: Check Version
       id: check-version
       shell: bash -eux {0}
-      continue-on-error: true
       run: |
         release=${GITHUB_REF##*/}
         version=$(python setup.py --version)
-        test "$release" == "$version"
+        echo ::set-output name=is-new-release::$([ "$release" == "$version" ] && echo true)
 
-    # Build the source distribution and publish it on PyPI.
-    #   Run this step only if the previous one was successful.
-    - name: Build and Publish
-      if: steps.check-version.outcome == 'success'
+    - name: Install Dependencies
+      id: install-dependencies
+      if: steps.check-version.outputs.is-new-release == 'true'
+      uses: ecmwf-actions/build-package@v2
+      with: ${{ fromJSON(needs.setup.outputs.inputs-for-ubuntu) }}
+
+    - name: Build & Install
+      if: steps.check-version.outputs.is-new-release == 'true'
+      shell: bash -eux {0}
+      run: |
+        python setup.py sdist
+        python -m pip install dist/*
+
+    - name: Run Tests with Installed Module
+      if: steps.check-version.outputs.is-new-release == 'true'
+      env:
+        LD_LIBRARY_PATH: ${{ steps.install-dependencies.outputs.lib_path }}
+      shell: bash -eux {0}
+      working-directory: tests
+      run: |
+        DYLD_LIBRARY_PATH=${{ env.LD_LIBRARY_PATH }} python -m pytest
+
+    - name: Publish on PyPI
+      if: steps.check-version.outputs.is-new-release == 'true'
       env:
         TWINE_USERNAME: ${{ secrets.pypi_username }}
         TWINE_PASSWORD: ${{ secrets.pypi_password }}
       shell: bash -eux {0}
-      run: |
-        python setup.py sdist
-        twine upload dist/*
+      run: twine upload dist/*
 
   notify:
     name: notify
