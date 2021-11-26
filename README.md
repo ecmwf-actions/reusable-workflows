@@ -314,6 +314,20 @@ The source repository reference, in case it differs from the current one.
 **Default:** `${{ github.ref }}`  
 **Type:** `string`
 
+## Development
+
+### Install Dependencies
+
+```
+npm install
+```
+
+### Lint Code
+
+```
+npm run lint
+```
+
 ## Licence
 
 This software is licensed under the terms of the Apache License Version 2.0 which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
