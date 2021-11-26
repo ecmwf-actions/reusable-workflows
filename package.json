@@ -1,0 +1,47 @@
+{
+  "name": "reusable-workflows",
+  "version": "0.0.1",
+  "description": "A collection of [reusable GitHub workflows] for ECMWF repositories",
+  "scripts": {
+    "lint": "eslint --ext .js,.yml --fix .github",
+    "version": "auto-changelog && git add CHANGELOG.md"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ecmwf-actions/reusable-workflows"
+  },
+  "devDependencies": {
+    "auto-changelog": "^2.3.0",
+    "eslint": "^8.3.0",
+    "eslint-plugin-json-schema-validator": "^2.1.9",
+    "eslint-plugin-jsonc": "^2.0.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:json-schema-validator/recommended"
+    ],
+    "rules": {
+      "json-schema-validator/no-invalid": [
+          "error",
+          {
+              "schemas": [
+                  {
+                    "fileMatch": [
+                      ".github/workflows/**.yml"
+                    ],
+                      "schema": "schemas/github-workflow.json"
+                  }
+              ],
+              "useSchemastoreCatalog": false
+          }
+      ]
+    }
+  },
+  "auto-changelog": {
+    "commitLimit": 99,
+    "hideCredit": true,
+    "package": true,
+    "template": "keepachangelog"
+  }
+}
