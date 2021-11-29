@@ -5,9 +5,6 @@
 
 A collection of [reusable GitHub workflows] for ECMWF repositories.
 
-> **NOTE:**  
-> Reusable workflows are currently in beta and subject to change. It is strongly advised NOT to use these workflows in production yet, as they can stop working at any time.
-
 ## Workflows
 
 * [ci.yml](#ciyml): Continuous Integration workflow for ecbuild/CMake-based projects
