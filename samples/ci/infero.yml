@@ -10,6 +10,9 @@ on:
     tags-ignore:
     - '**'
 
+  # Trigger the workflow on all pull requests
+  pull_request: ~
+
   # Allow workflow to be dispatched on demand
   workflow_dispatch: ~
 
@@ -156,7 +159,7 @@ jobs:
   #   We also pass the cache key of additional dependencies which were built in the previous job.
   ci:
     name: ci
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@feature/dependency-cache
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@main
     needs:
     - deps
     with:

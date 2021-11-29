@@ -25,12 +25,11 @@ jobs:
     uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@main
     with:
       codecov_upload: true
-      notify_teams: true
       build_package_inputs: |
         self_coverage: true
         dependencies: |
           ecmwf/ecbuild
           ecmwf/eckit
+          ecmwf/eccodes
+          ecmwf/metkit
         dependency_branch: develop
-    secrets:
-      incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}

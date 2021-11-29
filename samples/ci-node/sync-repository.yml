@@ -19,9 +19,9 @@ on:
 jobs:
 
   # Calls a reusable CI NodeJS workflow to qa & test the current repository.
-  #   It will install dependencies and produce a code coverage report on success.
+  #   It will install dependencies and run lint and test commands.
   ci:
     name: ci
     uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@main
     with:
-      codecov_upload: true
+      self_build: false
