@@ -22,6 +22,6 @@ jobs:
   #   It will install dependencies and run lint and test commands.
   ci:
     name: ci
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@main
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@v1
     with:
       self_build: false

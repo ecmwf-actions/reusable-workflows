@@ -22,6 +22,6 @@ jobs:
   #   It will install dependencies and produce a code coverage report on success.
   ci:
     name: ci
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@main
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@v1
     with:
       codecov_upload: true

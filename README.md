@@ -32,7 +32,7 @@ jobs:
   #   In case the job fails, a message will be posted to a Microsoft Teams channel.
   ci:
     name: ci
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@main
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@v1
     with:
       codecov_upload: true
       notify_teams: true
@@ -115,7 +115,7 @@ jobs:
   #   In case the job fails, a message will be posted to a Microsoft Teams channel.
   ci:
     name: ci
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-python.yml@main
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-python.yml@v1
     with:
       codecov_upload: true
       notify_teams: true
@@ -205,7 +205,7 @@ jobs:
   #   In case the job fails, a message will be posted to a Microsoft Teams channel.
   ci:
     name: ci
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@main
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@v1
     with:
       codecov_upload: true
       notify_teams: true
@@ -281,7 +281,7 @@ jobs:
   #   It will install required system dependencies and test Read the Docs build process.
   docs:
     name: docs
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/docs.yml@main
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/docs.yml@v1
     with:
       system_dependencies: doxygen pandoc
 ```

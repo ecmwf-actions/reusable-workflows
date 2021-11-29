@@ -159,7 +159,7 @@ jobs:
   #   We also pass the cache key of additional dependencies which were built in the previous job.
   ci:
     name: ci
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@main
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@v1
     needs:
     - deps
     with:
