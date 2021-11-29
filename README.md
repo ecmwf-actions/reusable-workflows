@@ -235,6 +235,18 @@ Whether to notify about workflow status via Microsoft Teams. Note that you must 
 **Default:** `false`  
 **Type:** `boolean`
 
+#### `self_build`
+
+Whether to build from currently checked out repository or not.  
+**Default:** `true`  
+**Type:** `boolean`
+
+#### `self_test`
+
+Whether to run tests from currently checked out repository or not.  
+**Default:** `true`  
+**Type:** `boolean`
+
 #### `node_version`
 
 The version of NodeJS interpreter to use.

@@ -24,6 +24,16 @@ on:
         required: false
         default: false
         type: boolean
+      self_build:
+        description: Whether to build from currently checked out repository or not.
+        required: false
+        default: true
+        type: boolean
+      self_test:
+        description: Whether to run tests from currently checked out repository or not.
+        required: false
+        default: true
+        type: boolean
       node_version:
         description: The version of NodeJS interpreter to use.
         required: false
@@ -120,13 +130,15 @@ jobs:
       run: npm install
 
     - name: Test Build
+      if: inputs.self_build
       run: npm run build
 
     - name: Run Tests
+      if: inputs.self_test
       run: npm test
 
     - name: Codecov Upload
-      if: inputs.codecov_upload && matrix.os == 'ubuntu-20.04' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+      if: inputs.self_test && inputs.codecov_upload && matrix.os == 'ubuntu-20.04' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
       uses: codecov/codecov-action@v2
 
   notify:
