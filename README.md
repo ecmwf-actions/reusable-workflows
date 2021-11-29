@@ -1,5 +1,6 @@
 # reusable-workflows
 
+[![Changelog](https://img.shields.io/github/package-json/v/ecmwf-actions/reusable-workflows)](CHANGELOG.md)
 [![Build Status](https://img.shields.io/github/workflow/status/ecmwf-actions/reusable-workflows/test)](https://github.com/ecmwf-actions/reusable-workflows/actions/workflows/test.yml)
 [![Licence](https://img.shields.io/github/license/ecmwf-actions/reusable-workflows)](https://github.com/ecmwf-actions/reusable-workflows/blob/main/LICENSE)
 

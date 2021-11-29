@@ -1,7 +1,7 @@
 {
   "name": "reusable-workflows",
   "version": "0.0.1",
-  "description": "A collection of [reusable GitHub workflows] for ECMWF repositories",
+  "description": "A collection of reusable GitHub workflows for ECMWF repositories",
   "scripts": {
     "lint": "eslint --ext .yml --fix .github",
     "lint-no-fix": "npm run lint -- --no-fix",
