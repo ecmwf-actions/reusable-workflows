@@ -249,7 +249,7 @@ jobs:
   sync:
     name: sync
     needs: qa
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/sync.yml@feature/sync-workflow
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/sync.yml@develop
     secrets:
       target_repository: ${{ secrets.BITBUCKET_REPOSITORY }}
       target_username: ${{ secrets.BITBUCKET_USERNAME }}
