@@ -39,7 +39,7 @@ jobs:
   ci:
     name: ci
     needs: qa
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@release/1.1.0
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@main
     with:
       repository: ecmwf/odc
       ref: develop
@@ -192,7 +192,7 @@ jobs:
   #   Checks if optional dependency cache feature works.
   ci-deps:
     name: ci-deps
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@release/1.1.0
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@main
     needs:
     - qa
     - deps
@@ -221,7 +221,7 @@ jobs:
   ci-python:
     name: ci-python
     needs: qa
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-python.yml@release/1.1.0
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-python.yml@main
     with:
       repository: ecmwf/pyodc
       ref: develop
@@ -239,7 +239,7 @@ jobs:
   ci-node:
     name: ci-node
     needs: qa
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@release/1.1.0
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@main
     with:
       repository: ecmwf-actions/build-package
       ref: develop
@@ -249,7 +249,7 @@ jobs:
   sync:
     name: sync
     needs: qa
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/sync.yml@release/1.1.0
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/sync.yml@main
     secrets:
       target_repository: ${{ secrets.BITBUCKET_REPOSITORY }}
       target_username: ${{ secrets.BITBUCKET_USERNAME }}
@@ -260,7 +260,7 @@ jobs:
   docs:
     name: docs
     needs: qa
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/docs.yml@release/1.1.0
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/docs.yml@main
     with:
       system_dependencies: pandoc
       repository: ecmwf/pyodc
