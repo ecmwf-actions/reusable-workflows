@@ -2,7 +2,7 @@
 
 [![Changelog](https://img.shields.io/github/package-json/v/ecmwf-actions/reusable-workflows)](CHANGELOG.md)
 [![Build Status](https://img.shields.io/github/workflow/status/ecmwf-actions/reusable-workflows/test)](https://github.com/ecmwf-actions/reusable-workflows/actions/workflows/test.yml)
-[![Licence](https://img.shields.io/github/license/ecmwf-actions/reusable-workflows)](https://github.com/ecmwf-actions/reusable-workflows/blob/main/LICENSE)
+[![Licence](https://img.shields.io/github/license/ecmwf-actions/reusable-workflows)](https://github.com/ecmwf-actions/reusable-workflows/blob/develop/LICENSE)
 
 A collection of [reusable GitHub workflows] for ECMWF repositories.
 
@@ -345,6 +345,6 @@ This software is licensed under the terms of the Apache License Version 2.0 whic
 In applying this licence, ECMWF does not waive the privileges and immunities granted to it by virtue of its status as an intergovernmental organisation nor does it submit to any jurisdiction.
 
 [reusable GitHub workflows]: https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
-[Samples]: https://github.com/ecmwf-actions/reusable-workflows/tree/main/samples
+[Samples]: https://github.com/ecmwf-actions/reusable-workflows/tree/develop/samples
 [codecov service]: https://codecov.io
 [inputs for the build-package]: https://github.com/ecmwf-actions/build-package#inputs
