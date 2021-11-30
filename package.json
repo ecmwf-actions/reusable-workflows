@@ -32,15 +32,7 @@
       "json-schema-validator/no-invalid": [
         "error",
         {
-          "schemas": [
-            {
-              "fileMatch": [
-                ".github/workflows/**.yml"
-              ],
-              "schema": "schemas/github-workflow.json"
-            }
-          ],
-          "useSchemastoreCatalog": false
+          "useSchemastoreCatalog": true
         }
       ]
     }
