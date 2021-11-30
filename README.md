@@ -12,6 +12,7 @@ A collection of [reusable GitHub workflows] for ECMWF repositories.
 * [ci-python.yml](#ci-pythonyml): Continuous Integration and Continuous Deployment workflow for Python-based projects
 * [ci-node.yml](#ci-nodeyml): Continuous Integration workflow for NodeJS-based projects
 * [docs.yml](#docsyml): Workflow for testing Sphinx-based documentation
+* [sync.yml](#syncyml): Workflow for syncing a Git repository
 
 [Samples]
 
@@ -324,6 +325,68 @@ The source repository reference, in case it differs from the current one.
 **Default:** `${{ github.ref }}`  
 **Type:** `string`
 
+## sync.yml
+
+### Usage
+
+```yaml
+# Controls when the workflow will run
+on:
+
+  # Trigger the workflow on all pushes
+  push:
+    branches:
+    - '**'
+    tags:
+    - '**'
+
+  # Trigger the workflow when a branch or tag is deleted
+  delete: ~
+
+jobs:
+
+  # Calls a reusable CI workflow to sync the current with a remote repository.
+  #   It will correctly handle addition of any new and removal of existing Git objects.
+  sync:
+    name: sync
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/sync.yml@v1
+    secrets:
+      target_repository: ${{ secrets.BITBUCKET_REPOSITORY }}
+      target_username: ${{ secrets.BITBUCKET_USERNAME }}
+      target_token: ${{ secrets.BITBUCKET_PAT }}
+```
+
+### Inputs
+
+#### `sync_repository_inputs`
+
+Optional [inputs for the sync-repository] action, provided as a YAML object value. Note that some values  may be overwritten by provided secrets with same name.  
+**Default:** `''`  
+**Type:** `string`
+
+### Secrets
+
+#### `source_token`
+
+The user access token with read access to the source repository, must be URL-encoded.  
+**Default:** `github.token`  
+**Example:** `...`
+
+#### `target_repository`
+
+**Required** The name of the target repository.  
+**Example:** `project-name/repo-name`
+
+#### `target_username`
+
+**Required** The user login with write access to the target repository, must be URL-encoded.  
+**Example:** `user`
+
+#### `target_token`
+
+**Required** The user access token with write access to the target repository, must be URL-encoded.  
+**Example:** `...`
+
 ## Development
 
 ### Install Dependencies
@@ -348,3 +411,4 @@ In applying this licence, ECMWF does not waive the privileges and immunities gra
 [Samples]: https://github.com/ecmwf-actions/reusable-workflows/tree/develop/samples
 [codecov service]: https://codecov.io
 [inputs for the build-package]: https://github.com/ecmwf-actions/build-package#inputs
+[inputs for the sync-repository]: https://github.com/ecmwf-actions/sync-repository#inputs
