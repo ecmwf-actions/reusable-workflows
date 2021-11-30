@@ -1,6 +1,6 @@
 {
   "name": "reusable-workflows",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A collection of reusable GitHub workflows for ECMWF repositories",
   "scripts": {
     "lint": "eslint --ext .yml --fix .github",
@@ -32,15 +32,7 @@
       "json-schema-validator/no-invalid": [
         "error",
         {
-          "schemas": [
-            {
-              "fileMatch": [
-                ".github/workflows/**.yml"
-              ],
-              "schema": "schemas/github-workflow.json"
-            }
-          ],
-          "useSchemastoreCatalog": false
+          "useSchemastoreCatalog": true
         }
       ]
     }
