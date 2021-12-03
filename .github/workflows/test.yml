@@ -30,7 +30,7 @@ jobs:
         node-version: ${{ inputs.node_version }}
 
     - name: Install Dependencies
-      run: npm install
+      run: npm ci
 
     - name: Code QA
       run: npm run lint-no-fix
