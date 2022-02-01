@@ -22,7 +22,7 @@
     "auto-changelog": "^2.3.0",
     "eslint": "^8.3.0",
     "eslint-plugin-json-schema-validator": "^2.1.9",
-    "eslint-plugin-jsonc": "^2.0.0"
+    "eslint-plugin-jsonc": "^2.1.0"
   },
   "eslintConfig": {
     "extends": [
