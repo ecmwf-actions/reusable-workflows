@@ -59,7 +59,7 @@ jobs:
         sudo apt-get -q -y install ${{ inputs.system_dependencies }}
 
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ inputs.python_version }}
 
