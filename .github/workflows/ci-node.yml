@@ -71,7 +71,7 @@ jobs:
         ref: ${{ inputs.ref }}
 
     - name: Setup Node
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3.1.0
       with:
         node-version: ${{ inputs.node_version }}
 
@@ -122,7 +122,7 @@ jobs:
         ref: ${{ inputs.ref }}
 
     - name: Setup Node
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3.1.0
       with:
         node-version: ${{ inputs.node_version }}
 
