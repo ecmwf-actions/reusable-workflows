@@ -177,7 +177,7 @@ jobs:
 
     - name: Codecov Upload
       if: inputs.codecov_upload && steps.build-test.outputs.coverage_file && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v3
       with:
         files: ${{ steps.build-test.outputs.coverage_file }}
 
