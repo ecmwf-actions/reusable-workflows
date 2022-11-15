@@ -76,7 +76,7 @@ jobs:
     uses: ./.github/workflows/ci-node.yml
     with:
       repository: ecmwf-actions/build-package
-      ref: develop
+      ref: main
 
   # Calls a reusable CI workflow to sync the current with a remote repository.
   #   It will correctly handle addition of any new and removal of existing Git objects.
