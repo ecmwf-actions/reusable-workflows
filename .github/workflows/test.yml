@@ -80,15 +80,16 @@ jobs:
 
   # Calls a reusable CI workflow to sync the current with a remote repository.
   #   It will correctly handle addition of any new and removal of existing Git objects.
-  sync:
-    name: sync
-    needs: qa
-    if: github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/sync.yml
-    secrets:
-      target_repository: ${{ secrets.BITBUCKET_REPOSITORY }}
-      target_username: ${{ secrets.BITBUCKET_USERNAME }}
-      target_token: ${{ secrets.BITBUCKET_PAT }}
+  #   Disabled because our token is stale. Needs investigation, then should be re-enabled.
+  #  sync:
+  #    name: sync
+  #    needs: qa
+  #    if: github.ref == 'refs/heads/main'
+  #    uses: ./.github/workflows/sync.yml
+  #    secrets:
+  #      target_repository: ${{ secrets.BITBUCKET_REPOSITORY }}
+  #      target_username: ${{ secrets.BITBUCKET_USERNAME }}
+  #      target_token: ${{ secrets.BITBUCKET_PAT }}
 
   # Calls a reusable CI workflow to build & check the documentation in another repository.
   #   It will install required system dependencies and test Read the Docs build process.
