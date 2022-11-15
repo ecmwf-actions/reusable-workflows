@@ -249,6 +249,7 @@ jobs:
   sync:
     name: sync
     needs: qa
+    if: github.ref == 'refs/heads/main'
     uses: ecmwf-actions/reusable-workflows/.github/workflows/sync.yml@main
     secrets:
       target_repository: ${{ secrets.BITBUCKET_REPOSITORY }}
