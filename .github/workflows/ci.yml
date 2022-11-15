@@ -43,6 +43,9 @@ on:
         required: false
         default: ${{ github.ref }}
         type: string
+      name_prefix:
+        required: false
+        type: string
 
       # Inputs for build-package action.
       build_package_inputs:
@@ -60,7 +63,7 @@ on:
 
 jobs:
   setup:
-    name: setup
+    name: ${{ inputs.name_prefix }}setup
     runs-on: ubuntu-20.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -133,7 +136,7 @@ jobs:
       run: echo ::set-output name=inputs::$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.' --output-format json --indent 0 -)
 
   test:
-    name: test
+    name: ${{ inputs.name_prefix }}test
     needs:
     - setup
     strategy:
@@ -178,7 +181,7 @@ jobs:
         files: ${{ steps.build-test.outputs.coverage_file }}
 
   notify:
-    name: notify
+    name: ${{ inputs.name_prefix }}notify
     runs-on: ubuntu-20.04
     needs:
     - setup
