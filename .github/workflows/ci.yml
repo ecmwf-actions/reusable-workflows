@@ -148,6 +148,7 @@ jobs:
       with:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.ref }}
+        token: ${{ secrets.PAT || github.token }}
 
     - name: Restore Dependency Cache
       id: deps-cache
