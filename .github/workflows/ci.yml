@@ -168,7 +168,7 @@ jobs:
 
     - name: Build & Test
       id: build-test
-      uses: ecmwf-actions/build-package@v2
+      uses: ecmwf-actions/build-package@main
       with: ${{ fromJSON(needs.setup.outputs.inputs) }}
 
     - name: Codecov Upload
