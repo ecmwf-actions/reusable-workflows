@@ -6,7 +6,7 @@ on:
   # Trigger the workflow on all pushes, except on tag creation
   push:
     branches:
-    - '**'
+    - main
     tags-ignore:
     - '**'
 
