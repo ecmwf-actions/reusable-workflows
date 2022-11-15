@@ -108,7 +108,7 @@ jobs:
 
     - name: Checkout ONNX Runtime Repository
       if: steps.deps-cache.outputs.cache-hit != 'true'
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: Microsoft/onnxruntime
         ref: ${{ env.ONNXRUNTIME_VERSION }}
@@ -129,7 +129,7 @@ jobs:
 
     - name: Checkout TensorFlow Repository
       if: steps.deps-cache.outputs.cache-hit != 'true'
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: tensorflow/tensorflow
         ref: ${{ env.TENSORFLOW_VERSION }}

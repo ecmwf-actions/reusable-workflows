@@ -6,7 +6,7 @@ on:
   # Trigger the workflow on all pushes, except on tag creation
   push:
     branches:
-    - '**'
+    - main
     tags-ignore:
     - '**'
 
@@ -22,10 +22,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Setup Node
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ inputs.node_version }}
 
@@ -39,7 +39,7 @@ jobs:
   ci:
     name: ci
     needs: qa
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@main
+    uses: ./.github/workflows/ci.yml
     with:
       repository: ecmwf/odc
       ref: develop
@@ -51,177 +51,11 @@ jobs:
           ecmwf/eckit
         dependency_branch: develop
 
-  # Prepares dependency cache for subsequent job.
-  deps:
-    name: deps
-    needs: qa
-    strategy:
-      matrix:
-        name:
-        - gnu-10@ubuntu-20.04
-        - clang-12@ubuntu-20.04
-        - gnu-10@ubuntu-18.04
-        - clang-9@ubuntu-18.04
-        # Currently disabled due to ONNX Runtime build issue (flatbuffers dependency):
-        #   g++-10: error: unrecognized command-line option '-stdlib=libc++'
-        # - gnu-10@macos-10.15
-        # Currently disabled due to infero build issue:
-        #   Undefined symbols for architecture x86_64: "eckit::mpi::comm(char const*)"
-        # - clang-12@macos-10.15
-        include:
-        - name: gnu-10@ubuntu-20.04
-          os: ubuntu-20.04
-          compiler: gnu-10
-          compiler_cc: gcc-10
-          compiler_cxx: g++-10
-          compiler_fc: gfortran-10
-        - name: clang-12@ubuntu-20.04
-          os: ubuntu-20.04
-          compiler: clang-12
-          compiler_cc: clang-12
-          compiler_cxx: clang++-12
-          compiler_fc: gfortran-10
-        - name: gnu-10@ubuntu-18.04
-          os: ubuntu-18.04
-          compiler: gnu-10
-          compiler_cc: gcc-10
-          compiler_cxx: g++-10
-          compiler_fc: gfortran-10
-        - name: clang-9@ubuntu-18.04
-          os: ubuntu-18.04
-          compiler: clang-9
-          compiler_cc: clang-9
-          compiler_cxx: clang++-9
-          compiler_fc: gfortran-9
-        # Currently disabled due to ONNX Runtime build issue (flatbuffers dependency):
-        #   g++-10: error: unrecognized command-line option '-stdlib=libc++'
-        # - name: gnu-10@macos-10.15
-        #   os: macos-10.15
-        #   compiler: gnu-10
-        #   compiler_cc: gcc-10
-        #   compiler_cxx: g++-10
-        #   compiler_fc: gfortran-10
-        # Currently disabled due to infero build issue:
-        #   Undefined symbols for architecture x86_64: "eckit::mpi::comm(char const*)"
-        # # Xcode compiler requires empty environment variables, so we pass null (~) here
-        # - name: clang-12@macos-10.15
-        #   os: macos-10.15
-        #   compiler: clang-12
-        #   compiler_cc: ~
-        #   compiler_cxx: ~
-        #   compiler_fc: gfortran-10
-    runs-on: ${{ matrix.os }}
-    env:
-      ONNXRUNTIME_VERSION: v1.9.1
-      ONNXRUNTIME_SRC_DIR: ${{ github.workspace }}/onnxruntime
-      TENSORFLOW_VERSION: v2.6.0
-      TENSORFLOW_SRC_DIR: ${{ github.workspace }}/tensorflow
-    outputs:
-      deps-cache-key: ${{ steps.setup-environment.outputs.deps-cache-key }}
-    steps:
-    - name: Setup Environment
-      id: setup-environment
-      shell: bash -eux {0}
-      run: |
-        DEPS_PATH="${{ runner.temp }}/deps"
-        ONNXRUNTIME_PATH="$DEPS_PATH/onnxruntime"
-        TENSORFLOW_PATH="$DEPS_PATH/tensorflow"
-        TFLITE_PATH="$DEPS_PATH/tensorflow/tensorflow/lite/build"
-        DEPS_ENV="DEPS_PATH=$DEPS_PATH"$'\n'"ONNXRUNTIME_PATH=$ONNXRUNTIME_PATH"$'\n'"TENSORFLOW_PATH=$TENSORFLOW_PATH"$'\n'"TFLITE_PATH=$TFLITE_PATH"
-        mkdir -p $DEPS_PATH
-        echo "$DEPS_ENV" > $DEPS_PATH/.env
-        echo "$DEPS_ENV" >> $GITHUB_ENV
-        echo ::set-output name=deps-cache-key::"deps-onnxruntime-${{ env.ONNXRUNTIME_VERSION }}-tensorflow-${{ env.TENSORFLOW_VERSION }}-"
-
-    - name: Check for Dependency Cache
-      id: deps-cache
-      uses: actions/cache@v2
-      with:
-        path: ${{ env.DEPS_PATH }}
-        key: ${{ steps.setup-environment.outputs.deps-cache-key }}${{ matrix.compiler }}@${{ matrix.os }}
-
-    - name: Checkout ONNX Runtime Repository
-      if: steps.deps-cache.outputs.cache-hit != 'true'
-      uses: actions/checkout@v2
-      with:
-        repository: Microsoft/onnxruntime
-        ref: ${{ env.ONNXRUNTIME_VERSION }}
-        path: ${{ env.ONNXRUNTIME_SRC_DIR }}
-
-    - name: Build ONNX Runtime
-      if: steps.deps-cache.outputs.cache-hit != 'true'
-      env:
-        CC: ${{ matrix.compiler_cc }}
-        CXX: ${{ matrix.compiler_cxx }}
-        FC: ${{ matrix.compiler_fc }}
-      working-directory: ${{ env.ONNXRUNTIME_SRC_DIR }}
-      shell: bash -eux {0}
-      run: |
-        ./build.sh --config Release --build_shared_lib --parallel 2
-        mkdir -p ${{ env.ONNXRUNTIME_PATH }}
-        mv build include ${{ env.ONNXRUNTIME_PATH }}
-
-    - name: Checkout TensorFlow Repository
-      if: steps.deps-cache.outputs.cache-hit != 'true'
-      uses: actions/checkout@v2
-      with:
-        repository: tensorflow/tensorflow
-        ref: ${{ env.TENSORFLOW_VERSION }}
-        path: ${{ env.TENSORFLOW_SRC_DIR }}
-
-    - name: Build TensorFlow Lite
-      if: steps.deps-cache.outputs.cache-hit != 'true'
-      env:
-        CC: ${{ matrix.compiler_cc }}
-        CXX: ${{ matrix.compiler_cxx }}
-        FC: ${{ matrix.compiler_fc }}
-      working-directory: ${{ env.TENSORFLOW_SRC_DIR }}
-      shell: bash -eux {0}
-      run: |
-        INSTALL_DIR=${{ env.TENSORFLOW_PATH }}
-        mkdir -p $INSTALL_DIR
-        mv tensorflow third_party $INSTALL_DIR
-        cd $INSTALL_DIR/tensorflow/lite
-        SRC_DIR=$(pwd)
-        BUILD_DIR=build
-        rm -rf $BUILD_DIR && mkdir -p $BUILD_DIR && cd $BUILD_DIR
-        cmake -DCMAKE_PREFIX_PATH=$INSTALL_DIR -DBUILD_SHARED_LIBS=ON $SRC_DIR
-        cmake --build . -j2
-
-  # Calls a reusable CI workflow to build & test another repository.
-  #   Checks if optional dependency cache feature works.
-  ci-deps:
-    name: ci-deps
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@main
-    needs:
-    - qa
-    - deps
-    with:
-      # Currently disabled due to:
-      #   - ONNX Runtime build issue (flatbuffers dependency):
-      #     g++-10: error: unrecognized command-line option '-stdlib=libc++'
-      #   - infero build issue:
-      #     Undefined symbols for architecture x86_64: "eckit::mpi::comm(char const*)"
-      skip_matrix_jobs: |
-        gnu-10@macos-10.15
-        clang-12@macos-10.15
-      deps_cache_key: ${{ needs.deps.outputs.deps-cache-key }}
-      repository: ecmwf-lab/infero
-      ref: develop
-      build_package_inputs: |
-        repository: ecmwf-lab/infero
-        sha: develop
-        cmake_options: -DENABLE_MPI=OFF -DENABLE_TF_LITE=ON -DTENSORFLOWLITE_PATH=$TENSORFLOW_PATH -DTENSORFLOWLITE_ROOT=$TFLITE_PATH -DENABLE_ONNX=ON -DONNX_ROOT=$ONNXRUNTIME_PATH -DENABLE_TENSORRT=OFF
-        dependencies: |
-          ecmwf/ecbuild
-          ecmwf/eckit
-        dependency_branch: develop
-
   # Calls a reusable CI Python workflow to qa & test another repository.
   ci-python:
     name: ci-python
     needs: qa
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-python.yml@main
+    uses: ./.github/workflows/ci-python.yml
     with:
       repository: ecmwf/pyodc
       ref: develop
@@ -239,17 +73,18 @@ jobs:
   ci-node:
     name: ci-node
     needs: qa
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@main
+    uses: ./.github/workflows/ci-node.yml
     with:
       repository: ecmwf-actions/build-package
-      ref: develop
+      ref: main
 
   # Calls a reusable CI workflow to sync the current with a remote repository.
   #   It will correctly handle addition of any new and removal of existing Git objects.
   sync:
     name: sync
     needs: qa
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/sync.yml@main
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/sync.yml
     secrets:
       target_repository: ${{ secrets.BITBUCKET_REPOSITORY }}
       target_username: ${{ secrets.BITBUCKET_USERNAME }}
@@ -260,7 +95,7 @@ jobs:
   docs:
     name: docs
     needs: qa
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/docs.yml@main
+    uses: ./.github/workflows/docs.yml
     with:
       system_dependencies: pandoc
       repository: ecmwf/pyodc
