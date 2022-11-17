@@ -39,7 +39,7 @@ jobs:
     - name: Prepare sync-repository Inputs
       id: prepare-inputs
       shell: bash -eux {0}
-      run: echo ::set-output name=inputs::$([ -z "${{ secrets.source_token }}" ] && echo "${{ inputs.sync_repository_inputs || '{}' }}" | yq eval '. * {"target_repository":"${{ secrets.target_repository }}","target_username":"${{ secrets.target_username }}","target_token":"${{ secrets.target_token }}"}' --output-format json --indent 0 - || echo "${{ inputs.sync_repository_inputs || '{}' }}" | yq eval '. * {"source_token":"${{ secrets.source_token }}","target_repository":"${{ secrets.target_repository }}","target_username":"${{ secrets.target_username }}","target_token":"${{ secrets.target_token }}"}' --output-format json --indent 0 -)
+      run: echo inputs::$([ -z "${{ secrets.source_token }}" ] && echo "${{ inputs.sync_repository_inputs || '{}' }}" | yq eval '. * {"target_repository":"${{ secrets.target_repository }}","target_username":"${{ secrets.target_username }}","target_token":"${{ secrets.target_token }}"}' --output-format json --indent 0 - || echo "${{ inputs.sync_repository_inputs || '{}' }}" | yq eval '. * {"source_token":"${{ secrets.source_token }}","target_repository":"${{ secrets.target_repository }}","target_username":"${{ secrets.target_username }}","target_token":"${{ secrets.target_token }}"}' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
     - name: Sync Repository
       uses: ecmwf-actions/sync-repository@v1
