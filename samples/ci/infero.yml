@@ -97,7 +97,7 @@ jobs:
         mkdir -p $DEPS_PATH
         echo "$DEPS_ENV" > $DEPS_PATH/.env
         echo "$DEPS_ENV" >> $GITHUB_ENV
-        echo deps-cache-key::"deps-onnxruntime-${{ env.ONNXRUNTIME_VERSION }}-tensorflow-${{ env.TENSORFLOW_VERSION }}-" >> $GITHUB_OUTPUT
+        echo deps-cache-key="deps-onnxruntime-${{ env.ONNXRUNTIME_VERSION }}-tensorflow-${{ env.TENSORFLOW_VERSION }}-" >> $GITHUB_OUTPUT
 
     - name: Check for Dependency Cache
       id: deps-cache
