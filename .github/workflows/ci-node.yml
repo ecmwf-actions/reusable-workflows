@@ -104,7 +104,7 @@ jobs:
         )
         SELECT_OS_COND="1 != 1"
         for skip_job in $SKIP_MATRIX_JOBS; do SELECT_OS_COND="$SELECT_OS_COND or . == \"$skip_job\""; done
-        echo matrix::$(echo "$MATRIX" | yq eval "del(.os[] | select($SELECT_OS_COND))" --output-format json --indent 0 - | sed 's/"/\\"/g') >> $GITHUB_OUTPUT
+        echo matrix::$(echo "$MATRIX" | yq eval "del(.os[] | select($SELECT_OS_COND))" --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
   test:
     name: test
