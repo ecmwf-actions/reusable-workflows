@@ -37,7 +37,7 @@ on:
       node_version:
         description: The version of NodeJS interpreter to use.
         required: false
-        default: '12'
+        default: '16'
         type: string
       repository:
         description: The source repository name, in case it differs from the current one. Repository names should
