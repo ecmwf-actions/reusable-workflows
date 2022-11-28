@@ -110,10 +110,10 @@ jobs:
         name:
         - gnu-10@ubuntu-20.04
         - clang-12@ubuntu-20.04
-        - gnu-10@ubuntu-18.04
-        - clang-9@ubuntu-18.04
-        - gnu-10@macos-10.15
-        - clang-12@macos-10.15
+        - gnu-11@ubuntu-22.04
+        - clang-14@ubuntu-22.04
+        - gnu-11@macos-12
+        - clang-14@macos-12
         include:
         - name: gnu-10@ubuntu-20.04
           os: ubuntu-20.04
@@ -127,31 +127,31 @@ jobs:
           compiler_cc: clang-12
           compiler_cxx: clang++-12
           compiler_fc: gfortran-10
-        - name: gnu-10@ubuntu-18.04
-          os: ubuntu-18.04
-          compiler: gnu-10
-          compiler_cc: gcc-10
-          compiler_cxx: g++-10
-          compiler_fc: gfortran-10
-        - name: clang-9@ubuntu-18.04
-          os: ubuntu-18.04
-          compiler: clang-9
-          compiler_cc: clang-9
-          compiler_cxx: clang++-9
-          compiler_fc: gfortran-9
-        - name: gnu-10@macos-10.15
-          os: macos-10.15
-          compiler: gnu-10
-          compiler_cc: gcc-10
-          compiler_cxx: g++-10
-          compiler_fc: gfortran-10
+        - name: gnu-11@ubuntu-22.04
+          os: ubuntu-22.04
+          compiler: gnu-11
+          compiler_cc: gcc-11
+          compiler_cxx: g++-11
+          compiler_fc: gfortran-11
+        - name: clang-14@ubuntu-22.04
+          os: ubuntu-22.04
+          compiler: clang-14
+          compiler_cc: clang-14
+          compiler_cxx: clang++-14
+          compiler_fc: gfortran-11
+        - name: gnu-11@macos-12
+          os: macos-12
+          compiler: gnu-11
+          compiler_cc: gcc-11
+          compiler_cxx: g++-11
+          compiler_fc: gfortran-11
         # Xcode compiler requires empty environment variables, so we pass null (~) here
-        - name: clang-12@macos-10.15
-          os: macos-10.15
-          compiler: clang-12
+        - name: clang-14@macos-12
+          os: macos-12
+          compiler: clang-14
           compiler_cc: ~
           compiler_cxx: ~
-          compiler_fc: gfortran-10
+          compiler_fc: gfortran-11
         EOS
         )
         SKIP_MATRIX_JOBS=$(cat << 'EOS'
@@ -176,6 +176,7 @@ jobs:
     - qa
     - setup
     strategy:
+      fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
     steps:
