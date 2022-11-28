@@ -112,6 +112,7 @@ jobs:
     - qa
     - setup
     strategy:
+      fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
     steps:
