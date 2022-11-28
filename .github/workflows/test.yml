@@ -57,8 +57,6 @@ jobs:
     needs: qa
     uses: ./.github/workflows/ci-python.yml
     with:
-      skip_matrix_jobs: |
-        gnu-11@macos-12
       repository: ecmwf/pyodc
       ref: develop
       build_package_inputs: |
