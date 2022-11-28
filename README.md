@@ -249,8 +249,8 @@ Whether to run tests from currently checked out repository or not.
 #### `node_version`
 
 The version of NodeJS interpreter to use.
-**Default:** `'12'`  
-**Type:** `boolean`
+**Default:** `'16'`  
+**Type:** `string`
 
 #### `repository`
 
