@@ -129,7 +129,7 @@ jobs:
       run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
   test:
-    name: ${{ inputs.name_prefix }}test
+    name: ${{ inputs.name_prefix }}test-${{ matrix.name }}
     needs:
     - setup
     strategy:
