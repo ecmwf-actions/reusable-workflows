@@ -81,24 +81,28 @@ jobs:
         - clang@rocky-8.6
         include:
         - name: gnu@debian-11
+          labels: [self-hosted, debian-11]
           os: debian-11
           compiler: gnu
           compiler_cc: gcc
           compiler_cxx: g++
           compiler_fc: gfortran
         - name: gnu@centos-7.9
+          labels: [self-hosted, centos-7.9]
           os: centos-7.9
           compiler: gnu
           compiler_cc: gcc
           compiler_cxx: g++
           compiler_fc: gfortran
         - name: gnu@rocky-8.6
+          labels: [self-hosted, rocky-8.6]
           os: rocky-8.6
           compiler: gnu
           compiler_cc: gcc
           compiler_cxx: g++
           compiler_fc: gfortran
         - name: clang@rocky-8.6
+          labels: [self-hosted, rocky-8.6]
           os: rocky-8.6
           compiler: clang
           compiler_cc: ~
@@ -127,7 +131,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
-    runs-on: [self-hosted, ${{ matrix.os }}]
+    runs-on: ${{ matrix.labels }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
