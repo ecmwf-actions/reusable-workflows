@@ -105,8 +105,8 @@ jobs:
           labels: [self-hosted, rocky-8.6]
           os: rocky-8.6
           compiler: clang
-          compiler_cc: ~
-          compiler_cxx: ~
+          compiler_cc: clang
+          compiler_cxx: clang++
           compiler_fc: gfortran
         EOS
         )
