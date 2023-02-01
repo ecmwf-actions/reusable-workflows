@@ -1,7 +1,7 @@
 # reusable-workflows
 
 [![Changelog](https://img.shields.io/github/package-json/v/ecmwf-actions/reusable-workflows)](CHANGELOG.md)
-[![Build Status](https://img.shields.io/github/workflow/status/ecmwf-actions/reusable-workflows/test)](https://github.com/ecmwf-actions/reusable-workflows/actions/workflows/test.yml)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/ecmwf-actions/reusable-workflows/test.yml?branch=main)](https://github.com/ecmwf-actions/reusable-workflows/actions/workflows/test.yml)
 [![Licence](https://img.shields.io/github/license/ecmwf-actions/reusable-workflows)](https://github.com/ecmwf-actions/reusable-workflows/blob/develop/LICENSE)
 
 A collection of [reusable GitHub workflows] for ECMWF repositories.
@@ -50,57 +50,57 @@ jobs:
 
 #### `skip_matrix_jobs`
 
-A list of matrix jobs to skip. Job names should be the full form of `<compiler>@<platform>`.  
-**Default:** `''`  
+A list of matrix jobs to skip. Job names should be the full form of `<compiler>@<platform>`.
+**Default:** `''`
 **Type:** `string`
 
 #### `deps_cache_key`
 
-Dependency cache key to restore from. Note that the key should be platform agnostic, as the `<compiler>@<platform>` suffix will be automatically appended. Upon extraction, a file called `.env` from the cache root directory will be loaded into the build environment, if it exists.  
-**Default:** `''`  
+Dependency cache key to restore from. Note that the key should be platform agnostic, as the `<compiler>@<platform>` suffix will be automatically appended. Upon extraction, a file called `.env` from the cache root directory will be loaded into the build environment, if it exists.
+**Default:** `''`
 **Type:** `string`
 
 #### `deps_cache_path`
 
-Optional dependency cache path to restore to, falls back to `${{ runner.temp }}/deps`. Will be considered only if [deps_cache_key](#deps_cache_key) is supplied.  
-**Default:** `''`  
+Optional dependency cache path to restore to, falls back to `${{ runner.temp }}/deps`. Will be considered only if [deps_cache_key](#deps_cache_key) is supplied.
+**Default:** `''`
 **Type:** `string`
 
 #### `codecov_upload`
 
-Whether to generate and upload code coverage to [codecov service] for main branches.  
-**Default:** `false`  
+Whether to generate and upload code coverage to [codecov service] for main branches.
+**Default:** `false`
 **Type:** `boolean`
 
 #### `notify_teams`
 
-Whether to notify about workflow status via Microsoft Teams. Note that you must supply [incoming_webhook](#incoming_webhook) secret if you switch on this feature.  
-**Default:** `false`  
+Whether to notify about workflow status via Microsoft Teams. Note that you must supply [incoming_webhook](#incoming_webhook) secret if you switch on this feature.
+**Default:** `false`
 **Type:** `boolean`
 
 #### `repository`
 
-The source repository name, in case it differs from the current one. Repository names should follow the standard Github `owner/name` format.  
-**Default:** `${{ github.repository }}`  
+The source repository name, in case it differs from the current one. Repository names should follow the standard Github `owner/name` format.
+**Default:** `${{ github.repository }}`
 **Type:** `string`
 
 #### `ref`
 
-The source repository reference, in case it differs from the current one.  
-**Default:** `${{ github.ref }}`  
+The source repository reference, in case it differs from the current one.
+**Default:** `${{ github.ref }}`
 **Type:** `string`
 
 #### `build_package_inputs`
 
-Optional [inputs for the build-package] action, provided as a YAML object value.  
-**Default:** `''`  
+Optional [inputs for the build-package] action, provided as a YAML object value.
+**Default:** `''`
 **Type:** `string`
 
 ### Secrets
 
 #### `incoming_webhook`
 
-Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in Teams has the appropriate connector set up. It will only be used if [notify_teams](#notify_teams) input is switched on.  
+Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in Teams has the appropriate connector set up. It will only be used if [notify_teams](#notify_teams) input is switched on.
 **Example:** `https://webhook.office.com/webhookb2/...`
 
 ## ci-python.yml
@@ -137,61 +137,61 @@ jobs:
 
 #### `skip_matrix_jobs`
 
-A list of matrix jobs to skip. Job names should be the full form of `<compiler>@<platform>`.  
-**Default:** `''`  
+A list of matrix jobs to skip. Job names should be the full form of `<compiler>@<platform>`.
+**Default:** `''`
 **Type:** `string`
 
 #### `codecov_upload`
 
-Whether to generate and upload code coverage to [codecov service] for main branches.  
-**Default:** `false`  
+Whether to generate and upload code coverage to [codecov service] for main branches.
+**Default:** `false`
 **Type:** `boolean`
 
 #### `notify_teams`
 
-Whether to notify about workflow status via Microsoft Teams. Note that you must supply [incoming_webhook](#incoming_webhook-1) secret if you switch on this feature.  
-**Default:** `false`  
+Whether to notify about workflow status via Microsoft Teams. Note that you must supply [incoming_webhook](#incoming_webhook-1) secret if you switch on this feature.
+**Default:** `false`
 **Type:** `boolean`
 
 #### `python_version`
 
-The version of Python binary to use.  
-**Default:** `'3.9'`  
+The version of Python binary to use.
+**Default:** `'3.9'`
 **Type:** `ring`
 
 #### `repository`
 
-The source repository name. Repository names should follow the standard Github `owner/name` format.  
-**Default:** `${{ github.repository }}`  
+The source repository name. Repository names should follow the standard Github `owner/name` format.
+**Default:** `${{ github.repository }}`
 **Type:** `string`
 
 #### `ref`
 
-The source repository reference.  
-**Default:** `${{ github.ref }}`  
+The source repository reference.
+**Default:** `${{ github.ref }}`
 **Type:** `string`
 
 #### `build_package_inputs`
 
-Optional [inputs for the build-package] action, provided as a YAML object value.  
-**Default:** `''`  
+Optional [inputs for the build-package] action, provided as a YAML object value.
+**Default:** `''`
 **Type:** `string`
 
 ### Secrets
 
 #### `pypi_username`
 
-Username of the PyPI account. The account must have sufficient permissions to deploy the current project.  
+Username of the PyPI account. The account must have sufficient permissions to deploy the current project.
 **Example:** `MyUsername`
 
 #### `pypi_password`
 
-Password of the PyPI account.  
+Password of the PyPI account.
 **Example:** `MyPassword`
 
 #### `incoming_webhook`
 
-Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in Teams has the appropriate connector set up. It will only be used if [notify_teams](#notify_teams-1) input is switched on.  
+Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in Teams has the appropriate connector set up. It will only be used if [notify_teams](#notify_teams-1) input is switched on.
 **Example:** `https://webhook.office.com/webhookb2/...`
 
 ## ci-node.yml
@@ -218,57 +218,57 @@ jobs:
 
 #### `skip_matrix_jobs`
 
-A list of matrix jobs to skip. Job names should be the form of `<platform>`.  
-**Default:** `''`  
+A list of matrix jobs to skip. Job names should be the form of `<platform>`.
+**Default:** `''`
 **Type:** `string`
 
 #### `codecov_upload`
 
-Whether to generate and upload code coverage to [codecov service] for main branches.  
-**Default:** `false`  
+Whether to generate and upload code coverage to [codecov service] for main branches.
+**Default:** `false`
 **Type:** `boolean`
 
 #### `notify_teams`
 
-Whether to notify about workflow status via Microsoft Teams. Note that you must supply [incoming_webhook](#incoming_webhook-2) secret if you switch on this feature.  
-**Default:** `false`  
+Whether to notify about workflow status via Microsoft Teams. Note that you must supply [incoming_webhook](#incoming_webhook-2) secret if you switch on this feature.
+**Default:** `false`
 **Type:** `boolean`
 
 #### `self_build`
 
-Whether to build from currently checked out repository or not.  
-**Default:** `true`  
+Whether to build from currently checked out repository or not.
+**Default:** `true`
 **Type:** `boolean`
 
 #### `self_test`
 
-Whether to run tests from currently checked out repository or not.  
-**Default:** `true`  
+Whether to run tests from currently checked out repository or not.
+**Default:** `true`
 **Type:** `boolean`
 
 #### `node_version`
 
 The version of NodeJS interpreter to use.
-**Default:** `'16'`  
+**Default:** `'16'`
 **Type:** `string`
 
 #### `repository`
 
-The source repository name. Repository names should follow the standard Github `owner/name` format.  
-**Default:** `${{ github.repository }}`  
+The source repository name. Repository names should follow the standard Github `owner/name` format.
+**Default:** `${{ github.repository }}`
 **Type:** `string`
 
 #### `ref`
 
-The source repository reference.  
-**Default:** `${{ github.ref }}`  
+The source repository reference.
+**Default:** `${{ github.ref }}`
 **Type:** `string`
 
 ### Secrets
 
 #### `incoming_webhook`
 
-Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in Teams has the appropriate connector set up. It will only be used if [notify_teams](#notify_teams-2) input is switched on.  
+Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in Teams has the appropriate connector set up. It will only be used if [notify_teams](#notify_teams-2) input is switched on.
 **Example:** `https://webhook.office.com/webhookb2/...`
 
 ## docs.yml
@@ -291,38 +291,38 @@ jobs:
 
 #### `requirements_path`
 
-Path of the `requirements.txt` file which includes all dependencies needed for building of the documentation, relative to the repository root.  
-**Default:** `docs/requirements.txt`  
+Path of the `requirements.txt` file which includes all dependencies needed for building of the documentation, relative to the repository root.
+**Default:** `docs/requirements.txt`
 **Type:** `string`
 
 #### `docs_path`
 
-Path of the documentation directory, relative to the repository root.  
-**Default:** `docs`  
+Path of the documentation directory, relative to the repository root.
+**Default:** `docs`
 **Type:** `string`
 
 #### `system_dependencies`
 
-Optional list of system dependencies to install via `apt` command, separated by spaces. Note that each dependency must be available via standard Ubuntu 20.04 package repositories.  
-**Default:** `''`  
+Optional list of system dependencies to install via `apt` command, separated by spaces. Note that each dependency must be available via standard Ubuntu 20.04 package repositories.
+**Default:** `''`
 **Type:** `string`
 
 #### `python_version`
 
-The version of Python binary to use.  
-**Default:** `'3.9'`  
+The version of Python binary to use.
+**Default:** `'3.9'`
 **Type:** `ring`
 
 #### `repository`
 
-The source repository name, in case it differs from the current one. Repository names should follow the standard Github `owner/name` format.  
-**Default:** `${{ github.repository }}`  
+The source repository name, in case it differs from the current one. Repository names should follow the standard Github `owner/name` format.
+**Default:** `${{ github.repository }}`
 **Type:** `string`
 
 #### `ref`
 
-The source repository reference, in case it differs from the current one.  
-**Default:** `${{ github.ref }}`  
+The source repository reference, in case it differs from the current one.
+**Default:** `${{ github.ref }}`
 **Type:** `string`
 
 ## sync.yml
@@ -360,31 +360,31 @@ jobs:
 
 #### `sync_repository_inputs`
 
-Optional [inputs for the sync-repository] action, provided as a YAML object value. Note that some values  may be overwritten by provided secrets with same name.  
-**Default:** `''`  
+Optional [inputs for the sync-repository] action, provided as a YAML object value. Note that some values  may be overwritten by provided secrets with same name.
+**Default:** `''`
 **Type:** `string`
 
 ### Secrets
 
 #### `source_token`
 
-The user access token with read access to the source repository, must be URL-encoded.  
-**Default:** `github.token`  
+The user access token with read access to the source repository, must be URL-encoded.
+**Default:** `github.token`
 **Example:** `...`
 
 #### `target_repository`
 
-**Required** The name of the target repository.  
+**Required** The name of the target repository.
 **Example:** `project-name/repo-name`
 
 #### `target_username`
 
-**Required** The user login with write access to the target repository, must be URL-encoded.  
+**Required** The user login with write access to the target repository, must be URL-encoded.
 **Example:** `user`
 
 #### `target_token`
 
-**Required** The user access token with write access to the target repository, must be URL-encoded.  
+**Required** The user access token with write access to the target repository, must be URL-encoded.
 **Example:** `...`
 
 ## Development
