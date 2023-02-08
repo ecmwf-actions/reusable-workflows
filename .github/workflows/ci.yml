@@ -150,7 +150,9 @@ jobs:
 
     - name: Missing Dependency Cache
       if: inputs.deps_cache_key && steps.deps-cache.outputs.cache-hit != 'true'
-      uses: cutenode/action-always-fail@v1
+      run: |
+        echo "::error::Missing dependency cache for given deps_cache_key input."
+        exit 1
 
     - name: Setup Dependency Environment
       if: steps.deps-cache.outputs.cache-hit == 'true'
@@ -167,7 +169,7 @@ jobs:
 
     - name: Codecov Upload
       if: inputs.codecov_upload && steps.build-test.outputs.coverage_file && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
       with:
         files: ${{ steps.build-test.outputs.coverage_file }}
 
