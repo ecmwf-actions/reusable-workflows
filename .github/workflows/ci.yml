@@ -150,7 +150,9 @@ jobs:
 
     - name: Missing Dependency Cache
       if: inputs.deps_cache_key && steps.deps-cache.outputs.cache-hit != 'true'
-      uses: cutenode/action-always-fail@v1
+      run: |
+        echo "::error::Missing dependency cache for given deps_cache_key input."
+        exit 1
 
     - name: Setup Dependency Environment
       if: steps.deps-cache.outputs.cache-hit == 'true'
