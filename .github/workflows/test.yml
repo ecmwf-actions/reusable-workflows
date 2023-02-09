@@ -100,3 +100,18 @@ jobs:
       system_dependencies: pandoc
       repository: ecmwf/pyodc
       ref: develop
+
+  ci-hpc:
+    name: ci-hpc
+    needs: qa
+    uses: ./.github/workflows/ci-hpc.yml
+    with:
+      name-prefix: eccodes-
+      build-inputs: |
+        --package: ecmwf/eccodes@develop
+        --modules: |
+          ecbuild
+          ninja
+        --parallel: 64
+    secrets:
+      PAT: ${{ secrets.PAT }}
