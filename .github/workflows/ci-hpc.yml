@@ -17,9 +17,6 @@ on:
         type: boolean
         required: false
         default: false
-    secrets:
-      PAT:
-        required: true
 
 jobs:
   setup:
@@ -46,4 +43,4 @@ jobs:
       - name: Run build-package-hpc
         run: |
           cd ~/build-package-hpc
-          poetry run python -m build_package_hpc build ${{ needs.setup.outputs.inputs }} --github-user=${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }} --github-token=${{ secrets.PAT }}
+          poetry run python -m build_package_hpc build ${{ needs.setup.outputs.inputs }} --github-user=${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }} --github-token=${{ secrets.GH_REPO_READ_TOKEN }}

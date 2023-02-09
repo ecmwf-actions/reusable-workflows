@@ -113,5 +113,4 @@ jobs:
           ecbuild
           ninja
         --parallel: 64
-    secrets:
-      PAT: ${{ secrets.PAT }}
+    secrets: inherit
