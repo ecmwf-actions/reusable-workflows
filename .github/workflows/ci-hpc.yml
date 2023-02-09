@@ -1,0 +1,49 @@
+# Reusable workflow to build on HPC
+name: ci-hpc
+
+on:
+  workflow_call:
+    inputs:
+      build-inputs:
+        description: build inputs in yaml object
+        type: string
+        required: true
+      name-prefix:
+        description: Prefix for job names, usually repo name.
+        type: string
+        required: false
+      dev-runner:
+        description: Whether to use runner with dev version of build-package-hpc .
+        type: boolean
+        required: false
+        default: false
+    secrets:
+      PAT:
+        required: true
+
+jobs:
+  setup:
+    name: ${{ inputs.name-prefix }}setup
+    runs-on: ubuntu-latest
+    outputs:
+      inputs: ${{ steps.prepare-inputs.outputs.inputs }}
+    steps:
+      - name: prepare inputs
+        id: prepare-inputs
+        shell: bash
+        run: |
+          props=$(echo '${{ inputs.build-inputs }}' | yq eval '.' --output-format props - | sed 's/ *//g; s/\\n/,/g; s/,$//')
+          echo inputs=$props >> $GITHUB_OUTPUT
+      - run: echo ${{ steps.prepare-inputs.outputs.inputs }}
+
+  build:
+    name: ${{ inputs.name-prefix }}build
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev-runner && 'hpc-dev' || 'hpc' }}"]
+    needs:
+      - setup
+    steps:
+      - name: Run build-package-hpc
+        run: |
+          cd ~/build-package-hpc
+          poetry run python -m build_package_hpc build ${{ needs.setup.outputs.inputs }} --github-user=${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }} --github-token=${{ secrets.PAT }}
