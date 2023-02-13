@@ -2,13 +2,12 @@ name: test
 
 # Controls when the workflow will run
 on:
-
   # Trigger the workflow on all pushes, except on tag creation
   push:
     branches:
-    - main
+      - main
     tags-ignore:
-    - '**'
+      - "**"
 
   # Trigger the workflow on all pull requests
   pull_request: ~
@@ -21,19 +20,19 @@ jobs:
     name: qa
     runs-on: ubuntu-20.04
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    - name: Setup Node
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ inputs.node_version }}
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node_version }}
 
-    - name: Install Dependencies
-      run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
-    - name: Code QA
-      run: npm run lint-no-fix
+      - name: Code QA
+        run: npm run lint-no-fix
 
   # Calls a reusable CI workflow to build & test another repository.
   ci:
@@ -80,16 +79,15 @@ jobs:
 
   # Calls a reusable CI workflow to sync the current with a remote repository.
   #   It will correctly handle addition of any new and removal of existing Git objects.
-  #   Disabled because our token is stale. Needs investigation, then should be re-enabled.
-  #  sync:
-  #    name: sync
-  #    needs: qa
-  #    if: github.ref == 'refs/heads/main'
-  #    uses: ./.github/workflows/sync.yml
-  #    secrets:
-  #      target_repository: ${{ secrets.BITBUCKET_REPOSITORY }}
-  #      target_username: ${{ secrets.BITBUCKET_USERNAME }}
-  #      target_token: ${{ secrets.BITBUCKET_PAT }}
+  sync:
+    name: sync
+    needs: qa
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/sync.yml
+    secrets:
+      target_repository: ${{ secrets.BITBUCKET_REPOSITORY }}
+      target_username: ${{ secrets.BITBUCKET_USERNAME }}
+      target_token: ${{ secrets.BITBUCKET_PAT }}
 
   # Calls a reusable CI workflow to build & check the documentation in another repository.
   #   It will install required system dependencies and test Read the Docs build process.
