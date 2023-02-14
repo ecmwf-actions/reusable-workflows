@@ -122,7 +122,7 @@ jobs:
     - name: Prepare build-package Inputs
       id: prepare-inputs
       shell: bash -eux {0}
-      run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+      run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}"' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
   test:
     name: ${{ inputs.name_prefix }}test-${{ matrix.name }}
@@ -138,7 +138,7 @@ jobs:
       with:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.ref }}
-        token: ${{ secrets.PAT || github.token }}
+        token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
 
     - name: Restore Dependency Cache
       id: deps-cache
