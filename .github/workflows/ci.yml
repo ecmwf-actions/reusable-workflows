@@ -67,7 +67,6 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-      inputs: ${{ steps.prepare-inputs.outputs.inputs }}
     steps:
     - name: Set Matrix
       id: set-matrix
@@ -119,11 +118,6 @@ jobs:
         for skip_job in $SKIP_MATRIX_JOBS; do SELECT_NAME_COND="$SELECT_NAME_COND or . == \"$skip_job\""; SELECT_INCLUDE_COND="$SELECT_INCLUDE_COND or .name == \"$skip_job\""; done
         echo matrix=$(echo "$MATRIX" | yq eval "del(.name[] | select($SELECT_NAME_COND)) | del(.include[] | select($SELECT_INCLUDE_COND))" --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
-    - name: Prepare build-package Inputs
-      id: prepare-inputs
-      shell: bash -eux {0}
-      run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
-
   test:
     name: ${{ inputs.name_prefix }}test-${{ matrix.name }}
     needs:
@@ -138,7 +132,7 @@ jobs:
       with:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.ref }}
-        token: ${{ secrets.PAT || github.token }}
+        token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
 
     - name: Restore Dependency Cache
       id: deps-cache
@@ -162,10 +156,15 @@ jobs:
       run: |
         [[ -f "${{ env.DEPS_CACHE_PATH }}/.env" ]] && cat "${{ env.DEPS_CACHE_PATH }}/.env" >> $GITHUB_ENV || echo "Environment file not found"
 
+    - name: Prepare build-package Inputs
+      id: prepare-inputs
+      shell: bash -eux {0}
+      run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}"' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+
     - name: Build & Test
       id: build-test
       uses: ecmwf-actions/build-package@v2
-      with: ${{ fromJSON(needs.setup.outputs.inputs) }}
+      with: ${{ fromJSON(steps.prepare-inputs.outputs.inputs) }}
 
     - name: Codecov Upload
       if: inputs.codecov_upload && steps.build-test.outputs.coverage_file && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')

@@ -49,6 +49,7 @@ jobs:
           ecmwf/ecbuild
           ecmwf/eckit
         dependency_branch: develop
+    secrets: inherit
 
   # Calls a reusable CI Python workflow to qa & test another repository.
   ci-python:
