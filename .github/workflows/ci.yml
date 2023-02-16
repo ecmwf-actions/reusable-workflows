@@ -34,7 +34,7 @@ on:
         type: boolean
       repository:
         description: The source repository name, in case it differs from the current one. Repository names should
-          follow the standard Github `owner/name` format.
+          follow the standard Github `owner/name@ref` format. `@ref` is optional, takes precedence over `ref` input.
         required: false
         default: ${{ github.repository }}
         type: string
@@ -67,6 +67,8 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+      repository: ${{ steps.parse-repo.outputs.repo }}
+      ref: ${{ steps.parse-repo.outputs.ref}}
     steps:
     - name: Set Matrix
       id: set-matrix
@@ -117,6 +119,21 @@ jobs:
         SELECT_INCLUDE_COND="1 != 1"
         for skip_job in $SKIP_MATRIX_JOBS; do SELECT_NAME_COND="$SELECT_NAME_COND or . == \"$skip_job\""; SELECT_INCLUDE_COND="$SELECT_INCLUDE_COND or .name == \"$skip_job\""; done
         echo matrix=$(echo "$MATRIX" | yq eval "del(.name[] | select($SELECT_NAME_COND)) | del(.include[] | select($SELECT_INCLUDE_COND))" --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+      
+    - name: Parse repository input
+      id: parse-repo
+      shell: bash -eux {0}
+      env:
+        REPO_INPUT: ${{ inputs.repository }}
+        REF_INPUT: ${{ inputs.ref }}
+      run: |
+        if [ -z "${REPO_INPUT##*@*}" ];then
+            echo repo=${REPO_INPUT%%@*} >> $GITHUB_OUTPUT
+            echo ref=${REPO_INPUT##*@} >> $GITHUB_OUTPUT
+        else
+            echo repo=$REPO_INPUT >> $GITHUB_OUTPUT
+            echo ref=$REF_INPUT >> $GITHUB_OUTPUT
+        fi
 
   test:
     name: ${{ inputs.name_prefix }}test-${{ matrix.name }}
@@ -130,8 +147,8 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
       with:
-        repository: ${{ inputs.repository }}
-        ref: ${{ inputs.ref }}
+        repository: ${{ needs.setup.outputs.repository }}
+        ref: ${{ needs.setup.outputs.ref }}
         token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
 
     - name: Restore Dependency Cache
