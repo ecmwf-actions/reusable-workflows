@@ -9,6 +9,7 @@ A collection of [reusable GitHub workflows] for ECMWF repositories.
 ## Workflows
 
 * [ci.yml](#ciyml): Continuous Integration workflow for ecbuild/CMake-based projects
+* [ci-hpc.yml](#ci-hpcyml): Continuous Integration workflow for ecbuild/CMake-based projects on HPC
 * [ci-python.yml](#ci-pythonyml): Continuous Integration and Continuous Deployment workflow for Python-based projects
 * [ci-node.yml](#ci-nodeyml): Continuous Integration workflow for NodeJS-based projects
 * [docs.yml](#docsyml): Workflow for testing Sphinx-based documentation
@@ -102,6 +103,49 @@ Optional [inputs for the build-package] action, provided as a YAML object value.
 
 Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in Teams has the appropriate connector set up. It will only be used if [notify_teams](#notify_teams) input is switched on.
 **Example:** `https://webhook.office.com/webhookb2/...`
+
+## ci-hpc.yml
+
+### Usage
+
+```yaml
+jobs:
+  ci-hpc:
+    name: ci-hpc
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-hpc.yml@v2
+    with:
+      name-prefix: metkit-
+      build-inputs: |
+        --package: ecmwf/metkit@develop
+        --modules: |
+          ecbuild
+          ninja
+        --dependencies: |
+          ecmwf/eccodes@develop
+          ecmwf/eckit@develop
+        --parallel: 64
+    secrets: inherit\
+```
+
+### Inputs
+
+#### `name-prefix`
+
+Job name prefix. Usually the package name. Suitable when building multiple packages within one workflow to easily differentiate between them.
+**Default:** `''`
+**Type:** `string`
+
+#### `build-inputs`
+
+Inputs for `build-package-hpc` action.
+**Default:** `''`
+**Type:** `string`
+
+#### `dev-runner`
+
+Whether to build using development runner which contains latest version of `build-package-hpc`. 
+**Default:** `''`
+**Type:** `string`
 
 ## ci-python.yml
 
