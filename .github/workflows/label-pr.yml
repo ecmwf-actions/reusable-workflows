@@ -1,4 +1,4 @@
-name: PR label
+name: Label PR
 
 on:
   workflow_call:
