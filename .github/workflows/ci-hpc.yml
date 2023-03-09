@@ -29,7 +29,7 @@ jobs:
         id: prepare-inputs
         shell: bash
         run: |
-          props=$(echo '${{ inputs.build-inputs }}' | yq eval '.' --output-format props - | sed 's/ *//g; s/\\n/,/g; s/,$//')
+          props=$(echo '${{ inputs.build-inputs }}' | yq eval '.' --output-format props - | sed 's/ *//g; s/\\n/,/g; s/,$//; s/|/\\|/g;')
           echo inputs=$props >> $GITHUB_OUTPUT
       - run: echo ${{ steps.prepare-inputs.outputs.inputs }}
 
