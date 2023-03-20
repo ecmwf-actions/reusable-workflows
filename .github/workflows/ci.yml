@@ -80,6 +80,7 @@ jobs:
         - gnu@centos-7.9
         - gnu@rocky-8.6
         - clang@rocky-8.6
+        - gnu@ubuntu-22.04
         include:
         - name: gnu@debian-11
           labels: [self-hosted, debian-11]
@@ -108,6 +109,13 @@ jobs:
           compiler: clang
           compiler_cc: clang
           compiler_cxx: clang++
+          compiler_fc: gfortran
+        - name: gnu@ubuntu-22.04
+          labels: [self-hosted, ubuntu-22.04]
+          os: ubuntu-22.04
+          compiler: gnu
+          compiler_cc: gcc
+          compiler_cxx: g++
           compiler_fc: gfortran
         EOS
         )
