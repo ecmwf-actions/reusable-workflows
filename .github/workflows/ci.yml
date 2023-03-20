@@ -81,6 +81,7 @@ jobs:
         - gnu@rocky-8.6
         - clang@rocky-8.6
         - gnu@ubuntu-22.04
+        - gnu@fedora-37
         include:
         - name: gnu@debian-11
           labels: [self-hosted, debian-11]
@@ -113,6 +114,13 @@ jobs:
         - name: gnu@ubuntu-22.04
           labels: [self-hosted, ubuntu-22.04]
           os: ubuntu-22.04
+          compiler: gnu
+          compiler_cc: gcc
+          compiler_cxx: g++
+          compiler_fc: gfortran
+        - name: gnu@fedora-37
+          labels: [self-hosted, fedora-37]
+          os: fedora-37
           compiler: gnu
           compiler_cc: gcc
           compiler_cxx: g++
