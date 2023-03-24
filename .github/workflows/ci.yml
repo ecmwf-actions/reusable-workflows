@@ -150,6 +150,38 @@ jobs:
             echo repo=$REPO_INPUT >> $GITHUB_OUTPUT
             echo ref=$REF_INPUT >> $GITHUB_OUTPUT
         fi
+  
+  qa:
+    name: ${{ inputs.name_prefix}}qa
+    needs:
+      - setup
+    runs-on: ubuntu-22.04
+    if: inputs.codecov_upload
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ needs.setup.outputs.repository }}
+        ref: ${{ needs.setup.outputs.ref }}
+        token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
+    
+    - name: Prepare build-package Inputs
+      id: prepare-inputs
+      shell: bash -eux {0}
+      run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}" | .save_cache="false"' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+    
+    - name: Build & Collect code coverage report
+      if: inputs.codecov_upload && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request'))
+      id: build
+      uses: ecmwf-actions/build-package@v2
+      with: ${{ fromJSON(steps.prepare-inputs.outputs.inputs) }}
+    
+    - name: Codecov Upload
+      if: steps.build.outputs.coverage_file 
+      uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
+      with:
+        files: ${{ steps.build-test.outputs.coverage_file }}
+
 
   test:
     name: ${{ inputs.name_prefix }}test-${{ matrix.name }}
@@ -192,18 +224,12 @@ jobs:
     - name: Prepare build-package Inputs
       id: prepare-inputs
       shell: bash -eux {0}
-      run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}"' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+      run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}" | .self_coverage="false"' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
     - name: Build & Test
       id: build-test
       uses: ecmwf-actions/build-package@v2
       with: ${{ fromJSON(steps.prepare-inputs.outputs.inputs) }}
-
-    - name: Codecov Upload
-      if: inputs.codecov_upload && steps.build-test.outputs.coverage_file && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
-      uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
-      with:
-        files: ${{ steps.build-test.outputs.coverage_file }}
 
   notify:
     name: ${{ inputs.name_prefix }}notify
