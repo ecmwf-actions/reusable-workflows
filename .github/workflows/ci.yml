@@ -160,7 +160,7 @@ jobs:
     name: ${{ inputs.name_prefix}}formatter
     needs:
       - setup
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     if: inputs.check_formatting
     steps:
     - name: Checkout repository
@@ -208,7 +208,7 @@ jobs:
     name: ${{ inputs.name_prefix}}codecov
     needs:
       - setup
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     if: inputs.codecov_upload
     steps:
     - name: Checkout repository
