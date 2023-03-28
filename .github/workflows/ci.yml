@@ -27,6 +27,10 @@ on:
         description: Whether to generate and upload code coverage to codecov service for main branches.
         required: false
         type: boolean
+      check_formatting:
+        description: Whether to check code formatting using clang-format.
+        required: false
+        type: boolean
       notify_teams:
         description: Whether to notify about workflow status via Microsoft Teams. Note that you must supply
           `incoming_webhook` secret if you switch on this feature.
@@ -151,6 +155,90 @@ jobs:
             echo ref=$REF_INPUT >> $GITHUB_OUTPUT
         fi
 
+
+  formatter:
+    name: ${{ inputs.name_prefix}}formatter
+    needs:
+      - setup
+    runs-on: ubuntu-latest
+    if: inputs.check_formatting
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ needs.setup.outputs.repository }}
+        ref: ${{ needs.setup.outputs.ref }}
+        token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
+    
+    - name: Install clang-format
+      if: inputs.check_formatting
+      run: |
+        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        sudo add-apt-repository deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main
+        sudo apt update
+        sudo apt install -y clang-format-16
+    
+    - name: Run clang-format
+      if: inputs.check_formatting
+      shell: bash {0}
+      run: |
+        files=$(find . -regex ".*\.\(cpp\|hpp\|cc\|cxx\|h\|c\)")
+        errors=0
+        
+        if [ ! -e ".clang-format" ]
+        then
+           echo "::error::Missing .clang-format file"
+           exit 1
+        fi
+
+        for file in $files; do
+            clang-format-16 --dry-run --Werror --style=file --fallback-style=none $file
+            if [ $? -ne 0 ]; then
+                ((errors++))
+            fi
+        done
+
+        if [ $errors -ne 0 ]; then
+            echo "::error::clang-format failed for $errors files"
+            exit 1
+        fi  
+
+
+  codecov:
+    name: ${{ inputs.name_prefix}}codecov
+    needs:
+      - setup
+    runs-on: ubuntu-latest
+    if: inputs.codecov_upload && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request'))
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ needs.setup.outputs.repository }}
+        ref: ${{ needs.setup.outputs.ref }}
+        token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
+
+    - name: Prepare build-package Inputs
+      id: prepare-inputs
+      shell: bash -eux {0}
+      run: > 
+        echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' |
+        yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}" | .save_cache="false" | .os="ubuntu-22.04"
+        | .compiler="gnu" | .compiler_cc="gcc" | .compiler_cxx="g++" | .compiler_fc="gfortran"'
+        --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+    
+    - name: Build & Collect code coverage report
+      id: build
+      uses: ecmwf-actions/build-package@v2
+      with: ${{ fromJSON(steps.prepare-inputs.outputs.inputs) }}
+    
+    - name: Codecov Upload
+      if: steps.build.outputs.coverage_file 
+      uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
+      with:
+        files: ${{ steps.build-test.outputs.coverage_file }}
+
+
   test:
     name: ${{ inputs.name_prefix }}test-${{ matrix.name }}
     needs:
@@ -192,18 +280,12 @@ jobs:
     - name: Prepare build-package Inputs
       id: prepare-inputs
       shell: bash -eux {0}
-      run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}"' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+      run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}" | .self_coverage="false"' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
     - name: Build & Test
       id: build-test
       uses: ecmwf-actions/build-package@v2
       with: ${{ fromJSON(steps.prepare-inputs.outputs.inputs) }}
-
-    - name: Codecov Upload
-      if: inputs.codecov_upload && steps.build-test.outputs.coverage_file && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
-      uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
-      with:
-        files: ${{ steps.build-test.outputs.coverage_file }}
 
   notify:
     name: ${{ inputs.name_prefix }}notify
