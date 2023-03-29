@@ -241,6 +241,7 @@ jobs:
 
   test:
     name: ${{ inputs.name_prefix }}test-${{ matrix.name }}
+    if: ${{ !inputs.codecov_upload }}
     needs:
     - setup
     strategy:
