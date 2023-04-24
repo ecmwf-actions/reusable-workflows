@@ -94,42 +94,42 @@ jobs:
           - gnu@fedora-37
           include:
           - name: gnu@debian-11
-            labels: [self-hosted, debian-11]
+            labels: [self-hosted, platform-builder-debian-11]
             os: debian-11
             compiler: gnu
             compiler_cc: gcc
             compiler_cxx: g++
             compiler_fc: gfortran
           - name: gnu@centos-7.9
-            labels: [self-hosted, centos-7.9]
+            labels: [self-hosted, platform-builder-centos-7.9]
             os: centos-7.9
             compiler: gnu
             compiler_cc: gcc
             compiler_cxx: g++
             compiler_fc: gfortran
           - name: gnu@rocky-8.6
-            labels: [self-hosted, rocky-8.6]
+            labels: [self-hosted, platform-builder-rocky-8.6]
             os: rocky-8.6
             compiler: gnu
             compiler_cc: gcc
             compiler_cxx: g++
             compiler_fc: gfortran
           - name: clang@rocky-8.6
-            labels: [self-hosted, rocky-8.6]
+            labels: [self-hosted, platform-builder-rocky-8.6]
             os: rocky-8.6
             compiler: clang
             compiler_cc: clang
             compiler_cxx: clang++
             compiler_fc: gfortran
           - name: gnu@ubuntu-22.04
-            labels: [self-hosted, ubuntu-22.04]
+            labels: [self-hosted, platform-builder-ubuntu-22.04]
             os: ubuntu-22.04
             compiler: gnu
             compiler_cc: gcc
             compiler_cxx: g++
             compiler_fc: gfortran
           - name: gnu@fedora-37
-            labels: [self-hosted, fedora-37]
+            labels: [self-hosted, platform-builder-fedora-37]
             os: fedora-37
             compiler: gnu
             compiler_cc: gcc
