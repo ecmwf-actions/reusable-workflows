@@ -2,24 +2,24 @@ name: ci
 
 # Controls when the workflow will run
 on:
-
   # Allow the workflow to be reusable
   workflow_call:
     inputs:
-
       # Inputs for job steps.
       skip_matrix_jobs:
         description: A list of matrix jobs to skip. Job names should be the full form of `<compiler>@<platform>`.
         required: false
         type: string
       deps_cache_key:
-        description: Optional dependency cache key to restore from. Note that the key should be platform agnostic, as
+        description:
+          Optional dependency cache key to restore from. Note that the key should be platform agnostic, as
           the `<compiler>@<platform>` suffix will be automatically appended. Upon extraction a file called `.env` from
           the cache root directory will be loaded into the build environment, if it exists.
         required: false
         type: string
       deps_cache_path:
-        description: Optional dependency cache path to restore to, falls back to `{{ runner.temp }}/deps`. Will be
+        description:
+          Optional dependency cache path to restore to, falls back to `{{ runner.temp }}/deps`. Will be
           considered only if `deps_cache_key` is supplied.
         required: false
         type: string
@@ -36,12 +36,14 @@ on:
         required: false
         type: string
       notify_teams:
-        description: Whether to notify about workflow status via Microsoft Teams. Note that you must supply
+        description:
+          Whether to notify about workflow status via Microsoft Teams. Note that you must supply
           `incoming_webhook` secret if you switch on this feature.
         required: false
         type: boolean
       repository:
-        description: The source repository name, in case it differs from the current one. Repository names should
+        description:
+          The source repository name, in case it differs from the current one. Repository names should
           follow the standard Github `owner/name@ref` format. `@ref` is optional, takes precedence over `ref` input.
         required: false
         default: ${{ github.repository }}
@@ -62,10 +64,10 @@ on:
         type: string
 
     secrets:
-
       # Secret for notify-teams action.
       incoming_webhook:
-        description: Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in
+        description:
+          Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in
           Teams has the appropriate connector set up. It will only be used if `notify_teams` input is switched on.
         required: false
 
@@ -78,87 +80,86 @@ jobs:
       repository: ${{ steps.parse-repo.outputs.repo }}
       ref: ${{ steps.parse-repo.outputs.ref}}
     steps:
-    - name: Set Matrix
-      id: set-matrix
-      shell: bash -eux {0}
-      run: |
-        MATRIX=$(cat << 'EOS'
-        name:
-        - gnu@debian-11
-        - gnu@centos-7.9
-        - gnu@rocky-8.6
-        - clang@rocky-8.6
-        - gnu@ubuntu-22.04
-        - gnu@fedora-37
-        include:
-        - name: gnu@debian-11
-          labels: [self-hosted, debian-11]
-          os: debian-11
-          compiler: gnu
-          compiler_cc: gcc
-          compiler_cxx: g++
-          compiler_fc: gfortran
-        - name: gnu@centos-7.9
-          labels: [self-hosted, centos-7.9]
-          os: centos-7.9
-          compiler: gnu
-          compiler_cc: gcc
-          compiler_cxx: g++
-          compiler_fc: gfortran
-        - name: gnu@rocky-8.6
-          labels: [self-hosted, rocky-8.6]
-          os: rocky-8.6
-          compiler: gnu
-          compiler_cc: gcc
-          compiler_cxx: g++
-          compiler_fc: gfortran
-        - name: clang@rocky-8.6
-          labels: [self-hosted, rocky-8.6]
-          os: rocky-8.6
-          compiler: clang
-          compiler_cc: clang
-          compiler_cxx: clang++
-          compiler_fc: gfortran
-        - name: gnu@ubuntu-22.04
-          labels: [self-hosted, ubuntu-22.04]
-          os: ubuntu-22.04
-          compiler: gnu
-          compiler_cc: gcc
-          compiler_cxx: g++
-          compiler_fc: gfortran
-        - name: gnu@fedora-37
-          labels: [self-hosted, fedora-37]
-          os: fedora-37
-          compiler: gnu
-          compiler_cc: gcc
-          compiler_cxx: g++
-          compiler_fc: gfortran
-        EOS
-        )
-        SKIP_MATRIX_JOBS=$(cat << 'EOS'
-        ${{ inputs.skip_matrix_jobs }}
-        EOS
-        )
-        SELECT_NAME_COND="1 != 1"
-        SELECT_INCLUDE_COND="1 != 1"
-        for skip_job in $SKIP_MATRIX_JOBS; do SELECT_NAME_COND="$SELECT_NAME_COND or . == \"$skip_job\""; SELECT_INCLUDE_COND="$SELECT_INCLUDE_COND or .name == \"$skip_job\""; done
-        echo matrix=$(echo "$MATRIX" | yq eval "del(.name[] | select($SELECT_NAME_COND)) | del(.include[] | select($SELECT_INCLUDE_COND))" --output-format json --indent 0 -) >> $GITHUB_OUTPUT
-      
-    - name: Parse repository input
-      id: parse-repo
-      shell: bash -eux {0}
-      env:
-        REPO_INPUT: ${{ inputs.repository }}
-        REF_INPUT: ${{ inputs.ref }}
-      run: |
-        if [ -z "${REPO_INPUT##*@*}" ];then
-            echo repo=${REPO_INPUT%%@*} >> $GITHUB_OUTPUT
-            echo ref=${REPO_INPUT##*@} >> $GITHUB_OUTPUT
-        else
-            echo repo=$REPO_INPUT >> $GITHUB_OUTPUT
-            echo ref=$REF_INPUT >> $GITHUB_OUTPUT
-        fi
+      - name: Set Matrix
+        id: set-matrix
+        shell: bash -eux {0}
+        run: |
+          MATRIX=$(cat << 'EOS'
+          name:
+          - gnu@debian-11
+          - gnu@centos-7.9
+          - gnu@rocky-8.6
+          - clang@rocky-8.6
+          - gnu@ubuntu-22.04
+          - gnu@fedora-37
+          include:
+          - name: gnu@debian-11
+            labels: [self-hosted, platform-builder-debian-11]
+            os: debian-11
+            compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+          - name: gnu@centos-7.9
+            labels: [self-hosted, platform-builder-centos-7.9]
+            os: centos-7.9
+            compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+          - name: gnu@rocky-8.6
+            labels: [self-hosted, platform-builder-rocky-8.6]
+            os: rocky-8.6
+            compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+          - name: clang@rocky-8.6
+            labels: [self-hosted, platform-builder-rocky-8.6]
+            os: rocky-8.6
+            compiler: clang
+            compiler_cc: clang
+            compiler_cxx: clang++
+            compiler_fc: gfortran
+          - name: gnu@ubuntu-22.04
+            labels: [self-hosted, platform-builder-ubuntu-22.04]
+            os: ubuntu-22.04
+            compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+          - name: gnu@fedora-37
+            labels: [self-hosted, platform-builder-fedora-37]
+            os: fedora-37
+            compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+          EOS
+          )
+          SKIP_MATRIX_JOBS=$(cat << 'EOS'
+          ${{ inputs.skip_matrix_jobs }}
+          EOS
+          )
+          SELECT_NAME_COND="1 != 1"
+          SELECT_INCLUDE_COND="1 != 1"
+          for skip_job in $SKIP_MATRIX_JOBS; do SELECT_NAME_COND="$SELECT_NAME_COND or . == \"$skip_job\""; SELECT_INCLUDE_COND="$SELECT_INCLUDE_COND or .name == \"$skip_job\""; done
+          echo matrix=$(echo "$MATRIX" | yq eval "del(.name[] | select($SELECT_NAME_COND)) | del(.include[] | select($SELECT_INCLUDE_COND))" --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
+      - name: Parse repository input
+        id: parse-repo
+        shell: bash -eux {0}
+        env:
+          REPO_INPUT: ${{ inputs.repository }}
+          REF_INPUT: ${{ inputs.ref }}
+        run: |
+          if [ -z "${REPO_INPUT##*@*}" ];then
+              echo repo=${REPO_INPUT%%@*} >> $GITHUB_OUTPUT
+              echo ref=${REPO_INPUT##*@} >> $GITHUB_OUTPUT
+          else
+              echo repo=$REPO_INPUT >> $GITHUB_OUTPUT
+              echo ref=$REF_INPUT >> $GITHUB_OUTPUT
+          fi
 
   formatter:
     name: ${{ inputs.name_prefix}}formatter
@@ -167,48 +168,47 @@ jobs:
     runs-on: ubuntu-latest
     if: inputs.check_formatting
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ needs.setup.outputs.repository }}
-        ref: ${{ needs.setup.outputs.ref }}
-        token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
-    
-    - name: Install clang-format
-      if: inputs.check_formatting
-      run: |
-        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-        sudo add-apt-repository deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main
-        sudo apt update
-        sudo apt install -y clang-format-16
-    
-    - name: Run clang-format
-      if: inputs.check_formatting
-      shell: bash {0}
-      run: |
-        ignore="./\($(echo "${{ inputs.format_ignore_paths }}" | sed ':a;N;$!ba;s/\n/\\|/g')\)"
-        echo "Ignore: $ignore"
-        files=$(find . -not \( -regex $ignore -prune \) -regex ".*\.\(cpp\|hpp\|cc\|cxx\|h\|c\)")
-        errors=0
-        
-        if [ ! -e ".clang-format" ]
-        then
-           echo "::error::Missing .clang-format file"
-           exit 1
-        fi
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ needs.setup.outputs.repository }}
+          ref: ${{ needs.setup.outputs.ref }}
+          token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
 
-        for file in $files; do
-            clang-format-16 --dry-run --Werror --style=file --fallback-style=none $file
-            if [ $? -ne 0 ]; then
-                ((errors++))
-            fi
-        done
+      - name: Install clang-format
+        if: inputs.check_formatting
+        run: |
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo add-apt-repository deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main
+          sudo apt update
+          sudo apt install -y clang-format-16
 
-        if [ $errors -ne 0 ]; then
-            echo "::error::clang-format failed for $errors files"
-            exit 1
-        fi  
+      - name: Run clang-format
+        if: inputs.check_formatting
+        shell: bash {0}
+        run: |
+          ignore="./\($(echo "${{ inputs.format_ignore_paths }}" | sed ':a;N;$!ba;s/\n/\\|/g')\)"
+          echo "Ignore: $ignore"
+          files=$(find . -not \( -regex $ignore -prune \) -regex ".*\.\(cpp\|hpp\|cc\|cxx\|h\|c\)")
+          errors=0
 
+          if [ ! -e ".clang-format" ]
+          then
+             echo "::error::Missing .clang-format file"
+             exit 1
+          fi
+
+          for file in $files; do
+              clang-format-16 --dry-run --Werror --style=file --fallback-style=none $file
+              if [ $? -ne 0 ]; then
+                  ((errors++))
+              fi
+          done
+
+          if [ $errors -ne 0 ]; then
+              echo "::error::clang-format failed for $errors files"
+              exit 1
+          fi
 
   codecov:
     name: ${{ inputs.name_prefix}}codecov
@@ -217,93 +217,92 @@ jobs:
     runs-on: ubuntu-latest
     if: inputs.codecov_upload && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request'))
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ needs.setup.outputs.repository }}
-        ref: ${{ needs.setup.outputs.ref }}
-        token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ needs.setup.outputs.repository }}
+          ref: ${{ needs.setup.outputs.ref }}
+          token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
 
-    - name: Prepare build-package Inputs
-      id: prepare-inputs
-      shell: bash -eux {0}
-      run: > 
-        echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' |
-        yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}" | .save_cache="false" | .os="ubuntu-22.04"
-        | .compiler="gnu" | .compiler_cc="gcc" | .compiler_cxx="g++" | .compiler_fc="gfortran"'
-        --output-format json --indent 0 -) >> $GITHUB_OUTPUT
-    
-    - name: Build & Collect code coverage report
-      id: build
-      uses: ecmwf-actions/build-package@v2
-      with: ${{ fromJSON(steps.prepare-inputs.outputs.inputs) }}
-    
-    - name: Codecov Upload
-      if: steps.build.outputs.coverage_file 
-      uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
-      with:
-        files: ${{ steps.build-test.outputs.coverage_file }}
+      - name: Prepare build-package Inputs
+        id: prepare-inputs
+        shell: bash -eux {0}
+        run: >
+          echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' |
+          yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}" | .save_cache="false" | .os="ubuntu-22.04"
+          | .compiler="gnu" | .compiler_cc="gcc" | .compiler_cxx="g++" | .compiler_fc="gfortran"'
+          --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
+      - name: Build & Collect code coverage report
+        id: build
+        uses: ecmwf-actions/build-package@v2
+        with: ${{ fromJSON(steps.prepare-inputs.outputs.inputs) }}
+
+      - name: Codecov Upload
+        if: steps.build.outputs.coverage_file
+        uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
+        with:
+          files: ${{ steps.build-test.outputs.coverage_file }}
 
   test:
     name: ${{ inputs.name_prefix }}test-${{ matrix.name }}
     if: ${{ !inputs.codecov_upload }}
     needs:
-    - setup
+      - setup
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ needs.setup.outputs.repository }}
-        ref: ${{ needs.setup.outputs.ref }}
-        token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ needs.setup.outputs.repository }}
+          ref: ${{ needs.setup.outputs.ref }}
+          token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
 
-    - name: Restore Dependency Cache
-      id: deps-cache
-      uses: actions/cache@v3
-      if: inputs.deps_cache_key
-      with:
-        path: ${{ inputs.deps_cache_path || format('{0}/deps', runner.temp) }}
-        key: ${{ inputs.deps_cache_key }}${{ matrix.compiler }}@${{ matrix.os }}
+      - name: Restore Dependency Cache
+        id: deps-cache
+        uses: actions/cache@v3
+        if: inputs.deps_cache_key
+        with:
+          path: ${{ inputs.deps_cache_path || format('{0}/deps', runner.temp) }}
+          key: ${{ inputs.deps_cache_key }}${{ matrix.compiler }}@${{ matrix.os }}
 
-    - name: Missing Dependency Cache
-      if: inputs.deps_cache_key && steps.deps-cache.outputs.cache-hit != 'true'
-      run: |
-        echo "::error::Missing dependency cache for given deps_cache_key input."
-        exit 1
+      - name: Missing Dependency Cache
+        if: inputs.deps_cache_key && steps.deps-cache.outputs.cache-hit != 'true'
+        run: |
+          echo "::error::Missing dependency cache for given deps_cache_key input."
+          exit 1
 
-    - name: Setup Dependency Environment
-      if: steps.deps-cache.outputs.cache-hit == 'true'
-      shell: bash -eux {0}
-      env:
-        DEPS_CACHE_PATH: ${{ inputs.deps_cache_path || format('{0}/deps', runner.temp) }}
-      run: |
-        [[ -f "${{ env.DEPS_CACHE_PATH }}/.env" ]] && cat "${{ env.DEPS_CACHE_PATH }}/.env" >> $GITHUB_ENV || echo "Environment file not found"
+      - name: Setup Dependency Environment
+        if: steps.deps-cache.outputs.cache-hit == 'true'
+        shell: bash -eux {0}
+        env:
+          DEPS_CACHE_PATH: ${{ inputs.deps_cache_path || format('{0}/deps', runner.temp) }}
+        run: |
+          [[ -f "${{ env.DEPS_CACHE_PATH }}/.env" ]] && cat "${{ env.DEPS_CACHE_PATH }}/.env" >> $GITHUB_ENV || echo "Environment file not found"
 
-    - name: Prepare build-package Inputs
-      id: prepare-inputs
-      shell: bash -eux {0}
-      run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}" | .self_coverage="false"' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+      - name: Prepare build-package Inputs
+        id: prepare-inputs
+        shell: bash -eux {0}
+        run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}" | .self_coverage="false"' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
-    - name: Build & Test
-      id: build-test
-      uses: ecmwf-actions/build-package@v2
-      with: ${{ fromJSON(steps.prepare-inputs.outputs.inputs) }}
+      - name: Build & Test
+        id: build-test
+        uses: ecmwf-actions/build-package@v2
+        with: ${{ fromJSON(steps.prepare-inputs.outputs.inputs) }}
 
   notify:
     name: ${{ inputs.name_prefix }}notify
     runs-on: ubuntu-20.04
     needs:
-    - setup
-    - test
+      - setup
+      - test
     if: always() && inputs.notify_teams && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
     steps:
-    - name: Notify Teams
-      uses: ecmwf-actions/notify-teams@v1
-      with:
-        incoming_webhook: ${{ secrets.incoming_webhook }}
-        needs_context: ${{ toJSON(needs) }}
+      - name: Notify Teams
+        uses: ecmwf-actions/notify-teams@v1
+        with:
+          incoming_webhook: ${{ secrets.incoming_webhook }}
+          needs_context: ${{ toJSON(needs) }}
