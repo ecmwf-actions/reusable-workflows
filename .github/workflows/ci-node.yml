@@ -2,16 +2,14 @@ name: ci-node
 
 # Controls when the workflow will run
 on:
-
   # Allow the workflow to be reusable
   workflow_call:
     inputs:
-
       # Inputs for job steps.
       skip_matrix_jobs:
         description: A list of matrix jobs to skip. Job names should be the form of `<platform>`.
         required: false
-        default: ''
+        default: ""
         type: string
       codecov_upload:
         description: Whether to generate and upload code coverage to codecov service for main branches.
@@ -19,7 +17,8 @@ on:
         default: false
         type: boolean
       notify_teams:
-        description: Whether to notify about workflow status via Microsoft Teams. Note that you must supply
+        description:
+          Whether to notify about workflow status via Microsoft Teams. Note that you must supply
           `incoming_webhook` secret if you switch on this feature.
         required: false
         default: false
@@ -37,10 +36,11 @@ on:
       node_version:
         description: The version of NodeJS interpreter to use.
         required: false
-        default: '16'
+        default: "16"
         type: string
       repository:
-        description: The source repository name, in case it differs from the current one. Repository names should
+        description:
+          The source repository name, in case it differs from the current one. Repository names should
           follow the standard Github `owner/name` format.
         required: false
         default: ${{ github.repository }}
@@ -52,10 +52,10 @@ on:
         type: string
 
     secrets:
-
       # Secret for notify-teams action.
       incoming_webhook:
-        description: Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in
+        description:
+          Public URL of the Microsoft Teams incoming webhook. To get the value, make sure that channel in
           Teams has the appropriate connector set up. It will only be used if `notify_teams` input is switched on.
         required: false
 
@@ -64,22 +64,22 @@ jobs:
     name: qa
     runs-on: ubuntu-22.04
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ inputs.repository }}
-        ref: ${{ inputs.ref }}
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.ref }}
 
-    - name: Setup Node
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ inputs.node_version }}
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node_version }}
 
-    - name: Install Dependencies
-      run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
-    - name: Code QA
-      run: npm run lint -- --no-fix
+      - name: Code QA
+        run: npm run lint -- --no-fix
 
   setup:
     name: setup
@@ -87,72 +87,72 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-    - name: Set Matrix
-      id: set-matrix
-      shell: bash -eux {0}
-      run: |
-        MATRIX=$(cat << 'EOS'
-        os:
-        - ubuntu-20.04
-        - ubuntu-22.04
-        - macos-12
-        EOS
-        )
-        SKIP_MATRIX_JOBS=$(cat << 'EOS'
-        ${{ inputs.skip_matrix_jobs }}
-        EOS
-        )
-        SELECT_OS_COND="1 != 1"
-        for skip_job in $SKIP_MATRIX_JOBS; do SELECT_OS_COND="$SELECT_OS_COND or . == \"$skip_job\""; done
-        echo matrix=$(echo "$MATRIX" | yq eval "del(.os[] | select($SELECT_OS_COND))" --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+      - name: Set Matrix
+        id: set-matrix
+        shell: bash -eux {0}
+        run: |
+          MATRIX=$(cat << 'EOS'
+          os:
+          - ubuntu-20.04
+          - ubuntu-22.04
+          - macos-12
+          EOS
+          )
+          SKIP_MATRIX_JOBS=$(cat << 'EOS'
+          ${{ inputs.skip_matrix_jobs }}
+          EOS
+          )
+          SELECT_OS_COND="1 != 1"
+          for skip_job in $SKIP_MATRIX_JOBS; do SELECT_OS_COND="$SELECT_OS_COND or . == \"$skip_job\""; done
+          echo matrix=$(echo "$MATRIX" | yq eval "del(.os[] | select($SELECT_OS_COND))" --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
   test:
     name: test
     needs:
-    - qa
-    - setup
+      - qa
+      - setup
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ inputs.repository }}
-        ref: ${{ inputs.ref }}
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.ref }}
 
-    - name: Setup Node
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ inputs.node_version }}
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node_version }}
 
-    - name: Install Dependencies
-      run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
-    - name: Test Build
-      if: inputs.self_build
-      run: npm run build
+      - name: Test Build
+        if: inputs.self_build
+        run: npm run build
 
-    - name: Run Tests
-      if: inputs.self_test
-      run: npm test
+      - name: Run Tests
+        if: inputs.self_test
+        run: npm test
 
-    - name: Codecov Upload
-      if: inputs.self_test && inputs.codecov_upload && matrix.os == 'ubuntu-20.04' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
-      uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
+      - name: Codecov Upload
+        if: inputs.self_test && inputs.codecov_upload && matrix.os == 'ubuntu-20.04' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+        uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
 
   notify:
     name: notify
     runs-on: ubuntu-20.04
     needs:
-    - qa
-    - setup
-    - test
+      - qa
+      - setup
+      - test
     if: always() && inputs.notify_teams && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     steps:
-    - name: Notify Teams
-      uses: ecmwf-actions/notify-teams@v1
-      with:
-        incoming_webhook: ${{ secrets.incoming_webhook }}
-        needs_context: ${{ toJSON(needs) }}
+      - name: Notify Teams
+        uses: ecmwf-actions/notify-teams@v1
+        with:
+          incoming_webhook: ${{ secrets.incoming_webhook }}
+          needs_context: ${{ toJSON(needs) }}
