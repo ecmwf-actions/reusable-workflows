@@ -68,6 +68,8 @@ jobs:
           ecmwf/odc
         dependency_branch: develop
         self_build: false
+    secrets:
+      incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
 
   # Calls a reusable CI Node workflow to qa & test another repository.
   ci-node:
@@ -77,6 +79,8 @@ jobs:
     with:
       repository: ecmwf-actions/build-package
       ref: main
+    secrets:
+      incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
 
   # Calls a reusable CI workflow to sync the current with a remote repository.
   #   It will correctly handle addition of any new and removal of existing Git objects.
