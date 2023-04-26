@@ -68,6 +68,7 @@ jobs:
           ecmwf/odc
         dependency_branch: develop
         self_build: false
+      notify_teams: true
     secrets:
       incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
 
@@ -79,6 +80,7 @@ jobs:
     with:
       repository: ecmwf-actions/build-package
       ref: main
+      notify_teams: true
     secrets:
       incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
 
