@@ -139,7 +139,7 @@ jobs:
         run: npm test
 
       - name: Codecov Upload
-        if: inputs.self_test && inputs.codecov_upload && matrix.os == 'ubuntu-20.04' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+        if: inputs.self_test && inputs.codecov_upload && matrix.os == 'ubuntu-22.04' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request'))
         uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
 
   notify:
