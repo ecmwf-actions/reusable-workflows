@@ -43,4 +43,4 @@ jobs:
       - name: Run build-package-hpc
         run: |
           cd ~/build-package-hpc
-          poetry run python -m build_package_hpc build ${{ needs.setup.outputs.inputs }} --github-user=${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }} --github-token=${{ secrets.GH_REPO_READ_TOKEN }} --troika-user=${{ secrets.HPC_CI_SSH_USER }}
+          poetry run python -m build_package_hpc build ${{ needs.setup.outputs.inputs }} --github-user=${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }} --github-token=${{ secrets.GH_REPO_READ_TOKEN || github.token }} --troika-user=${{ secrets.HPC_CI_SSH_USER }}

@@ -162,7 +162,7 @@ jobs:
           fi
 
   formatter:
-    name: ${{ inputs.name_prefix}}formatter
+    name: ${{ inputs.name_prefix }}formatter
     needs:
       - setup
     runs-on: ubuntu-latest
@@ -173,7 +173,7 @@ jobs:
         with:
           repository: ${{ needs.setup.outputs.repository }}
           ref: ${{ needs.setup.outputs.ref }}
-          token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
+          token: ${{ secrets.GH_REPO_READ_TOKEN || github.token }}
 
       - name: Install clang-format
         if: inputs.check_formatting
@@ -211,7 +211,7 @@ jobs:
           fi
 
   codecov:
-    name: ${{ inputs.name_prefix}}codecov
+    name: ${{ inputs.name_prefix }}codecov
     needs:
       - setup
     runs-on: ubuntu-latest
@@ -222,14 +222,14 @@ jobs:
         with:
           repository: ${{ needs.setup.outputs.repository }}
           ref: ${{ needs.setup.outputs.ref }}
-          token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
+          token: ${{ secrets.GH_REPO_READ_TOKEN || github.token }}
 
       - name: Prepare build-package Inputs
         id: prepare-inputs
         shell: bash -eux {0}
         run: >
           echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' |
-          yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}" | .save_cache="false" | .os="ubuntu-22.04"
+          yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN || github.token }}" | .save_cache="false" | .os="ubuntu-22.04"
           | .compiler="gnu" | .compiler_cc="gcc" | .compiler_cxx="g++" | .compiler_fc="gfortran"'
           --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
@@ -259,7 +259,7 @@ jobs:
         with:
           repository: ${{ needs.setup.outputs.repository }}
           ref: ${{ needs.setup.outputs.ref }}
-          token: ${{ secrets.GH_REPO_READ_TOKEN  || github.token }}
+          token: ${{ secrets.GH_REPO_READ_TOKEN || github.token }}
 
       - name: Restore Dependency Cache
         id: deps-cache
@@ -286,7 +286,7 @@ jobs:
       - name: Prepare build-package Inputs
         id: prepare-inputs
         shell: bash -eux {0}
-        run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN }}" | .self_coverage="false"' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+        run: echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' | yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN || github.token }}" | .self_coverage="false"' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
       - name: Build & Test
         id: build-test
