@@ -162,7 +162,7 @@ jobs:
           fi
 
   formatter:
-    name: ${{ inputs.name_prefix}}formatter
+    name: ${{ inputs.name_prefix }}formatter
     needs:
       - setup
     runs-on: ubuntu-latest
@@ -211,7 +211,7 @@ jobs:
           fi
 
   codecov:
-    name: ${{ inputs.name_prefix}}codecov
+    name: ${{ inputs.name_prefix }}codecov
     needs:
       - setup
     runs-on: ubuntu-latest
