@@ -19,7 +19,7 @@ jobs:
           import os
 
           # Extract version from branch name
-          github_ref = "${GITHUB_REF}"
+          github_ref = "${{ github.ref }}"
           print(f"github_ref={github_ref}")
           version_regex = r"^refs/heads/fake-release/(\d+\.\d+\.\d+)$"
           match = re.match(version_regex, github_ref)
