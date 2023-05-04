@@ -1,0 +1,47 @@
+name: Check release version
+
+on:
+  workflow_call: ~
+
+jobs:
+  check_version:
+    if: ${{ contains(github.ref, 'release/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check VERSION file content
+        shell: python
+        run: |
+          import re
+          import sys
+          import os
+
+          # Extract version from branch name
+          github_ref = "${GITHUB_REF}"
+          version_regex = r"^refs/heads/release/(\d+\.\d+\.\d+)$"
+          match = re.match(version_regex, github_ref)
+          if match:
+              branch_version = match.group(1)
+          else:
+              print("Error: Invalid branch name format")
+              sys.exit(1)
+
+          # Read version from VERSION file
+          version_file = "VERSION"
+          if os.path.isfile(version_file):
+              with open(version_file) as f:
+                  file_version = f.read().strip()
+          else:
+              print("Error: VERSION file not found")
+              sys.exit(1)
+
+          # Compare branch version and file version
+          if branch_version == file_version:
+              print("Success: VERSION file matches branch name")
+          else:
+              print("Error: VERSION file does not match branch name")
+              print(f"Branch version: {branch_version}")
+              print(f"File version: {file_version}")
+              sys.exit(1)
