@@ -1,0 +1,10 @@
+name: Check VERSION file
+
+on:
+  push:
+    branches:
+      - "fake-release/**"
+
+jobs:
+  check_version:
+    uses: .github/workflows/check-release-version.yml@fake-release/1.2.3
