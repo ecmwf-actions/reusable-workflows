@@ -20,7 +20,7 @@ jobs:
 
           # Extract version from branch name
           github_ref = "${GITHUB_REF}"
-          version_regex = r"^refs/heads/release/(\d+\.\d+\.\d+)$"
+          version_regex = r"^refs/heads/fake-release/(\d+\.\d+\.\d+)$"
           match = re.match(version_regex, github_ref)
           if match:
               branch_version = match.group(1)
