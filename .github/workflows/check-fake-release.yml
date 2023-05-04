@@ -7,4 +7,4 @@ on:
 
 jobs:
   check_version:
-    uses: .github/workflows/check-release-version.yml@fake-release/1.2.3
+    uses: ./.github/workflows/check-release-version.yml@fake-release/1.2.3
