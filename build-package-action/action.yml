@@ -19,7 +19,7 @@ runs:
   steps:
     - name: Parse repository input
       id: inputs
-      shell: python
+      shell: python3 {0}
       run: |
         import os
         repo, ref = "${{ inputs.repository }}".split("@")
@@ -35,7 +35,7 @@ runs:
 
     - name: Merge inputs with config file
       id: config
-      shell: python
+      shell: python3 {0}
       run: |
         import os
         import json
