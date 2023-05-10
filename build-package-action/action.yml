@@ -1,0 +1,67 @@
+name: build-package
+description: |
+  A wrapper around build-package action to support reading build configuration from a file.
+inputs:
+  repository:
+    description: Repository name in format owner/repo@ref.
+    required: true
+  build_package_inputs:
+    description: build-package action inputs in yaml format.
+    required: false
+  build_config:
+    description:
+      Path to build configuration yaml. Relative path from the repository root,
+      e.g. `.github/build-config.yml`.
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Parse repository input
+      id: inputs
+      shell: python
+      run: |
+        import os
+        repo, ref = "${{ inputs.repository }}".split("@")
+        with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
+            print("repo", repo, sep="=", file=f)
+            print("ref", ref, sep="=", file=f)
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ steps.inputs.outputs.repo }}
+        ref: ${{ steps.inputs.outputs.ref }}
+
+    - name: Merge inputs with config file
+      id: config
+      shell: python
+      run: |
+        import os
+        import json
+        import yaml
+
+        inputs_yaml = "${{ inputs.build_package_inputs }}"
+        inputs = yaml.safe_load(inputs_yaml) or {}
+        print("Inputs:\n", yaml.dump(inputs, sort_keys=False), sep='')
+
+        config_path = "${{ inputs.build_config }}"
+        if not config_path:
+          config = {}
+        else:
+          with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+          print("Config file:\n", yaml.dump(config, sort_keys=False), sep='')
+        combined = {**config, **inputs}
+
+        print("Combined inputs:\n", yaml.dump(combined, sort_keys=False), sep='')
+
+        with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
+          print(f"config<<EOF", file=f)
+          print(json.dumps(combined, separators=(',', ':')), file=f)
+          print("EOF", file=f)
+
+    - name: Build package
+      id: build
+      uses: ecmwf-actions/build-package@v2
+      with: ${{ fromJSON(steps.config.outputs.config) }}
