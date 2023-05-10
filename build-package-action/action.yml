@@ -41,7 +41,7 @@ runs:
         import json
         import yaml
 
-        inputs_yaml = "${{ inputs.build_package_inputs }}"
+        inputs_yaml = """${{ inputs.build_package_inputs }}"""
         inputs = yaml.safe_load(inputs_yaml) or {}
         print("Inputs:\n", yaml.dump(inputs, sort_keys=False), sep='')
 
