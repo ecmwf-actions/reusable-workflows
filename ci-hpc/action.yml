@@ -42,15 +42,17 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Parse repository input
+    - name: Parse inputs
       id: inputs
       shell: python3 {0}
       run: |
         import os
         repo, ref = "${{ inputs.repository }}".split("@")
+        deps = ",".join("""${{ inputs.dependencies }}""".splitlines())
         with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
             print("repo", repo, sep="=", file=f)
             print("ref", ref, sep="=", file=f)
+            print("deps", deps, sep="=", file=f)
 
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -64,7 +66,7 @@ runs:
         cd ~/build-package-hpc
         poetry run python -m build_package_hpc --config=$GITHUB_WORKSPACE/${{ inputs.build_config }} \
         build --package=${{ inputs.repository }} \
-        --dependencies=${{ inputs.dependencies }} \
+        --dependencies=${{ steps.inputs.outputs.deps }} \
         --github-user=${{ inputs.github_user }} \
         --github-token=${{ inputs.github_token }} \
         --troika-user=${{ inputs.troika_user }} \
