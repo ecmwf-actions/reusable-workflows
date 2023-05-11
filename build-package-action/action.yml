@@ -13,6 +13,9 @@ inputs:
       Path to build configuration yaml. Relative path from the repository root,
       e.g. `.github/build-config.yml`.
     required: false
+  build_dependencies:
+    description: List of dependencies in format `owner/repo@sha`. If the same `owner/repo` is defined in build config file, this input has precedence.
+    required: false
 
 runs:
   using: composite
@@ -52,6 +55,20 @@ runs:
           with open(config_path, "r") as f:
             config = yaml.safe_load(f)
           print("Config file:\n", yaml.dump(config, sort_keys=False), sep='')
+
+        build_deps_input = """${{ inputs.build_dependencies }}"""
+        if build_deps_input:
+          deps_config = {}
+          for line in config.get("dependencies", "").splitlines():
+            repo, *refs = line.split('@')
+            ref = "" if len(refs) == 0 else refs[0]
+            deps_config[repo] = ref
+          for line in build_deps_input.splitlines():
+            repo, *refs = line.split('@')
+            ref = "" if len(refs) == 0 else refs[0]
+            deps_config[repo] = ref
+          config["dependencies"] = "\n".join([f"{k}@{v}" if v else k for k, v in deps_config.items()])
+
         combined = {**config, **inputs}
 
         print("Combined inputs:\n", yaml.dump(combined, sort_keys=False), sep='')
