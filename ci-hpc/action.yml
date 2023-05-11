@@ -44,7 +44,7 @@ runs:
   steps:
     - name: Parse repository input
       id: inputs
-      shell: python
+      shell: python3 {0}
       run: |
         import os
         repo, ref = "${{ inputs.repository }}".split("@")
