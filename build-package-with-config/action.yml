@@ -1,0 +1,84 @@
+name: build-package-with-config
+description: |
+  A wrapper around build-package action to support reading build configuration from a file.
+inputs:
+  repository:
+    description: Repository name in format owner/repo@ref.
+    required: true
+  build_package_inputs:
+    description: build-package action inputs in yaml format.
+    required: false
+  build_config:
+    description:
+      Path to build configuration yaml. Relative path from the repository root,
+      e.g. `.github/build-config.yml`.
+    required: false
+  build_dependencies:
+    description: List of dependencies in format `owner/repo@sha`. If the same `owner/repo` is defined in build config file, this input has precedence.
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Parse repository input
+      id: inputs
+      shell: python3 {0}
+      run: |
+        import os
+        repo, ref = "${{ inputs.repository }}".split("@")
+        with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
+            print("repo", repo, sep="=", file=f)
+            print("ref", ref, sep="=", file=f)
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ steps.inputs.outputs.repo }}
+        ref: ${{ steps.inputs.outputs.ref }}
+
+    - name: Merge inputs with config file
+      id: config
+      shell: python3 {0}
+      run: |
+        import os
+        import json
+        import yaml
+
+        inputs_yaml = """${{ inputs.build_package_inputs }}"""
+        inputs = yaml.safe_load(inputs_yaml) or {}
+        print("Inputs:\n", yaml.dump(inputs, sort_keys=False), sep='')
+
+        config_path = "${{ inputs.build_config }}"
+        if not config_path:
+          config = {}
+        else:
+          with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+          print("Config file:\n", yaml.dump(config, sort_keys=False), sep='')
+
+        build_deps_input = """${{ inputs.build_dependencies }}"""
+        if build_deps_input:
+          deps_config = {}
+          for line in config.get("dependencies", "").splitlines():
+            repo, *refs = line.split('@')
+            ref = "" if len(refs) == 0 else refs[0]
+            deps_config[repo] = ref
+          for line in build_deps_input.splitlines():
+            repo, *refs = line.split('@')
+            ref = "" if len(refs) == 0 else refs[0]
+            deps_config[repo] = ref
+          config["dependencies"] = "\n".join([f"{k}@{v}" if v else k for k, v in deps_config.items()])
+
+        combined = {**config, **inputs}
+
+        print("Combined inputs:\n", yaml.dump(combined, sort_keys=False), sep='')
+
+        with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
+          print(f"config<<EOF", file=f)
+          print(json.dumps(combined, separators=(',', ':')), file=f)
+          print("EOF", file=f)
+
+    - name: Build package
+      id: build
+      uses: ecmwf-actions/build-package@v2
+      with: ${{ fromJSON(steps.config.outputs.config) }}
