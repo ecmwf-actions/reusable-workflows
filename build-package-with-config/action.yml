@@ -1,4 +1,4 @@
-name: build-package
+name: build-package-with-config
 description: |
   A wrapper around build-package action to support reading build configuration from a file.
 inputs:
