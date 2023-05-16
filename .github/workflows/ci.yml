@@ -233,6 +233,13 @@ jobs:
           | .compiler="gnu" | .compiler_cc="gcc" | .compiler_cxx="g++" | .compiler_fc="gfortran"'
           --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
+      # Tempororary solution to get fftw for mir on github hosted runner
+      - name: install fftw for MIR
+        if: ${{ contains(steps.prepare-inputs.outputs.inputs, 'ecmwf/mir') }}
+        run: |
+          sudo apt update
+          sudo apt install -y -q libfftw3-dev
+
       - name: Build & Collect code coverage report
         id: build
         uses: ecmwf-actions/build-package@v2
