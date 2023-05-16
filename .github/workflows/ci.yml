@@ -229,7 +229,7 @@ jobs:
         shell: bash -eux {0}
         run: >
           echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' |
-          yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN || github.token }}" | .save_cache="false" | .os="ubuntu-22.04"
+          yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN || github.token }}" | .cache_suffix="-codecov" | .os="ubuntu-22.04"
           | .compiler="gnu" | .compiler_cc="gcc" | .compiler_cxx="g++" | .compiler_fc="gfortran"'
           --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
