@@ -229,9 +229,17 @@ jobs:
         shell: bash -eux {0}
         run: >
           echo inputs=$(echo '${{ inputs.build_package_inputs || '{}' }}' |
-          yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN || github.token }}" | .save_cache="false" | .os="ubuntu-22.04"
+          yq eval '.github_token="${{ secrets.GH_REPO_READ_TOKEN || github.token }}" | .parallelism_factor="2"
+          | .cache_suffix="-codecov" | .os="ubuntu-22.04"
           | .compiler="gnu" | .compiler_cc="gcc" | .compiler_cxx="g++" | .compiler_fc="gfortran"'
           --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+
+      # Tempororary solution to get fftw for mir on github hosted runner
+      - name: install fftw for MIR
+        if: ${{ contains(steps.prepare-inputs.outputs.inputs, 'ecmwf/mir') }}
+        run: |
+          sudo apt update
+          sudo apt install -y -q libfftw3-dev
 
       - name: Build & Collect code coverage report
         id: build
