@@ -54,6 +54,8 @@ runs:
         else:
           with open(config_path, "r") as f:
             config = yaml.safe_load(f)
+          if "${{ matrix.config }}":
+            config = config["${{ matrix.config }}"] 
           print("Config file:\n", yaml.dump(config, sort_keys=False), sep='')
 
         build_deps_input = """${{ inputs.build_dependencies }}"""
