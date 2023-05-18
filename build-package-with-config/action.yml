@@ -13,6 +13,10 @@ inputs:
       Path to build configuration yaml. Relative path from the repository root,
       e.g. `.github/build-config.yml`.
     required: false
+  build_config_key:
+    description: Config name in the build config file.
+    required: false
+    default: ${{ matrix.config }}
   build_dependencies:
     description: List of dependencies in format `owner/repo@sha`. If the same `owner/repo` is defined in build config file, this input has precedence.
     required: false
@@ -54,8 +58,8 @@ runs:
         else:
           with open(config_path, "r") as f:
             config = yaml.safe_load(f)
-          if "${{ matrix.config }}":
-            config = config["${{ matrix.config }}"] 
+          if "${{ inputs.build_config_key }}":
+            config = config["${{ inputs.build_config_key }}"] 
           print("Config file:\n", yaml.dump(config, sort_keys=False), sep='')
 
         build_deps_input = """${{ inputs.build_dependencies }}"""
