@@ -38,6 +38,10 @@ inputs:
     description: Fortran compiler.
     required: true
     default: ${{ matrix.compiler_fc }}
+  compiler_modules:
+    description: List of compilers to be loaded as modules.
+    required: false
+    default: ${{ matrix.compiler_modules }}
 
 runs:
   using: composite
@@ -73,4 +77,5 @@ runs:
         --compiler=${{ inputs.compiler }} \
         --compiler-cc=${{ inputs.compiler_cc }} \
         --compiler-cxx=${{ inputs.compiler_cxx }} \
-        --compiler-fc=${{ inputs.compiler_fc }}
+        --compiler-fc=${{ inputs.compiler_fc }} \
+        --compiler-modules=${{ inputs.compiler_modules }}
