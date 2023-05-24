@@ -20,6 +20,9 @@ inputs:
   build_dependencies:
     description: List of dependencies in format `owner/repo@sha`. If the same `owner/repo` is defined in build config file, this input has precedence.
     required: false
+  github_token:
+    description: Github token with read access to needed repositories.
+    required: false
 
 runs:
   using: composite
@@ -39,6 +42,7 @@ runs:
       with:
         repository: ${{ steps.inputs.outputs.repo }}
         ref: ${{ steps.inputs.outputs.ref }}
+        token: ${{ inputs.github_token }}
 
     - name: Merge inputs with config file
       id: config
@@ -50,6 +54,9 @@ runs:
 
         inputs_yaml = """${{ inputs.build_package_inputs }}"""
         inputs = yaml.safe_load(inputs_yaml) or {}
+        token = "${{ inputs.github_token }}"
+        if token:
+          inputs["github_token"] = token
         print("Inputs:\n", yaml.dump(inputs, sort_keys=False), sep='')
 
         config_path = "${{ inputs.build_config }}"
