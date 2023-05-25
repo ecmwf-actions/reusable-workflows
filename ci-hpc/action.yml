@@ -38,6 +38,10 @@ inputs:
     description: Fortran compiler.
     required: true
     default: ${{ matrix.compiler_fc }}
+  compiler_modules:
+    description: List of compilers to be loaded as modules.
+    required: false
+    default: ${{ matrix.compiler_modules }}
 
 runs:
   using: composite
@@ -65,6 +69,7 @@ runs:
       run: |
         cd ~/build-package-hpc
         poetry run python -m build_package_hpc --config=$GITHUB_WORKSPACE/${{ inputs.build_config }} \
+        --config-name=${{ inputs.compiler }} \
         build --package=${{ inputs.repository }} \
         --dependencies=${{ steps.inputs.outputs.deps }} \
         --github-user=${{ inputs.github_user }} \
@@ -73,4 +78,5 @@ runs:
         --compiler=${{ inputs.compiler }} \
         --compiler-cc=${{ inputs.compiler_cc }} \
         --compiler-cxx=${{ inputs.compiler_cxx }} \
-        --compiler-fc=${{ inputs.compiler_fc }}
+        --compiler-fc=${{ inputs.compiler_fc }} \
+        --compiler-modules=${{ inputs.compiler_modules }}
