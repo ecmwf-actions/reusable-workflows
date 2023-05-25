@@ -69,6 +69,7 @@ runs:
       run: |
         cd ~/build-package-hpc
         poetry run python -m build_package_hpc --config=$GITHUB_WORKSPACE/${{ inputs.build_config }} \
+        --config-name=${{ inputs.compiler }} \
         build --package=${{ inputs.repository }} \
         --dependencies=${{ steps.inputs.outputs.deps }} \
         --github-user=${{ inputs.github_user }} \
