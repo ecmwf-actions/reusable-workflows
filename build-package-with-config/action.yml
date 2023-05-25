@@ -23,6 +23,7 @@ inputs:
   github_token:
     description: Github token with read access to needed repositories.
     required: false
+    default: ${{ github.token }}
 
 runs:
   using: composite
