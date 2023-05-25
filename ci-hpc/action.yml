@@ -63,6 +63,7 @@ runs:
       with:
         repository: ${{ steps.inputs.outputs.repo }}
         ref: ${{ steps.inputs.outputs.ref }}
+        token: ${{ inputs.github_token }}
 
     - name: Run build-package-hpc
       shell: bash
