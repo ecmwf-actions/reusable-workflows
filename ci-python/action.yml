@@ -25,6 +25,7 @@ runs:
     - name: Install package
       shell: bash
       run: |
+        source venv/bin/activate
         python setup.py sdist
         pip install dist/*
 
@@ -33,5 +34,6 @@ runs:
         DYLD_LIBRARY_PATH: ${{ inputs.lib_path }}
       shell: bash
       run: |
+        source venv/bin/activate
         pytest --cov=./ --cov-report=xml
         python -m coverage report
