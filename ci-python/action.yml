@@ -1,0 +1,31 @@
+name: ci-python
+description: A composite action build and test python packages.
+inputs:
+  lib_path:
+    description: LD_LIBRARY_PATH containing paths to depedency libraries.
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Setup python env
+      shell: bash
+      run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install pytest pytest-cov
+        pip install -r requirements.txt
+
+    - name: Install package
+      shell: bash
+      run: |
+        python setup.py sdist
+        pip install dist/*
+
+    - name: Run tests
+      env:
+        DYLD_LIBRARY_PATH: ${{ inputs.lib_path }}
+      shell: bash
+      run: |
+        pytest --cov=./ --cov-report=xml
+        python -m coverage report
