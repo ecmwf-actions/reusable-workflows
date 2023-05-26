@@ -1,6 +1,9 @@
 name: ci-python
 description: A composite action build and test python packages.
 inputs:
+  requirements_path:
+    description: Path to pip requirements file.
+    default: requirements.txt
   lib_path:
     description: LD_LIBRARY_PATH containing paths to depedency libraries.
     required: false
@@ -13,8 +16,11 @@ runs:
       run: |
         python3 -m venv venv
         source venv/bin/activate
+        pip install --upgrade pip
         pip install pytest pytest-cov
-        pip install -r requirements.txt
+        if [ -f ${{ inputs.requirements_path }} ]; then
+          pip install -r ${{ inputs.requirements_path }} 
+        fi
 
     - name: Install package
       shell: bash
