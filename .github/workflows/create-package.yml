@@ -1,0 +1,39 @@
+name: Create package
+
+on:
+  workflow_call:
+
+jobs:
+  deploy:
+    strategy:
+      matrix:
+        name:
+          - gnu@debian-11
+        include:
+          - name: gnu@debian-11
+            labels: [self-hosted, platform-builder-debian-11]
+            os: debian-11
+            compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+            cpack_generator: DEB
+            cpack_options: -D CPACK_DEBIAN_PACKAGE_MAINTAINER=software@ecmwf.int -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON
+            upload_token: ${{ secrets.NEXUS_REPO_UPLOAD_TOKEN }}
+            upload_url: ${{ secrets.NEXUS_REPO_URL_DEBIAN_11 }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - name: Create package
+        id: build
+        uses: ./build-package-with-config
+        with:
+          repository: ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}
+          build_package_inputs: |
+            repository: ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}
+          build_config: .github/ci-config.yml
+          cpack_generator: ${{ matrix.cpack_generator }}
+          cpack_options: ${{ matrix.cpack_options }}
+
+      - name: Upload
+        run: |
+          curl --user '${{ matrix.upload_token }}' -H "Content-Type: multipart/form-data" --data-binary "@${{ steps.build.outputs.package_path }}" "${{ matrix.upload_url }}"

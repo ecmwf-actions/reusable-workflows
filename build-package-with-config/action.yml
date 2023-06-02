@@ -96,3 +96,8 @@ runs:
       id: build
       uses: ecmwf-actions/build-package@v2
       with: ${{ fromJSON(steps.config.outputs.config) }}
+
+outputs:
+  package_path:
+    description: Absolute path to generated package.
+    value: ${{ steps.build.outputs.package_path }}
