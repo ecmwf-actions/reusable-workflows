@@ -5,6 +5,7 @@ on:
 
 jobs:
   deploy:
+    if: ${{ github.ref_type == 'tag' }}
     strategy:
       matrix:
         name:
@@ -18,11 +19,59 @@ jobs:
             compiler_cxx: g++
             compiler_fc: gfortran
             cpack_generator: DEB
-            cpack_options: -D CPACK_DEBIAN_PACKAGE_MAINTAINER=software@ecmwf.int -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON
+            cpack_options: >
+              -D CPACK_DEBIAN_PACKAGE_MAINTAINER=software@ecmwf.int 
+              -D CPACK_PACKAGING_INSTALL_PREFIX="/opt/ecmwf" 
+              -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON
             upload_token: ${{ secrets.NEXUS_REPO_UPLOAD_TOKEN }}
             upload_url: ${{ secrets.NEXUS_REPO_URL_DEBIAN_11 }}
     runs-on: ${{ matrix.labels }}
     steps:
+      - name: Check version number
+        shell: python3 {0}
+        run: |
+          import os
+          import re
+          import sys
+
+          tag = "${{ github.ref_name }}"
+
+          def check_version():
+              file_name = "VERSION"
+              if os.path.isfile(file_name):
+                  with open(file_name, 'r') as f:
+                      version = f.read().strip()
+                      return version
+              else:
+                  print(f"::warning::{file_name} file not found! Using {file_name} is the preferred method.")
+                  return
+
+          def check_cmakelists():
+              file_name = "CMakeLists.txt"
+              if os.path.isfile(file_name):
+                  with open(file_name, 'r') as f:
+                      content = f.read()
+                      pattern = r"project\([\s\w]+VERSION\s+((?:\d+)(?:.\d+){0,3})"
+
+                      hit = re.search(pattern, content)
+                      version = hit.group(1)
+                      return version
+              else:
+                  print(f"::warning::{file_name} file not found!")
+                  return
+
+          version = check_version() or check_cmakelists()
+
+          if not version:
+              print("::error::Version not found!")
+              sys.exit(1)
+
+          if version != tag:
+              print(f"::error::Git tag ({tag}) and project version ({version}) do not match!")
+              sys.exit(1)
+
+          print("OK: Git tag and project versions match.")
+
       - name: Create package
         id: build
         uses: ./build-package-with-config
