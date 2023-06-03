@@ -23,8 +23,8 @@ jobs:
               -D CPACK_DEBIAN_PACKAGE_MAINTAINER=software@ecmwf.int 
               -D CPACK_PACKAGING_INSTALL_PREFIX="/opt/ecmwf" 
               -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON
-            upload_token: ${{ secrets.NEXUS_REPO_UPLOAD_TOKEN }}
-            upload_url: ${{ secrets.NEXUS_REPO_URL_DEBIAN_11 }}
+            upload_token: NEXUS_REPO_UPLOAD_TOKEN
+            upload_url: NEXUS_REPO_URL_DEBIAN_11
     runs-on: ${{ matrix.labels }}
     steps:
       - name: Check version number
@@ -85,4 +85,4 @@ jobs:
 
       - name: Upload
         run: |
-          curl --user '${{ matrix.upload_token }}' -H "Content-Type: multipart/form-data" --data-binary "@${{ steps.build.outputs.package_path }}" "${{ matrix.upload_url }}"
+          curl --user '${{ secrets[matrix.upload_token] }}' -H "Content-Type: multipart/form-data" --data-binary "@${{ steps.build.outputs.package_path }}" "${{ secrets[matrix.upload_url] }}"
