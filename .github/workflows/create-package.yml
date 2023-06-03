@@ -79,9 +79,9 @@ jobs:
           repository: ${{ format('{0}@{1}', github.repository, github.sha ) }}
           build_package_inputs: |
             repository: ${{ format('{0}@{1}', github.repository, github.sha ) }}
+            cpack_generator: ${{ matrix.cpack_generator }}
+            cpack_options: ${{ matrix.cpack_options }}
           build_config: .github/ci-config.yml
-          cpack_generator: ${{ matrix.cpack_generator }}
-          cpack_options: ${{ matrix.cpack_options }}
 
       - name: Upload
         run: |
