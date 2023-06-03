@@ -76,9 +76,9 @@ jobs:
         id: build
         uses: ./build-package-with-config
         with:
-          repository: ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}
+          repository: ${{ format('{0}@{1}', github.repository, github.sha ) }}
           build_package_inputs: |
-            repository: ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}
+            repository: ${{ format('{0}@{1}', github.repository, github.sha ) }}
           build_config: .github/ci-config.yml
           cpack_generator: ${{ matrix.cpack_generator }}
           cpack_options: ${{ matrix.cpack_options }}
