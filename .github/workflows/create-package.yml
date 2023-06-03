@@ -74,7 +74,7 @@ jobs:
 
       - name: Create package
         id: build
-        uses: ./build-package-with-config
+        uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
           repository: ${{ format('{0}@{1}', github.repository, github.sha ) }}
           build_package_inputs: |
