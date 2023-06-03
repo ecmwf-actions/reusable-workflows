@@ -85,7 +85,7 @@ jobs:
 
       - name: Upload
         run: |
-          if [ ! -f ${{ steps.build.outputs.package_path }} ]; then
+          if [ -z "${{ steps.build.outputs.package_path }}" ] || [ ! -f ${{ steps.build.outputs.package_path }} ]; then
             echo "::error::Built package not found!"
             exit 1
           fi
