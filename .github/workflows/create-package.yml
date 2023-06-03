@@ -89,4 +89,13 @@ jobs:
             echo "::error::Built package not found!"
             exit 1
           fi
-          curl --fail-with-body --user '${{ secrets[matrix.upload_token] }}' -H "Content-Type: multipart/form-data" --data-binary "@${{ steps.build.outputs.package_path }}" "${{ secrets[matrix.upload_url] }}"
+          response=$(curl -w "%{http_code}" --user '${{ secrets[matrix.upload_token] }}' -H "Content-Type: multipart/form-data" --data-binary "@${{ steps.build.outputs.package_path }}" "${{ secrets[matrix.upload_url] }}")
+
+          status=$(echo $response | tail -c 4)
+          echo $status
+          if [ $status -eq 200 ]; then
+            echo "Successfully uploaded!
+          else
+            echo "$status: Upload failed"
+            exit 1
+          fi
