@@ -85,4 +85,8 @@ jobs:
 
       - name: Upload
         run: |
-          curl --user '${{ secrets[matrix.upload_token] }}' -H "Content-Type: multipart/form-data" --data-binary "@${{ steps.build.outputs.package_path }}" "${{ secrets[matrix.upload_url] }}"
+          if [ ! -f ${{ steps.build.outputs.package_path }} ]; then
+            echo "::error::Built package not found!"
+            exit 1
+          fi
+          curl --fail-with-body --user '${{ secrets[matrix.upload_token] }}' -H "Content-Type: multipart/form-data" --data-binary "@${{ steps.build.outputs.package_path }}" "${{ secrets[matrix.upload_url] }}"
