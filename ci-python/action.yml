@@ -1,0 +1,45 @@
+name: ci-python
+description: A composite action build and test python packages.
+inputs:
+  requirements_path:
+    description: Path to pip requirements file.
+    default: requirements.txt
+  lib_path:
+    description: LD_LIBRARY_PATH containing paths to depedency libraries.
+    required: false
+  python_version:
+    description: The version of python used to test the package
+    default: ${{ matrix.python_version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup python env
+      shell: bash -e {0}
+      run: |
+        source /opt/conda/etc/profile.d/conda.sh
+        conda create -y -p venv
+        conda activate ./venv
+        conda install -y python=${{ inputs.python_version }}
+        pip install pytest pytest-cov
+        if [ -f ${{ inputs.requirements_path }} ]; then
+          pip install -r ${{ inputs.requirements_path }} 
+        fi
+
+    - name: Install package
+      shell: bash -e {0}
+      run: |
+        source /opt/conda/etc/profile.d/conda.sh
+        conda activate ./venv
+        python setup.py sdist
+        pip install dist/*
+
+    - name: Run tests
+      env:
+        DYLD_LIBRARY_PATH: ${{ inputs.lib_path }}
+      shell: bash -e {0}
+      run: |
+        source /opt/conda/etc/profile.d/conda.sh
+        conda activate ./venv
+        pytest --cov=./ --cov-report=xml
+        python -m coverage report

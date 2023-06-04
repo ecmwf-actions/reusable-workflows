@@ -98,6 +98,9 @@ runs:
       with: ${{ fromJSON(steps.config.outputs.config) }}
 
 outputs:
+  lib_path:
+    description: Library paths of all installed packages, delimited by colons (:).
+    value: ${{ steps.build.outputs.lib_path }}
   package_path:
     description: Absolute path to generated package.
     value: ${{ steps.build.outputs.package_path }}
