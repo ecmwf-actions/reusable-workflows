@@ -1,0 +1,47 @@
+name: cd-pypi
+
+on:
+  workflow_call:
+    inputs:
+      build_config:
+        description: Path to build config file
+        default: .github/ci-config.yml
+        type: string
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, platform-builder-rocky-8.6]
+    if: ${{ github.ref_type == 'tag' }}
+    steps:
+      - name: Build dependencies
+        id: build-deps
+        uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ format('{0}@{1}', github.repository, github.sha ) }}
+          build_package_inputs: |
+            repository: ${{ format('{0}@{1}', github.repository, github.sha ) }}
+            os: rocky-8.6
+            compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+          build_config: ${{ inputs.build_config }}
+
+      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+        with:
+          lib_path: ${{ steps.build-deps.outputs.lib_path }}
+          python_version: '3.10'
+
+      - name: Publish on PyPI
+        env:
+          TWINE_USERNAME: ${{ secrets.pypi_username }}
+          TWINE_PASSWORD: ${{ secrets.pypi_password }}
+        shell: bash -eux {0}
+        run: |
+          source /opt/conda/etc/profile.d/conda.sh
+          conda activate ./venv
+          release=${{ github.ref_name }}
+          version=$(python setup.py --version)
+          test "$release" == "$version"
+          pip install setuptools wheel twine
+          twine upload dist/*
