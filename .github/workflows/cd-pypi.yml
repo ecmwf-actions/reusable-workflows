@@ -32,13 +32,6 @@ jobs:
           lib_path: ${{ steps.build-deps.outputs.lib_path }}
           python_version: '3.10'
 
-      - name: Check Version
-        shell: bash -eux {0}
-        run: |
-          release=${{ github.ref_name }}
-          version=$(python setup.py --version)
-          test "$release" == "$version"
-
       - name: Publish on PyPI
         env:
           TWINE_USERNAME: ${{ secrets.pypi_username }}
@@ -47,5 +40,8 @@ jobs:
         run: |
           source /opt/conda/etc/profile.d/conda.sh
           conda activate ./venv
+          release=${{ github.ref_name }}
+          version=$(python setup.py --version)
+          test "$release" == "$version"
           pip install setuptools wheel twine
           twine upload dist/*
