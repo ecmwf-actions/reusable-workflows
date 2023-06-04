@@ -15,8 +15,9 @@ runs:
   using: composite
   steps:
     - name: Setup python env
-      shell: bash
+      shell: bash -e {0}
       run: |
+        source /opt/conda/etc/profile.d/conda.sh
         conda create -y -p venv
         conda activate ./venv
         conda install -y python=${{ inputs.python_version }}
@@ -26,8 +27,9 @@ runs:
         fi
 
     - name: Install package
-      shell: bash
+      shell: bash -e {0}
       run: |
+        source /opt/conda/etc/profile.d/conda.sh
         conda activate ./venv
         python setup.py sdist
         pip install dist/*
@@ -35,8 +37,9 @@ runs:
     - name: Run tests
       env:
         DYLD_LIBRARY_PATH: ${{ inputs.lib_path }}
-      shell: bash
+      shell: bash -e {0}
       run: |
+        source /opt/conda/etc/profile.d/conda.sh
         conda activate ./venv
         pytest --cov=./ --cov-report=xml
         python -m coverage report
