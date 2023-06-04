@@ -9,7 +9,7 @@ inputs:
     required: false
   python_version:
     description: The version of python used to test the package
-    default: '3.10'
+    default: ${{ matrix.python_version }}
 
 runs:
   using: composite

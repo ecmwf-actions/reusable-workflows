@@ -46,6 +46,10 @@ inputs:
     description: Config name in the build config file.
     required: false
     default: ${{ matrix.config }}
+  python_version:
+    description: Python version.
+    required: false
+    default: ${{ matrix.python_version }}
 
 runs:
   using: composite
@@ -84,4 +88,5 @@ runs:
         --compiler-cc=${{ inputs.compiler_cc }} \
         --compiler-cxx=${{ inputs.compiler_cxx }} \
         --compiler-fc=${{ inputs.compiler_fc }} \
-        --compiler-modules=${{ inputs.compiler_modules }}
+        --compiler-modules=${{ inputs.compiler_modules }} \
+        --python=${{ inputs.python_version }}
