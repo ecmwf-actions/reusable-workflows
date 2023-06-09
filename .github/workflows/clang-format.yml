@@ -1,0 +1,49 @@
+name: clang-format
+
+on:
+  workflow_call:
+    inputs:
+      ignore_paths:
+        description: A list of paths to be skipped during formatting check.
+        required: false
+        type: string
+
+jobs:
+  check-formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install clang-format
+        run: |
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo add-apt-repository deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main
+          sudo apt update
+          sudo apt install -y clang-format-16
+
+      - name: Run clang-format
+        shell: bash {0}
+        run: |
+          ignore="./\($(echo "${{ inputs.ignore_paths }}" | sed ':a;N;$!ba;s/\n/\\|/g')\)"
+          echo "Ignore: $ignore"
+          files=$(find . -not \( -regex $ignore -prune \) -regex ".*\.\(cpp\|hpp\|cc\|cxx\|h\|c\)")
+          errors=0
+
+          if [ ! -e ".clang-format" ]
+          then
+              echo "::error::Missing .clang-format file"
+              exit 1
+          fi
+
+          for file in $files; do
+              clang-format-16 --dry-run --Werror --style=file --fallback-style=none $file
+              if [ $? -ne 0 ]; then
+                  ((errors++))
+              fi
+          done
+
+          if [ $errors -ne 0 ]; then
+              echo "::error::clang-format failed for $errors files"
+              exit 1
+          fi
