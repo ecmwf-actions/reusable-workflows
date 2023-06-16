@@ -27,6 +27,8 @@ jobs:
             upload_url: NEXUS_REPO_URL_DEBIAN_11
     runs-on: ${{ matrix.labels }}
     steps:
+      - uses: actions/checkout@v3
+
       - name: Check version number
         shell: python3 {0}
         run: |
