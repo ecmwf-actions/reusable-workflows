@@ -20,6 +20,9 @@ inputs:
     description: Github token with read access to needed repositories.
     required: false
     default: ${{ github.token }}
+  repository:
+    description: Repository name in format owner/repo@ref.
+    required: false
 
 runs:
   using: composite
