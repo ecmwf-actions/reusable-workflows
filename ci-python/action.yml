@@ -13,10 +13,36 @@ inputs:
   conda_install:
     description: List of packages to install using conda
     required: false
+  checkout:
+    description: Whether to checkout the repository.
+    required: false
+  github_token:
+    description: Github token with read access to needed repositories.
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: composite
   steps:
+    - name: Parse repository input
+      id: inputs
+      if: ${{ inputs.checkout == 'true' }}
+      shell: python3 {0}
+      run: |
+        import os
+        repo, ref = "${{ inputs.repository }}".split("@")
+        with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
+            print("repo", repo, sep="=", file=f)
+            print("ref", ref, sep="=", file=f)
+
+    - name: Checkout repository
+      if: ${{ inputs.checkout == 'true' }}
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ steps.inputs.outputs.repo }}
+        ref: ${{ steps.inputs.outputs.ref }}
+        token: ${{ inputs.github_token }}
+
     - name: Setup python env
       shell: bash -e {0}
       run: |
