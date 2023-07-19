@@ -10,6 +10,7 @@ jobs:
       matrix:
         name:
           - gnu@debian-11
+          - gnu-8@centos-7.9
         include:
           - name: gnu@debian-11
             labels: [self-hosted, platform-builder-debian-11]
@@ -25,6 +26,18 @@ jobs:
               -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON
             upload_token: NEXUS_REPO_UPLOAD_TOKEN
             upload_url: NEXUS_REPO_URL_DEBIAN_11
+          - name: gnu-8@centos-7.9
+            labels: [self-hosted, platform-builder-centos-7.9]
+            os: centos-7.9
+            compiler: gnu-8
+            compiler_cc: gcc-8
+            compiler_cxx: g++-8
+            compiler_fc: gfortran-8
+            cpack_generator: RPM
+            cpack_options: >
+              -D CPACK_PACKAGING_INSTALL_PREFIX="/opt/ecmwf"
+            upload_token: NEXUS_REPO_UPLOAD_TOKEN
+            upload_url: NEXUS_REPO_URL_CENTOS_7
     runs-on: ${{ matrix.labels }}
     steps:
       - uses: actions/checkout@v3
