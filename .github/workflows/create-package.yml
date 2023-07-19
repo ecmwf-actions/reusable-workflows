@@ -11,6 +11,7 @@ jobs:
         name:
           - gnu@debian-11
           - gnu-8@centos-7.9
+          - gnu@rocky-8.6
         include:
           - name: gnu@debian-11
             labels: [self-hosted, platform-builder-debian-11]
@@ -38,6 +39,18 @@ jobs:
               -D CPACK_PACKAGING_INSTALL_PREFIX="/opt/ecmwf"
             upload_token: NEXUS_REPO_UPLOAD_TOKEN
             upload_url: NEXUS_REPO_URL_CENTOS_7
+          - name: gnu@rocky-8.6
+            labels: [self-hosted, platform-builder-rocky-8.6]
+            os: rocky-8.6
+            compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+            cpack_generator: RPM
+            cpack_options: >
+              -D CPACK_PACKAGING_INSTALL_PREFIX="/opt/ecmwf"
+            upload_token: NEXUS_REPO_UPLOAD_TOKEN
+            upload_url: NEXUS_REPO_URL_ROCKY_8
     runs-on: ${{ matrix.labels }}
     steps:
       - uses: actions/checkout@v3
