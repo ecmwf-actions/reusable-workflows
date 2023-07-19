@@ -110,6 +110,9 @@ jobs:
             repository: ${{ format('{0}@{1}', github.repository, github.sha ) }}
             cpack_generator: ${{ matrix.cpack_generator }}
             cpack_options: ${{ matrix.cpack_options }}
+            force_build: true
+            recreate_cache: true
+            save_cache: false
           build_config: .github/ci-config.yml
 
       - name: Upload
