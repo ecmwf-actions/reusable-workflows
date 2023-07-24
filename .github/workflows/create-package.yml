@@ -113,6 +113,7 @@ jobs:
             force_build: true
             recreate_cache: true
             save_cache: false
+            self_test: false
           build_config: .github/ci-config.yml
 
       - name: Upload
