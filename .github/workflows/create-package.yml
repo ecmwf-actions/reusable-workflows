@@ -24,7 +24,7 @@ jobs:
             cpack_generator: DEB
             cpack_options: >
               -D CPACK_DEBIAN_PACKAGE_MAINTAINER=software@ecmwf.int 
-              -D CPACK_PACKAGING_INSTALL_PREFIX="/opt/ecmwf" 
+              -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf 
               -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON
             upload_token: NEXUS_REPO_UPLOAD_TOKEN
             upload_url: NEXUS_REPO_URL_DEBIAN_11
@@ -37,7 +37,7 @@ jobs:
             compiler_fc: gfortran-8
             cpack_generator: RPM
             cpack_options: >
-              -D CPACK_PACKAGING_INSTALL_PREFIX="/opt/ecmwf"
+              -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf
             upload_token: NEXUS_REPO_UPLOAD_TOKEN
             upload_url: NEXUS_REPO_URL_CENTOS_7
           - name: gnu@rocky-8.6
@@ -49,7 +49,7 @@ jobs:
             compiler_fc: gfortran
             cpack_generator: RPM
             cpack_options: >
-              -D CPACK_PACKAGING_INSTALL_PREFIX="/opt/ecmwf"
+              -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf
             upload_token: NEXUS_REPO_UPLOAD_TOKEN
             upload_url: NEXUS_REPO_URL_ROCKY_8
     runs-on: ${{ matrix.labels }}
