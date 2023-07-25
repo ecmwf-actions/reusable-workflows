@@ -122,10 +122,15 @@ jobs:
             echo "::error::Built package not found!"
             exit 1
           fi
-          response=$(curl -w "%{http_code}" --user '${{ secrets[matrix.upload_token] }}' -H "Content-Type: multipart/form-data" --data-binary "@${{ steps.build.outputs.package_path }}" "${{ secrets[matrix.upload_url] }}")
+
+          if [ "${{ matrix.cpack_generator }}" == "DEB" ]; then
+            response=$(curl -w "%{http_code}" --user '${{ secrets[matrix.upload_token] }}' -H "Content-Type: multipart/form-data" --data-binary "@${{ steps.build.outputs.package_path }}" "${{ secrets[matrix.upload_url] }}")
+          elif [ "${{ matrix.cpack_generator }}" == "RPM" ]; then
+            response=$(curl -w "%{http_code}" --user '${{ secrets[matrix.upload_token] }}' --upload-file ${{ steps.build.outputs.package_path }} ${{ secrets[matrix.upload_url] }}/${{ steps.build.outputs.package_path }})
+          fi
 
           status=$(echo $response | tail -c 4)
-          if [ $status -eq 201 ]; then
+          if [ $status -eq 201 ] || [ $status -eq 200 ]; then
             echo "Successfully uploaded!"
           else
             echo "$status: Upload failed"
