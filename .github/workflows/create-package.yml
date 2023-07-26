@@ -126,7 +126,8 @@ jobs:
           if [ "${{ matrix.cpack_generator }}" == "DEB" ]; then
             response=$(curl -w "%{http_code}" --user '${{ secrets[matrix.upload_token] }}' -H "Content-Type: multipart/form-data" --data-binary "@${{ steps.build.outputs.package_path }}" "${{ secrets[matrix.upload_url] }}")
           elif [ "${{ matrix.cpack_generator }}" == "RPM" ]; then
-            response=$(curl -w "%{http_code}" --user '${{ secrets[matrix.upload_token] }}' --upload-file ${{ steps.build.outputs.package_path }} ${{ secrets[matrix.upload_url] }}/${{ steps.build.outputs.package_path }})
+            file_name=$(basename "${{ steps.build.outputs.package_path }}")
+            response=$(curl -w "%{http_code}" --user '${{ secrets[matrix.upload_token] }}' --upload-file ${{ steps.build.outputs.package_path }} ${{ secrets[matrix.upload_url] }}/$file_name)
           fi
 
           status=$(echo $response | tail -c 4)
