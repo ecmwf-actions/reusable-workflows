@@ -38,8 +38,8 @@ jobs:
             cpack_generator: RPM
             cpack_options: >
               -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf
-            upload_token: NEXUS_REPO_UPLOAD_TOKEN
-            upload_url: NEXUS_REPO_URL_CENTOS_7
+            upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
+            upload_url: NEXUS_TEST_REPO_URL_CENTOS_7
           - name: gnu@rocky-8.6
             labels: [self-hosted, platform-builder-rocky-8.6]
             os: rocky-8.6
@@ -50,8 +50,8 @@ jobs:
             cpack_generator: RPM
             cpack_options: >
               -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf
-            upload_token: NEXUS_REPO_UPLOAD_TOKEN
-            upload_url: NEXUS_REPO_URL_ROCKY_8
+            upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
+            upload_url: NEXUS_TEST_REPO_URL_ROCKY_8
     runs-on: ${{ matrix.labels }}
     steps:
       - uses: actions/checkout@v3
