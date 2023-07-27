@@ -52,6 +52,7 @@ jobs:
             compiler_cc: gcc
             compiler_cxx: g++
             compiler_fc: gfortran
+            toolchain_file: /opt/actions-runner/files/toolchain-clang-rocky-8.6.cmake
             cpack_generator: RPM
             cpack_options: >
               -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf
@@ -115,7 +116,7 @@ jobs:
           build_package_inputs: |
             repository: ${{ format('{0}@{1}', github.repository, github.sha ) }}
             cpack_generator: ${{ matrix.cpack_generator }}
-            cpack_options: ${{ matrix.cpack_options }}
+            cpack_options: ${{ matrix.cpack_options }} -DCPACK_PACKAGE_NAME=${{ github.event.repository.name }}
             force_build: true
             recreate_cache: true
             save_cache: false
