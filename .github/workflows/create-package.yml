@@ -52,7 +52,6 @@ jobs:
             compiler_cc: gcc
             compiler_cxx: g++
             compiler_fc: gfortran
-            toolchain_file: /opt/actions-runner/files/toolchain-clang-rocky-8.6.cmake
             cpack_generator: RPM
             cpack_options: >
               -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf
