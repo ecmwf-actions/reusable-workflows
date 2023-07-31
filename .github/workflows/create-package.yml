@@ -31,8 +31,8 @@ jobs:
               -D CPACK_DEBIAN_PACKAGE_MAINTAINER=software@ecmwf.int 
               -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf 
               -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON
-            upload_token: NEXUS_REPO_UPLOAD_TOKEN
-            upload_url: NEXUS_REPO_URL_DEBIAN_11
+            upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
+            upload_url: NEXUS_TEST_REPO_URL_DEBIAN_11
           - name: gnu-8@centos-7.9
             labels: [self-hosted, platform-builder-centos-7.9]
             os: centos-7.9
