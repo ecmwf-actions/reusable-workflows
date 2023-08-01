@@ -3,14 +3,45 @@ name: Create package
 on:
   workflow_call:
     inputs:
-      test:
-        description: Set this flag for testing purposes, skips checks.
+      skip_checks:
+        description: Value `true` will skip version checks, use for testing or in nightly builds.
         type: boolean
+        required: false
+      cpack_options:
+        description: CPack options to be used on all platforms.
+        type: string
+        required: false
+      cpack_options_deb:
+        description: CPack options for DEB generator
+        type: string
+        required: false
+      cpack_options_rpm:
+        description: CPack options for RPM generator
+        type: string
+        required: false
+    secrets:
+      url_debian_11:
+        description: Use other than the default url for Debian 11.
+        required: false
+      token_debian_11:
+        description: Use other than the default token for Debian 11.
+        required: false
+      url_centos_7:
+        description: Use other than the default url for CentOS 7.
+        required: false
+      token_centos_7:
+        description: Use other than the default token for CentOS 7.
+        required: false
+      url_rocky_8:
+        description: Use other than the default url for Rocky 8.
+        required: false
+      token_rocky_8:
+        description: Use other than the default token for Rocky 8.
         required: false
 
 jobs:
   deploy:
-    if: ${{ github.ref_type == 'tag' || inputs.test }}
+    if: ${{ github.ref_type == 'tag' || inputs.skip_checks }}
     strategy:
       fail-fast: false
       matrix:
@@ -30,6 +61,7 @@ jobs:
             cpack_options: >
               -D CPACK_DEBIAN_PACKAGE_MAINTAINER=software@ecmwf.int 
               -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf 
+              ${{ inputs.cpack_options_deb }} 
               -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON
             upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
             upload_url: NEXUS_TEST_REPO_URL_DEBIAN_11
@@ -42,7 +74,8 @@ jobs:
             compiler_fc: gfortran-8
             cpack_generator: RPM
             cpack_options: >
-              -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf
+              -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf 
+              ${{ inputs.cpack_options_rpm }}
             upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
             upload_url: NEXUS_TEST_REPO_URL_CENTOS_7
           - name: gnu@rocky-8.6
@@ -54,7 +87,8 @@ jobs:
             compiler_fc: gfortran
             cpack_generator: RPM
             cpack_options: >
-              -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf
+              -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf 
+              ${{ inputs.cpack_options_rpm }}
             upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
             upload_url: NEXUS_TEST_REPO_URL_ROCKY_8
     runs-on: ${{ matrix.labels }}
@@ -62,7 +96,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Check version number
-        if: ${{ !inputs.test }}
+        if: ${{ !inputs.skip_checks }}
         shell: python3 {0}
         run: |
           import os
@@ -115,7 +149,7 @@ jobs:
           build_package_inputs: |
             repository: ${{ format('{0}@{1}', github.repository, github.sha ) }}
             cpack_generator: ${{ matrix.cpack_generator }}
-            cpack_options: ${{ matrix.cpack_options }} -DCPACK_PACKAGE_NAME=${{ github.event.repository.name }}
+            cpack_options: ${{ matrix.cpack_options }} ${{ inputs.cpack_options }}
             force_build: true
             recreate_cache: true
             save_cache: false
@@ -129,11 +163,37 @@ jobs:
             exit 1
           fi
 
+          os=${{ matrix.os }}
+          token=""
+          url=""
+
+          case "$os" in
+            "debian-11")
+              token=${{ secrets.token_debian_11 || secrets[matrix.upload_token] }}
+              url=${{ secrets.url_debian_11 || secrets[matrix.upload_url] }}
+            ;;
+
+            "centos-7.9")
+              token=${{ secrets.token_centos_7 || secrets[matrix.upload_token] }}
+              url=${{ secrets.url_centos_7 || secrets[matrix.upload_url] }}
+            ;;
+
+            "rocky-8.6")
+              token=${{ secrets.token_rocky_8 || secrets[matrix.upload_token] }}
+              url=${{ secrets.url_rocky_8 || secrets[matrix.upload_url] }}
+            ;;
+
+            *)
+              token=${{ secrets[matrix.upload_token] }}
+              url=${{ secrets[matrix.upload_url] }}
+            ;;
+          esac
+
           if [ "${{ matrix.cpack_generator }}" == "DEB" ]; then
-            response=$(curl -w "%{http_code}" --user '${{ secrets[matrix.upload_token] }}' -H "Content-Type: multipart/form-data" --data-binary "@${{ steps.build.outputs.package_path }}" "${{ secrets[matrix.upload_url] }}")
+            response=$(curl -w "%{http_code}" --user "$token" -H "Content-Type: multipart/form-data" --data-binary "@${{ steps.build.outputs.package_path }}" "$url")
           elif [ "${{ matrix.cpack_generator }}" == "RPM" ]; then
             file_name=$(basename "${{ steps.build.outputs.package_path }}")
-            response=$(curl -w "%{http_code}" --user '${{ secrets[matrix.upload_token] }}' --upload-file ${{ steps.build.outputs.package_path }} ${{ secrets[matrix.upload_url] }}/$file_name)
+            response=$(curl -w "%{http_code}" --user "$token" --upload-file ${{ steps.build.outputs.package_path }} $url/$file_name)
           fi
 
           status=$(echo $response | tail -c 4)
