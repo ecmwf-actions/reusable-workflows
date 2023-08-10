@@ -159,7 +159,7 @@ jobs:
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: packages
+          name: ${{ matrix.os }}
           path: ${{ steps.build.outputs.package_path }}
 
       - name: Upload
