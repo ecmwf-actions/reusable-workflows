@@ -156,6 +156,12 @@ jobs:
             self_test: false
           build_config: .github/ci-config.yml
 
+      - name: Upload binary as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: packages
+          path: ${{ steps.build.outputs.package_path }}
+
       - name: Upload
         run: |
           if [ -z "${{ steps.build.outputs.package_path }}" ] || [ ! -f ${{ steps.build.outputs.package_path }} ]; then
