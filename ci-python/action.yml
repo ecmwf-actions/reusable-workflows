@@ -53,8 +53,8 @@ runs:
       shell: bash -e {0}
       run: |
         source /opt/conda/etc/profile.d/conda.sh
-        conda create -y -p venv
-        conda activate ./venv
+        conda create -y -p $RUNNER_TEMP/venv
+        conda activate $RUNNER_TEMP/venv
         conda install -y python=${{ inputs.python_version }}
         if [ -n "${{ inputs.conda_install }}" ]; then
           conda install -y ${{ inputs.conda_install }}
@@ -69,7 +69,7 @@ runs:
       shell: bash -e {0}
       run: |
         source /opt/conda/etc/profile.d/conda.sh
-        conda activate ./venv
+        conda activate $RUNNER_TEMP/venv
 
         while IFS= read -r line && [[ -n "$line" ]]; do
           owner="${line%%/*}"
@@ -91,7 +91,7 @@ runs:
       shell: bash -e {0}
       run: |
         source /opt/conda/etc/profile.d/conda.sh
-        conda activate ./venv
+        conda activate $RUNNER_TEMP/venv
         python setup.py sdist
         pip install dist/*
 
@@ -101,6 +101,6 @@ runs:
       shell: bash -e {0}
       run: |
         source /opt/conda/etc/profile.d/conda.sh
-        conda activate ./venv
+        conda activate $RUNNER_TEMP/venv
         pytest --cov=./ --cov-report=xml
         python -m coverage report
