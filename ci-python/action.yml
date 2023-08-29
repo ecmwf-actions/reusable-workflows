@@ -77,8 +77,8 @@ runs:
           repo="${repo_ref%%@*}"
           ref="${repo_ref#*@}"
           
-          mkdir -p $GITHUB_WORKSPACE/ci-deps/$repo
-          cd $GITHUB_WORKSPACE/ci-deps/$repo
+          mkdir -p $RUNNER_TEMP/ci-deps/$repo
+          cd $RUNNER_TEMP/ci-deps/$repo
           git init
           git remote add origin https://${{ inputs.github_token }}@github.com/$owner/$repo.git
           git fetch --depth 1 origin $ref
