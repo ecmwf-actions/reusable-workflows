@@ -39,7 +39,7 @@ jobs:
         shell: bash -eux {0}
         run: |
           source /opt/conda/etc/profile.d/conda.sh
-          conda activate ./venv
+          conda activate $RUNNER_TEMP/venv
           release=${{ github.ref_name }}
           version=$(python setup.py --version)
           test "$release" == "$version"
