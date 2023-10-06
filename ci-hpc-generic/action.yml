@@ -1,0 +1,31 @@
+name: build-package-hpc generic
+description: |
+  A Github action to submit generic CI jobs to the HPC
+inputs:
+  troika_user:
+    description: User used to submit troika job.
+    required: true
+  template:
+    description: Valid jinja2 template
+    required: true
+  template_data:
+    description: Yaml formatted object containing data to populate the template with
+    required: false
+  sbatch_options:
+    description: List of SBATCH directives
+    required: false
+  path:
+    description: Path to build-package-hpc directory
+    default: ~/build-package-hpc
+runs:
+  using: composite
+  steps:
+    - name: Run build-package-hpc
+      shell: bash
+      env:
+        TEMPLATE_INPUT: ${{ inputs.template }}
+        SBATCH_INPUT: ${{ inputs.sbatch_options }}
+        TEMPLATE_DATA: ${{ inputs.template_data }}
+      run: |
+        cd ${{ inputs.path }}
+        poetry run python -m build_package_hpc generic --troika-user=${{ inputs.troika_user }}
