@@ -98,7 +98,8 @@ runs:
     - name: Run tests
       env:
         DYLD_LIBRARY_PATH: ${{ inputs.lib_path }}
-      shell: bash -e {0}
+        LD_LIBRARY_PATH: ${{ inputs.lib_path }}
+      shell: bash -ex {0}
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda activate $RUNNER_TEMP/venv
