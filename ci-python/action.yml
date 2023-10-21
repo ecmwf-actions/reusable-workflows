@@ -52,9 +52,6 @@ runs:
     - name: Setup python env
       shell: bash -e {0}
       run: |
-        echo $USER
-        ls -l /opt/conda/pkgs/
-        ls -l /opt/conda/cache/
         source /opt/conda/etc/profile.d/conda.sh
         conda create -y -p $RUNNER_TEMP/venv
         conda activate $RUNNER_TEMP/venv
