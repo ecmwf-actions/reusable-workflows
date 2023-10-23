@@ -27,6 +27,10 @@ inputs:
   codecov_upload:
     description: Whether to upload code coverage to codecov service, only for master, develop and PRs.
     required: false
+  env:
+    description: List of environment variables in format `VAR=value`
+    required: false
+    default: ${{ matrix.env }}
 
 runs:
   using: composite
@@ -47,6 +51,11 @@ runs:
         repository: ${{ steps.inputs.outputs.repo }}
         ref: ${{ steps.inputs.outputs.ref }}
         token: ${{ inputs.github_token }}
+
+    - name: Set env vars from matrix
+      if: ${{ inputs.env }}
+      shell: bash -e {0}
+      run: echo "${{ inputs.env }}" >> "$GITHUB_ENV"
 
     - name: Merge inputs with config file
       id: config
