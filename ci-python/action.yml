@@ -26,6 +26,10 @@ inputs:
   python_dependencies:
     description: List of python packages to install from source as dependencies. In format owner/repo@ref, multiline for multiple packages.
     required: false
+  env:
+    description: List of environment variables in format `VAR=value`
+    required: false
+    default: ${{ matrix.env }}
 
 runs:
   using: composite
@@ -48,6 +52,11 @@ runs:
         repository: ${{ steps.inputs.outputs.repo }}
         ref: ${{ steps.inputs.outputs.ref }}
         token: ${{ inputs.github_token }}
+
+    - name: Set env vars from matrix
+      if: ${{ inputs.env }}
+      shell: bash -e {0}
+      run: echo "${{ inputs.env }}" >> "$GITHUB_ENV"
 
     - name: Setup python env
       shell: bash -e {0}
