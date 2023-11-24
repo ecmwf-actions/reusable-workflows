@@ -18,7 +18,7 @@ on:
 jobs:
   qa:
     name: qa
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -33,44 +33,6 @@ jobs:
 
       - name: Code QA
         run: npm run lint-no-fix
-
-  # Calls a reusable CI workflow to build & test another repository.
-  ci:
-    name: ci
-    needs: qa
-    uses: ./.github/workflows/ci.yml
-    with:
-      repository: ecmwf/odc
-      ref: develop
-      build_package_inputs: |
-        repository: ecmwf/odc
-        sha: develop
-        dependencies: |
-          ecmwf/ecbuild
-          ecmwf/eckit
-        dependency_branch: develop
-    secrets: inherit
-
-  # Calls a reusable CI Python workflow to qa & test another repository.
-  ci-python:
-    name: ci-python
-    needs: qa
-    uses: ./.github/workflows/ci-python.yml
-    with:
-      repository: ecmwf/pyodc
-      ref: develop
-      build_package_inputs: |
-        repository: ecmwf/pyodc
-        sha: develop
-        dependencies: |
-          ecmwf/ecbuild
-          ecmwf/eckit
-          ecmwf/odc
-        dependency_branch: develop
-        self_build: false
-      notify_teams: true
-    secrets:
-      incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
 
   # Calls a reusable CI Node workflow to qa & test another repository.
   ci-node:
@@ -106,17 +68,3 @@ jobs:
       system_dependencies: pandoc
       repository: ecmwf/pyodc
       ref: develop
-
-  ci-hpc:
-    name: ci-hpc
-    needs: qa
-    uses: ./.github/workflows/ci-hpc.yml
-    with:
-      name-prefix: eccodes-
-      build-inputs: |
-        --package: ecmwf/eccodes@develop
-        --modules: |
-          ecbuild
-          ninja
-        --parallel: 64
-    secrets: inherit

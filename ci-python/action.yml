@@ -68,7 +68,7 @@ runs:
         if [ -n "${{ inputs.conda_install }}" ]; then
           conda install -y ${{ inputs.conda_install }}
         fi
-        pip install pytest pytest-cov
+        pip install pytest pytest-cov build
         if [ -f ${{ inputs.requirements_path }} ]; then
           pip install -r ${{ inputs.requirements_path }} 
         fi
@@ -92,7 +92,7 @@ runs:
           git remote add origin https://${{ inputs.github_token }}@github.com/$owner/$repo.git
           git fetch --depth 1 origin $ref
           git checkout FETCH_HEAD
-          python setup.py sdist
+          python -m build --sdist
           pip install dist/*
         done <<< "${{ inputs.python_dependencies }}"
 
@@ -101,7 +101,7 @@ runs:
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda activate $RUNNER_TEMP/venv
-        python setup.py sdist
+        python -m build --sdist
         pip install dist/*
 
     - name: Run tests
