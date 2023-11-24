@@ -93,7 +93,7 @@ jobs:
             upload_url: NEXUS_TEST_REPO_URL_ROCKY_8
     runs-on: ${{ matrix.labels }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Check version number
         if: ${{ !inputs.skip_checks }}
