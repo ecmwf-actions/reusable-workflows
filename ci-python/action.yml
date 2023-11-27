@@ -30,6 +30,9 @@ inputs:
     description: List of environment variables in format `VAR=value`
     required: false
     default: ${{ matrix.env }}
+  test_cmd:
+    description: Custom test command.
+    required: false
 
 runs:
   using: composite
@@ -112,5 +115,9 @@ runs:
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda activate $RUNNER_TEMP/venv
-        pytest --cov=./ --cov-report=xml
-        python -m coverage report
+        if [ -n "${{ inputs.test_cmd }}" ]; then
+          ${{ inputs.test_cmd }}
+        else
+          pytest --cov=./ --cov-report=xml
+          python -m coverage report
+        fi
