@@ -1,0 +1,53 @@
+name: check-upstream-conclusion
+description: Checks the conclusions of upstream package builds on the same platform.
+inputs:
+  deps:
+    description: List of package names the job depends on.
+    required: true
+  name:
+    description: Matrix job name.
+    required: true
+    default: ${{ matrix.name }}
+
+runs:
+  using: composite
+  steps:
+    # v7 uses Node20, which cannot run out of the box on CentOS7
+    - uses: actions/github-script@v6
+      with:
+        script: |
+          const platformName = `${{ inputs.name }}`.toLowerCase()
+          const deps = `${{ inputs.deps }}`
+            .toLowerCase()
+            .split("\n")
+            .filter((x) => x.length != 0)
+            .map((x) => {
+              if (x.includes("@")) {
+                x = x.split("@")[0];
+              }
+              if (x.includes("/")) {
+                x = x.split("/")[1];
+              }
+              return x;
+            });
+
+          const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun.endpoint.merge({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            run_id: `${{ github.run_id }}`,
+            filter: "latest"
+          }));
+
+          for (const dep of deps){
+            for (const job of jobs){
+              if (
+                job.name.toLowerCase().includes(dep) && 
+                job.name.toLowerCase().includes(platformName) && 
+                job.status == "completed" && 
+                job.conclusion == "failure"
+              ){
+                core.setFailed(`==> Build of upstream package ${dep} failed on platform ${platformName}, exiting.`);
+                return;
+              }
+            }
+          }
