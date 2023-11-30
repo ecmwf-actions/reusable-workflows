@@ -12,7 +12,8 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/github-script@v7
+    # v7 uses Node20, which cannot run out of the box on CentOS7
+    - uses: actions/github-script@v6
       with:
         script: |
           const platformName = `${{ inputs.name }}`.toLowerCase()
