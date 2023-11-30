@@ -58,7 +58,7 @@ runs:
   using: composite
   steps:
     - name: Check upstream build status
-      uses: ecmwf-action/reusable-workflows/check-upstream-conclusion@v2
+      uses: ecmwf-actions/reusable-workflows/check-upstream-conclusion@v2
       with:
         deps: |
           ${{ inputs.dependencies }}
