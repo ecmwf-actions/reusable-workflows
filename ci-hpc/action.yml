@@ -57,6 +57,13 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Check upstream build status
+      uses: ecmwf-action/reusable-workflows/check-upstream-conclusion@v2
+      with:
+        deps: |
+          ${{ inputs.dependencies }}
+          ${{ inputs.python_dependencies }}
+
     - name: Parse inputs
       id: inputs
       shell: python3 {0}
