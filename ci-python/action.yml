@@ -33,6 +33,9 @@ inputs:
   test_cmd:
     description: Custom test command.
     required: false
+  codecov_upload:
+    description: Whether to upload code coverage to codecov service, only for master, develop and PRs.
+    required: false
 
 runs:
   using: composite
@@ -122,3 +125,7 @@ runs:
           pytest --cov=./ --cov-report=xml
           python -m coverage report
         fi
+
+    - name: Codecov Upload
+      if: ${{ inputs.codecov_upload == 'true' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request')) }}
+      uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
