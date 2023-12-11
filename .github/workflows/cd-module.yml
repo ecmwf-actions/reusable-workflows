@@ -1,0 +1,125 @@
+name: CD HPC Module
+
+on:
+  workflow_call:
+    inputs:
+      platforms:
+        type: string
+        description: Multiline list of platforms to build the module on. See build matrix for available options.
+        required: true
+      config_path:
+        type: string
+        description: Path to configuration file for build-package-hpc.
+        required: true
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Setup Matrix
+        id: matrix
+        shell: python
+        env:
+          MATRIX: |
+            name:
+            - gnu-12.2.0
+            - gnu-8.5.0
+            - nvidia-22.11
+            - intel-2021.4.0
+            include:
+            - name: gnu-12.2.0
+              compiler: gnu-12.2.0
+              compiler_cc: gcc
+              compiler_cxx: g++
+              compiler_fc: gfortran
+              compiler_modules: gcc/12.2.0
+            - name: gnu-8.5.0
+              compiler: gnu-8.5.0
+              compiler_cc: gcc
+              compiler_cxx: g++
+              compiler_fc: gfortran
+              compiler_modules: gcc/8.5.0
+            - name: nvidia-22.11
+              compiler: nvidia-22.11
+              compiler_cc: nvc
+              compiler_cxx: nvc++
+              compiler_fc: nvfortran
+              compiler_modules: prgenv/nvidia,nvidia/22.11
+            - name: intel-2021.4.0
+              compiler: intel-2021.4.0
+              compiler_cc: icc
+              compiler_cxx: icpc
+              compiler_fc: ifort
+              compiler_modules: prgenv/intel,intel/2021.4.0
+        run: |
+          import json
+          import os
+          import sys
+          import requests
+          import yaml
+
+          input_platforms = """${{ inputs.platforms }}""".splitlines()
+          available_matrix = yaml.safe_load(os.getenv("MATRIX", ""))
+          input_config_path = "${{ inputs.config_path }}"
+
+          if not input_platforms:
+              print("::error::platforms input not provided.")
+              sys.exit(1)
+
+          if not input_config_path:
+              print("::error::config_path input not provided.")
+              sys.exit(1)
+
+          matrix = {}
+
+          matrix["name"] = [name for name in available_matrix["name"] if name in input_platforms]
+          matrix["include"] = [
+              d for d in available_matrix["include"] if d["name"] in input_platforms
+          ]
+
+          print("Matrix:")
+          print(json.dumps(matrix, indent=2))
+
+          with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
+              print("matrix<<EOF", file=f)
+              print(json.dumps(matrix, separators=(",", ":")), file=f)
+              print("EOF", file=f)
+
+          owner_repo = "${{ github.repository }}"
+          owner, repo = owner_repo.split("/")
+          ref = "${{ github.sha }}"
+          token = "${{ github.token }}"
+          url = f"https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{input_config_path}"
+          response = requests.get(url, headers={"Authorization": f"token {token}"})
+
+          if response.status_code == 200:
+              content = response.content.decode()
+              config = yaml.safe_load(content)
+              compiler_spec = config.get("build", {}).get("prefix_compiler_specific", False)
+              if not compiler_spec and len(matrix["name"]) > 1:
+                  print(
+                      "::error::Requested more than 1 platform while missing "
+                      "`prefix_compiler_specific: true` in the provided configuration file."
+                  )
+                  sys.exit(1)
+          else:
+              print(
+                  f"::error::Failed fetching config, {response.status_code}: {response.content}"
+              )
+              sys.exit(1)
+
+  install:
+    needs: [setup]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on: [self-hosted, linux, hpc]
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+          repository: ${{ github.repository }}/${{ github.sha }}
+          build_config: ${{ inputs.config_path }}
