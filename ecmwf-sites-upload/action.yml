@@ -1,0 +1,27 @@
+name: ecmwf-sites-upload
+description: Composite action to handle uploading html files to sites.ecmwf.int
+inputs:
+  token:
+    description: Authentication token
+    required: true
+  path:
+    description: Directory to be uploaded
+    required: true
+  space:
+    description: Name of the site space
+    required: true
+  name:
+    description: Name of the site within given space
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    
+    - shell: bash
+      run: pip install sites-toolkit --upgrade --index-url https://get.ecmwf.int/repository/pypi-all/simple
+
+    - shell: bash
+      run: python $GITHUB_ACTION_PATH/upload.py --token=${{ inputs.token }} --path=${{ inputs.path }} --space=${{ inputs.space }} --name=${{ inputs.name }}
