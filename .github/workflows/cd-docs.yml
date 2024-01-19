@@ -28,7 +28,7 @@ jobs:
           build_steps = config.get("build-steps", [])
           for i, step in enumerate(build_steps):
             print(f"::group::Step {i+1}")
-            result = subprocess.run("set -e\n" + step, shell=True, executable="/bin/bash")
+            result = subprocess.run("set -ex\n" + step, shell=True, executable="/bin/bash")
             print(f"::endgroup::")
             if result.returncode != 0:
               print(f"::error::Step failed with return code {result.returncode}: {step}")
@@ -46,10 +46,10 @@ jobs:
           exit 1
 
       - name: publish to ecmwf-sites
-        if: fromJSON(steps.setup.config).hosts.ecmwf-sites
+        if: fromJSON(steps.setup.outputs.config).hosts.ecmwf-sites
         uses: ecmwf-actions/reusable-workflows/ecmwf-sites-upload@v2
         with:
           token: ${{ secrets.ECMWF_SITES_TOKEN }}
           path: ${{ env.DOC_BUILD_PATH }} #has to be set by build step
-          space: ${{ fromJSON(steps.setup.config).hosts.ecmwf-sites }}
-          name: ${{ fromJSON(steps.setup.config).hosts.ecmwf-sites }}
+          space: ${{ fromJSON(steps.setup.outputs.config).hosts.ecmwf-sites.space }}
+          name: ${{ fromJSON(steps.setup.outputs.config).hosts.ecmwf-sites.name }}
