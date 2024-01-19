@@ -26,8 +26,10 @@ jobs:
             config = yaml.safe_load(f)
           
           build_steps = config.get("build-steps", [])
-          for step in build_steps:
+          for i, step in enumerate(build_steps):
+            print(f"::group::Step {i+1}")
             result = subprocess.run("set -e\n" + step, shell=True, executable="/bin/bash")
+            print(f"::endgroup::")
             if result.returncode != 0:
               print(f"::error::Step failed with return code {result.returncode}: {step}")
               sys.exit(1)
