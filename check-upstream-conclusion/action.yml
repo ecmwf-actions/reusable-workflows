@@ -42,7 +42,7 @@ runs:
             for (const job of jobs){
               core.info(job.name);
               if (
-                job.name.toLowerCase().includes(`${dep} (`) && 
+                job.name.toLowerCase().includes(`/ ${dep} (`) && 
                 job.name.toLowerCase().includes(platformName) && 
                 job.status == "completed" && 
                 job.conclusion == "failure"
