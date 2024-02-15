@@ -41,7 +41,7 @@ runs:
           for (const dep of deps){
             for (const job of jobs){
               if (
-                job.name.toLowerCase().includes(`${dep} (`) && 
+                job.name.toLowerCase().startsWith(`${dep} (`) && 
                 job.name.toLowerCase().includes(platformName) && 
                 job.status == "completed" && 
                 job.conclusion == "failure"
