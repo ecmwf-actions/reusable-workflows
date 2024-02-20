@@ -45,6 +45,10 @@ inputs:
     description: List of compilers to be loaded as modules.
     required: false
     default: ${{ matrix.compiler_modules }}
+  site:
+    description: HPC site name.
+    required: false
+    default: ${{ matrix.site }}
   build_config_key:
     description: Config name in the build config file.
     required: false
@@ -91,6 +95,7 @@ runs:
         cd ~/build-package-hpc
         poetry run python -m build_package_hpc --config=$GITHUB_WORKSPACE/${{ inputs.build_config }} \
         --config-name=${{ inputs.build_config_key }} \
+        --site=${{ inputs.site }} \
         build --package=${{ inputs.repository }} \
         --dependencies=${{ steps.inputs.outputs.deps }} \
         --github-user=${{ inputs.github_user }} \
