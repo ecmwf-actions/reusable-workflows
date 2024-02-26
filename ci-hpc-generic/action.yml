@@ -17,6 +17,10 @@ inputs:
   path:
     description: Path to build-package-hpc directory
     default: ~/build-package-hpc
+  site:
+    description: HPC site name.
+    required: false
+    default: hpc-batch
 runs:
   using: composite
   steps:
@@ -28,4 +32,4 @@ runs:
         TEMPLATE_DATA: ${{ inputs.template_data }}
       run: |
         cd ${{ inputs.path }}
-        poetry run python -m build_package_hpc generic --troika-user=${{ inputs.troika_user }}
+        poetry run python -m build_package_hpc generic --troika-user=${{ inputs.troika_user }} --site=${{ inputs.site }}
