@@ -66,11 +66,12 @@ runs:
 
     - name: Setup python env
       shell: bash -e {0}
+      # include ldap to provide a consistent environment with conda's openssl
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda create -y -p $RUNNER_TEMP/venv
         conda activate $RUNNER_TEMP/venv
-        conda install -y python=${{ inputs.python_version }}
+        conda install -y python=${{ inputs.python_version }} ldap
         if [ -n "${{ inputs.conda_install }}" ]; then
           conda install -y ${{ inputs.conda_install }}
         fi
