@@ -25,6 +25,9 @@ inputs:
   python_dependencies:
     description: List of python dependencies to build from source in format `owner/repo@ref`
     required: false
+  python_requirements:
+    description: Path to pip requirements file for python packages.
+    required: false
   compiler:
     description: Compiler family.
     required: true
@@ -107,4 +110,5 @@ runs:
         --compiler-fc=${{ inputs.compiler_fc }} \
         --compiler-modules=${{ inputs.compiler_modules }} \
         --python=${{ inputs.python_version }} \
+        ${{ inputs.python_requirements && format('--requirements={0}', inputs.python_requirements) }} \
         --python-dependencies=${{ steps.inputs.outputs.py_deps }}
