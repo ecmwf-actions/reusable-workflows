@@ -36,6 +36,9 @@ inputs:
   codecov_upload:
     description: Whether to upload code coverage to codecov service, only for master, develop and PRs.
     required: false
+  codecov_token:
+    description: codecov.io upload token
+    required: false
 
 runs:
   using: composite
@@ -129,4 +132,6 @@ runs:
 
     - name: Codecov Upload
       if: ${{ inputs.codecov_upload == 'true' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request')) }}
-      uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+      uses: codecov/codecov-action@84508663e988701840491b86de86b666e8a86bed
+      with:
+        token: ${{ inputs.codecov_token }}
