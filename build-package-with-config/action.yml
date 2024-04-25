@@ -121,7 +121,7 @@ runs:
 
     - name: Codecov Upload
       if: ${{ inputs.codecov_upload == 'true' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request')) && steps.build.outputs.coverage_file }}
-      uses: codecov/codecov-action@84508663e988701840491b86de86b666e8a86bed
+      uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
       with:
         files: ${{ steps.build.outputs.coverage_file }}
         token: ${{ inputs.codecov_token }}

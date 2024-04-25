@@ -131,7 +131,7 @@ runs:
         fi
 
     - name: Codecov Upload
-      if: ${{ inputs.codecov_upload == 'true' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request')) }}
-      uses: codecov/codecov-action@84508663e988701840491b86de86b666e8a86bed
+      if: ${{ inputs.codecov_upload == 'true' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request')) &&  }}
+      uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
       with:
         token: ${{ inputs.codecov_token }}
