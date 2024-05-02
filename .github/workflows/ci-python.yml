@@ -86,13 +86,13 @@ jobs:
         python -m pip install black flake8 isort
 
     - name: Check isort
-      run: isort --check .
+      run: isort --profile black --check .
 
     - name: Check black
       run: black --check .
 
     - name: Check flake8
-      run: flake8 .
+      run: flake8 --max-line-length 88 .
 
   setup:
     name: setup
