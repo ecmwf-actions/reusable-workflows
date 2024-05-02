@@ -28,6 +28,9 @@ inputs:
   python_requirements:
     description: Path to pip requirements file for python packages.
     required: false
+  conda_deps:
+    description: List of conda packages to be installed into the environment.
+    required: false
   compiler:
     description: Compiler family.
     required: true
@@ -110,5 +113,6 @@ runs:
         --compiler-fc=${{ inputs.compiler_fc }} \
         --compiler-modules=${{ inputs.compiler_modules }} \
         --python=${{ inputs.python_version }} \
+        --conda-deps=${{ inputs.conda_deps }} \
         ${{ inputs.python_requirements && format('--requirements={0}', inputs.python_requirements) }} \
         --python-dependencies=${{ steps.inputs.outputs.py_deps }}
