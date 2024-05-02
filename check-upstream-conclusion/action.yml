@@ -8,6 +8,10 @@ inputs:
     description: Matrix job name.
     required: true
     default: ${{ matrix.name }}
+  token:
+    description: Github token
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: composite
@@ -15,6 +19,7 @@ runs:
     # v7 uses Node20, which cannot run out of the box on CentOS7
     - uses: actions/github-script@v6
       with:
+        github-token: ${{ inputs.token }}
         script: |
           const platformName = `${{ inputs.name }}`.toLowerCase()
           const deps = `${{ inputs.deps }}`

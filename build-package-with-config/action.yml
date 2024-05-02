@@ -113,6 +113,7 @@ runs:
       uses: ecmwf-actions/reusable-workflows/check-upstream-conclusion@v2
       with:
         deps: ${{ fromJSON(steps.config.outputs.config).dependencies }}
+        token: ${{ inputs.github_token }}
 
     - name: Build package
       id: build

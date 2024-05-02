@@ -70,6 +70,7 @@ runs:
     - name: Check upstream build status
       uses: ecmwf-actions/reusable-workflows/check-upstream-conclusion@v2
       with:
+        token: ${{ inputs.github_token }}
         deps: |
           ${{ inputs.dependencies }}
           ${{ inputs.python_dependencies }}
