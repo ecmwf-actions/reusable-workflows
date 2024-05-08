@@ -117,15 +117,18 @@ runs:
         python -m build --sdist
         pip install dist/*
 
-    - name: Run tests
-      env:
-        DYLD_LIBRARY_PATH: ${{ inputs.lib_path }}
-        LD_LIBRARY_PATH: ${{ inputs.lib_path }}
+    - name: Add dependency bin dirs to PATH
       shell: bash -ex {0}
       run: |
         if [ -n "${{ inputs.bin_paths }}" ]; then
           echo "$HOME/.local/bin" >> $GITHUB_PATH
         fi
+
+    - name: Run tests
+      env:
+        DYLD_LIBRARY_PATH: ${{ inputs.lib_path }}
+        LD_LIBRARY_PATH: ${{ inputs.lib_path }}
+      shell: bash -ex {0}
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda activate $RUNNER_TEMP/venv
