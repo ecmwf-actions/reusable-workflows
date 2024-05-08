@@ -7,6 +7,9 @@ inputs:
   lib_path:
     description: LD_LIBRARY_PATH containing paths to depedency libraries.
     required: false
+  bin_paths:
+    description: List of paths to bin directories of dependency libraries.
+    required: false
   python_version:
     description: The version of python used to test the package
     default: ${{ matrix.python_version }}
@@ -119,6 +122,10 @@ runs:
         DYLD_LIBRARY_PATH: ${{ inputs.lib_path }}
         LD_LIBRARY_PATH: ${{ inputs.lib_path }}
       shell: bash -ex {0}
+      run: |
+        if [ -n "${{ inputs.bin_paths }}" ]; then
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        fi
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda activate $RUNNER_TEMP/venv
