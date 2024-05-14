@@ -63,6 +63,12 @@ inputs:
     description: Python version.
     required: false
     default: ${{ matrix.python_version }}
+  workdir:
+    description: Path to work directory on the remote host
+    required: false
+  output_dir:
+    description: Path to directory on the remote host where to store the output file.
+    required: false
 
 runs:
   using: composite
@@ -116,4 +122,6 @@ runs:
         --python=${{ inputs.python_version }} \
         --conda-deps=${{ inputs.conda_deps }} \
         ${{ inputs.python_requirements && format('--requirements={0}', inputs.python_requirements) }} \
-        --python-dependencies=${{ steps.inputs.outputs.py_deps }}
+        --python-dependencies=${{ steps.inputs.outputs.py_deps }} \
+        --workdir=${{ inputs.workdir }} \
+        --output-dir=${{ inputs.output_dir }}
