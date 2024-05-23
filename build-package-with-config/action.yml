@@ -105,6 +105,9 @@ runs:
 
         combined["self_coverage"] = "${{ inputs.codecov_upload == 'true' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request')) }}"
 
+        if "${{ inputs.python_version }}":
+          combined["cmake_options"] = f'{combined.get("cmake_options", "")} -DPython3_EXECUTABLE=$RUNNER_TEMP/bpvenv/bin/python'
+
         print("Combined inputs:\n", yaml.dump(combined, sort_keys=False), sep='')
 
         with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
