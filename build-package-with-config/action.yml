@@ -34,6 +34,9 @@ inputs:
   codecov_token:
     description: codecov.io upload token
     required: false
+  python_version:
+    description: Version of python to optionally setup. If not supplied, only system python is available.
+    required: false
 
 runs:
   using: composite
@@ -114,6 +117,14 @@ runs:
       with:
         deps: ${{ fromJSON(steps.config.outputs.config).dependencies }}
         token: ${{ inputs.github_token }}
+
+    - name: Setup python
+      shell: bash -e {0}
+      if: ${{ inputs.python_version }}
+      run: |
+        source /opt/conda/etc/profile.d/conda.sh
+        conda create -y -p $RUNNER_TEMP/bpvenv python=${{ inputs.python_version }}
+        echo "Python3_EXECUTABLE=$RUNNER_TEMP/bpvenv/bin/python" >> "$GITHUB_ENV"
 
     - name: Build package
       id: build
