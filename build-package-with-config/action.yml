@@ -124,7 +124,7 @@ runs:
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda create -y -p $RUNNER_TEMP/bpvenv python=${{ inputs.python_version }}
-        echo "Python3_EXECUTABLE=$RUNNER_TEMP/bpvenv/bin/python" >> "$GITHUB_ENV"
+        echo "Python3_ROOT_DIR=$RUNNER_TEMP/bpvenv" >> "$GITHUB_ENV"
 
     - name: Build package
       id: build
