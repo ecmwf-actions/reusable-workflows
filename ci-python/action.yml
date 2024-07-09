@@ -4,6 +4,9 @@ inputs:
   requirements_path:
     description: Path to pip requirements file.
     default: requirements.txt
+  toml_opt_dep_sections:
+    description: List of optional dependency sections specified in pyproject.toml. ' ' to only install default deps.
+    required: false
   lib_path:
     description: LD_LIBRARY_PATH containing paths to depedency libraries.
     required: false
@@ -84,6 +87,10 @@ runs:
         pip install pytest pytest-cov build
         if [ -f ${{ inputs.requirements_path }} ]; then
           pip install -r ${{ inputs.requirements_path }} 
+        fi
+        # this is just to install the dependencies; the pkg will be overwritten later
+        if [ -n "${{ inputs.toml_opt_dep_sections }}" ]; then
+          pip install -e .[${{ inputs.toml_opt_dep_sections }}]
         fi
 
     - name: Install dependencies
