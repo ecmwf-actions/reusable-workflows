@@ -28,6 +28,9 @@ inputs:
   python_requirements:
     description: Path to pip requirements file for python packages.
     required: false
+  python_toml_opt_dep_sections:
+    description: List of optional dependency sections specified in pyproject.toml. ' ' to only install default deps.
+    required: false
   conda_deps:
     description: List of conda packages to be installed into the environment.
     required: false
@@ -122,6 +125,7 @@ runs:
         --python=${{ inputs.python_version }} \
         --conda-deps=${{ inputs.conda_deps }} \
         ${{ inputs.python_requirements && format('--requirements={0}', inputs.python_requirements) }} \
+        ${{ inputs.python_toml_opt_dep_sections && format('--toml-opt-dep_sections={0}', inputs.python_toml_opt_dep_sections) }} \
         --python-dependencies=${{ steps.inputs.outputs.py_deps }} \
         --workdir=${{ inputs.workdir }} \
         --output-dir=${{ inputs.output_dir }}
