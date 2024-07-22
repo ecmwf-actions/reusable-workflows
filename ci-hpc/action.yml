@@ -123,7 +123,7 @@ runs:
         --compiler-fc=${{ inputs.compiler_fc }} \
         --compiler-modules=${{ inputs.compiler_modules }} \
         --python=${{ inputs.python_version }} \
-        --conda-deps=${{ inputs.conda_deps }} \
+        --conda-deps="${{ inputs.conda_deps }}" \
         ${{ inputs.python_requirements && format('--requirements={0}', inputs.python_requirements) }} \
         ${{ inputs.python_toml_opt_dep_sections && format('--toml-opt-dep-sections={0}', inputs.python_toml_opt_dep_sections) }} \
         --python-dependencies=${{ steps.inputs.outputs.py_deps }} \
