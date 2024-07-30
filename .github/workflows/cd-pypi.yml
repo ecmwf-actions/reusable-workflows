@@ -1,3 +1,4 @@
+---
 name: cd-pypi
 
 on:
@@ -5,33 +6,33 @@ on:
 
 jobs:
   deploy:
-    if: ${{ github.ref_type == 'tag' }}
+    if: ${{ github.ref_type == 'tag' || github.event_name == 'release' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install setuptools wheel twine build
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine build
 
-      - name: Check version
-        run: |
-          if [ -f "setup.py" ]; then
-            release=${{ github.ref_name }}
-            version=$(python setup.py --version)
-            test "$release" == "$version"
-          fi
+    - name: Check version
+      run: |
+        if [ -f "setup.py" ]; then
+          release=${{ github.ref_name }}
+          version=$(python setup.py --version)
+          test "$release" == "$version"
+        fi
 
-      - name: Build and publish
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          python -m build
-          twine upload dist/*
+    - name: Build and publish
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: |
+        python -m build
+        twine upload dist/*
