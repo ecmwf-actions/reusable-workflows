@@ -139,6 +139,10 @@ runs:
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda activate $RUNNER_TEMP/venv
+        echo "conda list:"
+        conda list
+        echo "pip list:"
+        pip list
         if [ -n "${{ inputs.test_cmd }}" ]; then
           echo "Running package-supplied test command"
           ${{ inputs.test_cmd }}
