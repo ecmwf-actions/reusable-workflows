@@ -4,16 +4,14 @@ name: cd-pypi
 on:
   workflow_call:
     inputs:
-      extra_twine_args:
-        description: extra arguments for 'twine upload'
-        type: string
+      testpypi:
+        description:
+          Whether to upload to testpypi instead of pypi.
+          Requires secrets.PYPI_TEST_API_TOKEN to be defined.
+        type: boolean
         required: false
-        default: ""
-      pypi_token:
-        description: alternative token for uploading to pypi
-        type: string
-        required: false
-        default: ${{ secrets.PYPI_API_TOKEN }}
+        default: false
+
 jobs:
   deploy:
     if: ${{ github.ref_type == 'tag' || github.event_name == 'release' }}
@@ -39,10 +37,20 @@ jobs:
           test "$release" == "$version"
         fi
 
-    - name: Build and publish
+    - name: Build and publish to pypi
+      if: ${{ !inputs.testpypi }}
       env:
         TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ pypi_token }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
       run: |
         python -m build
-        twine upload ${{ extra_twine_args }} dist/*
+        twine upload dist/*
+
+    - name: Build and publish to testpypi
+      if: ${{ inputs.testpypi }}
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_TEST_API_TOKEN }}
+      run: |
+        python -m build
+        twine upload --repository testpypi dist/*
