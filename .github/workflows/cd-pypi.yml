@@ -14,7 +14,7 @@ on:
 
 jobs:
   deploy:
-    #if: ${{ github.ref_type == 'tag' || github.event_name == 'release' }}
+    if: ${{ github.ref_type == 'tag' || github.event_name == 'release' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -34,7 +34,7 @@ jobs:
         if [ -f "setup.py" ]; then
           release=${{ github.ref_name }}
           version=$(python setup.py --version)
-          # test "$release" == "$version"
+          test "$release" == "$version"
         fi
 
     - name: Build and publish to pypi
