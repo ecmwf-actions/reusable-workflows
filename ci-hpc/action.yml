@@ -109,6 +109,7 @@ runs:
       shell: bash
       run: |
         cd ~/build-package-hpc
+        rm -f cancel-job.sh
         poetry run python -m build_package_hpc --config=$GITHUB_WORKSPACE/${{ inputs.build_config }} \
         --config-name=${{ inputs.build_config_key }} \
         --site=${{ inputs.site }} \
@@ -129,3 +130,14 @@ runs:
         --python-dependencies=${{ steps.inputs.outputs.py_deps }} \
         --workdir=${{ inputs.workdir }} \
         --output-dir=${{ inputs.output_dir }}
+
+    - name: Cancel HPC job
+      if: ${{ cancelled() }}
+      shell: bash
+      run: |
+        cd ~/build-package-hpc
+        if [ -f "cancel-job.sh" ]; then
+            bash cancel-job.sh
+        else
+          echo "Job cancel script not found!"
+        fi
