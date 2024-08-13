@@ -111,7 +111,7 @@ runs:
         cd ~/build-package-hpc
         rm -f cancel-job.sh
         poetry run python -m build_package_hpc --config=$GITHUB_WORKSPACE/${{ inputs.build_config }} \
-        --config-name=${{ inputs.build_config_key }} \
+        --config-name=${{ inputs.build_config_key || inputs.compiler }} \
         --site=${{ inputs.site }} \
         build --package=${{ inputs.repository }} \
         --dependencies=${{ steps.inputs.outputs.deps }} \
