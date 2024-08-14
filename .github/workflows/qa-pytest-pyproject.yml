@@ -3,17 +3,17 @@ name: Run pytest tests installation from pyproject toml with report
 on:
   workflow_call:
     inputs:
-      python_version:
+      python-version:
         description: The version of Python binary to use.
         required: false
         default: '3.x'
         type: string
-      optional_dependencies:
+      optional-dependencies:
         description: The optional dependencies to install.
         required: false
         default: 'all,tests'
         type: string
-      skip_tests:
+      skip-tests:
         description: The pytest marks to pass to `-m` command.
         required: false
         default: ''
@@ -24,28 +24,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python ${{ inputs.python_version }}
+      - name: Set up Python ${{ inputs.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ inputs.python_version }}
+          python-version: ${{ inputs.python-version }}
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .[${{ inputs.optional_dependencies }}]
+          python -m pip install .[${{ inputs.optional-dependencies }}]
           python -m pip install pytest-md pytest-emoji
       - name: Test with pytest
         id: pytest
         run: |
-          REPORT=pytest_${{ inputs.python_version }}.md
+          REPORT=pytest_${{ inputs.python-version }}.md
           echo "report-path=$REPORT" >> $GITHUB_OUTPUT
-          pytest -v -m "${{ inputs.skip_tests }}" --emoji --md $REPORT
+          pytest -v -m "${{ inputs.skip-tests }}" --emoji --md $REPORT
         shell: bash -el {0}
       - name: Add report to summary
         if: always()
         run: |
           echo "::group::..."
-          FINAL_REPORT=pytest_report_${{ inputs.python_version }}.md
-          echo "# Test report (python ${{ inputs.python_version }})" > "$FINAL_REPORT"
+          FINAL_REPORT=pytest_report_${{ inputs.python-version }}.md
+          echo "# Test report (python ${{ inputs.python-version }})" > "$FINAL_REPORT"
           echo "<details><summary>Click to expand!</summary>" >> "$FINAL_REPORT"
           report_variable=$(tail -n+2 ${{ steps.pytest.outputs.report-path }})
           echo "$report_variable" >> "$FINAL_REPORT"
