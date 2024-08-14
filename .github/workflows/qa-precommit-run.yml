@@ -1,0 +1,30 @@
+name: '[QA] Run pre-commit hooks'
+
+on:
+
+  # Allow the workflow to be reusable
+  workflow_call:
+    inputs:
+      # Inputs for pre-commit hooks action.
+      python_version:
+        description: The version of Python binary to use.
+        required: false
+        default: '3.x'
+        type: string
+      skip_hooks:
+        description: A list of pre-commit hooks to skip.
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  pre-commit-run:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python_version }}
+    - uses: pre-commit/action@v3.0.1
+      env:
+        SKIP: {{ inputs.skip_hooks }}
