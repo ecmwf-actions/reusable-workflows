@@ -8,11 +8,6 @@ on:
         required: false
         default: '3.x'
         type: string
-      runs-on:
-        description: Platform to run the test on
-        required: false
-        default: 'ubuntu-latest'
-        type: string
       optional-dependencies:
         description: The optional dependencies to install.
         required: false
@@ -26,7 +21,12 @@ on:
 
 jobs:
   tests:
-    runs-on: ${{ inputs.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ["ubuntu-latest", "macos-latest"]
+    name: Run pytest with Python ${{ inputs.python-version }} on ${{ matrix.platform }}
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ inputs.python-version }}
