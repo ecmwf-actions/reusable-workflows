@@ -21,10 +21,13 @@ jobs:
   pre-commit-run:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Setup Python
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ inputs.python_version }}
-    - uses: pre-commit/action@v3.0.1
+    - name: Run pre-commit hooks
+      uses: pre-commit/action@v3.0.1
       env:
         SKIP: {{ inputs.skip_hooks }}
