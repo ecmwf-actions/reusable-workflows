@@ -6,12 +6,12 @@ on:
   workflow_call:
     inputs:
       # Inputs for pre-commit hooks action.
-      python_version:
+      python-version:
         description: The version of Python binary to use.
         required: false
         default: '3.x'
         type: string
-      skip_hooks:
+      skip-hooks:
         description: A list of pre-commit hooks to skip.
         required: false
         default: ''
@@ -26,8 +26,8 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ inputs.python_version }}
+        python-version: ${{ inputs.python-version }}
     - name: Run pre-commit hooks
       uses: pre-commit/action@v3.0.1
       env:
-        SKIP: ${{ inputs.skip_hooks }}
+        SKIP: ${{ inputs.skip-hooks }}
