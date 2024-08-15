@@ -1,0 +1,63 @@
+name: Run pytest tests installation from pyproject toml with report
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        description: The version of Python binary to use.
+        required: false
+        default: '3.x'
+        type: string
+      optional-dependencies:
+        description: The optional dependencies to install.
+        required: false
+        default: 'all,tests'
+        type: string
+      skip-tests:
+        description: The pytest marks to pass to `-m` command.
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ["ubuntu-latest", "macos-latest"]
+    name: Run pytest with Python ${{ inputs.python-version }} on ${{ matrix.platform }}
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[${{ inputs.optional-dependencies }}]
+          python -m pip install pytest-md pytest-emoji
+      - name: Test with pytest
+        id: pytest
+        run: |
+          REPORT=pytest_${{ inputs.python-version }}.md
+          echo "report-path=$REPORT" >> $GITHUB_OUTPUT
+          pytest -v -m "${{ inputs.skip-tests }}" --emoji --md $REPORT
+        shell: bash -el {0}
+      - name: Add report to summary
+        if: always()
+        run: |
+          echo "::group::..."
+          FINAL_REPORT=pytest_report_${{ inputs.python-version }}.md
+          echo "# Test report (python ${{ inputs.python-version }})" > "$FINAL_REPORT"
+          echo "<details><summary>Click to expand!</summary>" >> "$FINAL_REPORT"
+          report_variable=$(tail -n+2 ${{ steps.pytest.outputs.report-path }})
+          echo "$report_variable" >> "$FINAL_REPORT"
+          echo "</details>" >> "$FINAL_REPORT"
+          cat "$FINAL_REPORT" >> "$GITHUB_STEP_SUMMARY"
+          echo "::endgroup::"
+          echo
+          echo "====================================================================================="
+          echo Markdown summaries: "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          echo "====================================================================================="

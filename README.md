@@ -14,6 +14,7 @@ A collection of [reusable GitHub workflows] for ECMWF repositories.
 -   [ci-node.yml](#ci-nodeyml): Continuous Integration workflow for NodeJS-based projects
 -   [docs.yml](#docsyml): Workflow for testing Sphinx-based documentation
 -   [qa-precommit-run.yml](#qa-precommit): Runs the pre-commit hooks on all files server-side as a QA drop-in.
+-   [qa-pytest-pyproject.yml](#qa-pytest-pyproject): Runs pytest after a `pyproject.toml` install with a markdown report.
 -   [sync.yml](#syncyml): Workflow for syncing a Git repository
 
 [Samples]
@@ -398,6 +399,54 @@ Optional, a comma-separated string of pre-commit hooks to skip.
 **Default:** `''`
 **Type:** `string`
 **Example:** `'no-commit-to-branch,black'`
+
+## qa-pytest-pyproject
+
+### Usage
+
+```yaml
+on:
+    push:
+    pull_request_target:
+        types: [opened, synchronize, reopened]
+
+jobs:
+    checks:
+        strategy:
+            matrix:
+                python-version: ['3.9', '3.10']
+        uses: ecmwf-actions/reusable-workflows/.github/workflows/qa-pytest-pyproject.yml@v2
+        with:
+            python-version: ${{ matrix.python-version }}
+```
+
+### Inputs
+
+#### `python-version`
+
+Optional, the version of Python binary to use.
+
+**Default:** `'3.x'`
+**Type:** `string`
+**Example:** `'3.9'`
+
+#### `optional-dependencies`
+
+Optional, optional dependencies to install from package to be tested.
+
+**Default:** `'all,tests'`
+**Type:** `string`
+**Example:** `dev,tests,third_dependency_group`
+
+#### `skip-tests`
+
+Optional, the pytest marks to pass to the `-m` command flag.
+
+Expands in `pytest -v -m "${{ inputs.skip-tests }}"` to coordinate marked tests.
+
+**Default:** `''`
+**Type:** `string`
+**Example:** `'no gpu'`
 
 ## sync.yml
 
