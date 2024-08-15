@@ -8,19 +8,20 @@ A collection of [reusable GitHub workflows] for ECMWF repositories.
 
 ## Workflows
 
-* [ci.yml](#ciyml): Continuous Integration workflow for ecbuild/CMake-based projects
-* [ci-hpc.yml](#ci-hpcyml): Continuous Integration workflow for ecbuild/CMake-based projects on HPC
-* [ci-python.yml](#ci-pythonyml): Continuous Integration and Continuous Deployment workflow for Python-based projects
-* [ci-node.yml](#ci-nodeyml): Continuous Integration workflow for NodeJS-based projects
-* [docs.yml](#docsyml): Workflow for testing Sphinx-based documentation
-* [sync.yml](#syncyml): Workflow for syncing a Git repository
+-   [ci.yml](#ciyml): Continuous Integration workflow for ecbuild/CMake-based projects
+-   [ci-hpc.yml](#ci-hpcyml): Continuous Integration workflow for ecbuild/CMake-based projects on HPC
+-   [ci-python.yml](#ci-pythonyml): Continuous Integration and Continuous Deployment workflow for Python-based projects
+-   [ci-node.yml](#ci-nodeyml): Continuous Integration workflow for NodeJS-based projects
+-   [docs.yml](#docsyml): Workflow for testing Sphinx-based documentation
+-   [qa-precommit-run.yml](#qa-precommit): Runs the pre-commit hooks on all files server-side as a QA drop-in.
+-   [sync.yml](#syncyml): Workflow for syncing a Git repository
 
 [Samples]
 
 ## Supported Operating Systems
 
-* Linux
-* macOS
+-   Linux
+-   macOS
 
 ## ci.yml
 
@@ -28,23 +29,22 @@ A collection of [reusable GitHub workflows] for ECMWF repositories.
 
 ```yaml
 jobs:
-
-  # Calls a reusable CI workflow to build & test current repository.
-  #   It will pull in all needed dependencies and produce a code coverage report on success.
-  #   In case the job fails, a message will be posted to a Microsoft Teams channel.
-  ci:
-    name: ci
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@v1
-    with:
-      codecov_upload: true
-      notify_teams: true
-      build_package_inputs: |
-        dependencies: |
-          ecmwf/ecbuild
-          ecmwf/eckit
-        dependency_branch: develop
-    secrets:
-      incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
+    # Calls a reusable CI workflow to build & test current repository.
+    #   It will pull in all needed dependencies and produce a code coverage report on success.
+    #   In case the job fails, a message will be posted to a Microsoft Teams channel.
+    ci:
+        name: ci
+        uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@v1
+        with:
+            codecov_upload: true
+            notify_teams: true
+            build_package_inputs: |
+                dependencies: |
+                  ecmwf/ecbuild
+                  ecmwf/eckit
+                dependency_branch: develop
+        secrets:
+            incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
 ```
 
 ### Inputs
@@ -110,21 +110,21 @@ Public URL of the Microsoft Teams incoming webhook. To get the value, make sure 
 
 ```yaml
 jobs:
-  ci-hpc:
-    name: ci-hpc
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-hpc.yml@v2
-    with:
-      name-prefix: metkit-
-      build-inputs: |
-        --package: ecmwf/metkit@develop
-        --modules: |
-          ecbuild
-          ninja
-        --dependencies: |
-          ecmwf/eccodes@develop
-          ecmwf/eckit@develop
-        --parallel: 64
-    secrets: inherit\
+    ci-hpc:
+        name: ci-hpc
+        uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-hpc.yml@v2
+        with:
+            name-prefix: metkit-
+            build-inputs: |
+                --package: ecmwf/metkit@develop
+                --modules: |
+                  ecbuild
+                  ninja
+                --dependencies: |
+                  ecmwf/eccodes@develop
+                  ecmwf/eckit@develop
+                --parallel: 64
+        secrets: inherit\
 ```
 
 ### Inputs
@@ -143,7 +143,7 @@ Inputs for `build-package-hpc` action.
 
 #### `dev-runner`
 
-Whether to build using development runner which contains latest version of `build-package-hpc`. 
+Whether to build using development runner which contains latest version of `build-package-hpc`.
 **Default:** `''`
 **Type:** `string`
 
@@ -153,28 +153,27 @@ Whether to build using development runner which contains latest version of `buil
 
 ```yaml
 jobs:
-
-  # Calls a reusable CI workflow to qa, test & deploy the current repository.
-  #   It will pull in all needed dependencies and produce a code coverage report on success.
-  #   If all checks were successful and a new release tag pushed, the package will be published on PyPI.
-  #   In case the job fails, a message will be posted to a Microsoft Teams channel.
-  ci:
-    name: ci
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-python.yml@v1
-    with:
-      codecov_upload: true
-      notify_teams: true
-      build_package_inputs: |
-        dependencies: |
-          ecmwf/ecbuild
-          ecmwf/eckit
-          ecmwf/odc
-        dependency_branch: develop
-        self_build: false
-    secrets:
-      pypi_username: ${{ secrets.PYPI_USERNAME }}
-      pypi_password: ${{ secrets.PYPI_PASSWORD }}
-      incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
+    # Calls a reusable CI workflow to qa, test & deploy the current repository.
+    #   It will pull in all needed dependencies and produce a code coverage report on success.
+    #   If all checks were successful and a new release tag pushed, the package will be published on PyPI.
+    #   In case the job fails, a message will be posted to a Microsoft Teams channel.
+    ci:
+        name: ci
+        uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-python.yml@v1
+        with:
+            codecov_upload: true
+            notify_teams: true
+            build_package_inputs: |
+                dependencies: |
+                  ecmwf/ecbuild
+                  ecmwf/eckit
+                  ecmwf/odc
+                dependency_branch: develop
+                self_build: false
+        secrets:
+            pypi_username: ${{ secrets.PYPI_USERNAME }}
+            pypi_password: ${{ secrets.PYPI_PASSWORD }}
+            incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
 ```
 
 ### Inputs
@@ -244,18 +243,17 @@ Public URL of the Microsoft Teams incoming webhook. To get the value, make sure 
 
 ```yaml
 jobs:
-
-  # Calls a reusable CI NodeJS workflow to qa & test & deploy the current repository.
-  #   It will install dependencies and produce a code coverage report on success.
-  #   In case the job fails, a message will be posted to a Microsoft Teams channel.
-  ci:
-    name: ci
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@v1
-    with:
-      codecov_upload: true
-      notify_teams: true
-    secrets:
-      incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
+    # Calls a reusable CI NodeJS workflow to qa & test & deploy the current repository.
+    #   It will install dependencies and produce a code coverage report on success.
+    #   In case the job fails, a message will be posted to a Microsoft Teams channel.
+    ci:
+        name: ci
+        uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-node.yml@v1
+        with:
+            codecov_upload: true
+            notify_teams: true
+        secrets:
+            incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
 ```
 
 ### Inputs
@@ -321,14 +319,13 @@ Public URL of the Microsoft Teams incoming webhook. To get the value, make sure 
 
 ```yaml
 jobs:
-
-  # Calls a reusable CI workflow to build & check the documentation in the current repository.
-  #   It will install required system dependencies and test Read the Docs build process.
-  docs:
-    name: docs
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/docs.yml@v1
-    with:
-      system_dependencies: doxygen pandoc
+    # Calls a reusable CI workflow to build & check the documentation in the current repository.
+    #   It will install required system dependencies and test Read the Docs build process.
+    docs:
+        name: docs
+        uses: ecmwf-actions/reusable-workflows/.github/workflows/docs.yml@v1
+        with:
+            system_dependencies: doxygen pandoc
 ```
 
 ### Inputs
@@ -369,6 +366,39 @@ The source repository reference, in case it differs from the current one.
 **Default:** `${{ github.ref }}`
 **Type:** `string`
 
+## qa-precommit
+
+### Usage
+
+```yaml
+on:
+    push:
+    pull_request_target:
+        types: [opened, synchronize, reopened]
+
+jobs:
+    quality:
+        uses: ecmwf-actions/reusable-workflows/.github/workflows/qa-precommit-run.yml@v2
+        with:
+            skip_hooks: 'no-commit-to-branch'
+```
+
+### Inputs
+
+#### `python-version`
+
+Optional, pin to use a specific Python version
+**Default:** `'3.x'`
+**Type:** `string`
+**Example:** `'3.9'`
+
+#### `skip-hooks`
+
+Optional, a comma-separated string of pre-commit hooks to skip.
+**Default:** `''`
+**Type:** `string`
+**Example:** `'no-commit-to-branch,black'`
+
 ## sync.yml
 
 ### Usage
@@ -376,35 +406,33 @@ The source repository reference, in case it differs from the current one.
 ```yaml
 # Controls when the workflow will run
 on:
+    # Trigger the workflow on all pushes
+    push:
+        branches:
+            - '**'
+        tags:
+            - '**'
 
-  # Trigger the workflow on all pushes
-  push:
-    branches:
-    - '**'
-    tags:
-    - '**'
-
-  # Trigger the workflow when a branch or tag is deleted
-  delete: ~
+    # Trigger the workflow when a branch or tag is deleted
+    delete: ~
 
 jobs:
-
-  # Calls a reusable CI workflow to sync the current with a remote repository.
-  #   It will correctly handle addition of any new and removal of existing Git objects.
-  sync:
-    name: sync
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/sync.yml@v1
-    secrets:
-      target_repository: ${{ secrets.BITBUCKET_REPOSITORY }}
-      target_username: ${{ secrets.BITBUCKET_USERNAME }}
-      target_token: ${{ secrets.BITBUCKET_PAT }}
+    # Calls a reusable CI workflow to sync the current with a remote repository.
+    #   It will correctly handle addition of any new and removal of existing Git objects.
+    sync:
+        name: sync
+        uses: ecmwf-actions/reusable-workflows/.github/workflows/sync.yml@v1
+        secrets:
+            target_repository: ${{ secrets.BITBUCKET_REPOSITORY }}
+            target_username: ${{ secrets.BITBUCKET_USERNAME }}
+            target_token: ${{ secrets.BITBUCKET_PAT }}
 ```
 
 ### Inputs
 
 #### `sync_repository_inputs`
 
-Optional [inputs for the sync-repository] action, provided as a YAML object value. Note that some values  may be overwritten by provided secrets with same name.
+Optional [inputs for the sync-repository] action, provided as a YAML object value. Note that some values may be overwritten by provided secrets with same name.
 **Default:** `''`
 **Type:** `string`
 
@@ -431,22 +459,22 @@ The user access token with read access to the source repository, must be URL-enc
 **Required** The user access token with write access to the target repository, must be URL-encoded.
 **Example:** `...`
 
-
 ## label-pr.yml
+
 Manages labels on public pull requests. `contributor` label is added when a PR from public fork is opened. Removes label `approved-for-ci` when pull request HEAD changes.
+
 ### Usage
 
 ```yaml
 on:
-  # trigger the pull request is opened or pushed to
-  pull_request_target:
-    types: [opened, synchronize]
+    # trigger the pull request is opened or pushed to
+    pull_request_target:
+        types: [opened, synchronize]
 
 jobs:
-  label:
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/pr-label.yml@v2
+    label:
+        uses: ecmwf-actions/reusable-workflows/.github/workflows/pr-label.yml@v2
 ```
-
 
 ## Development
 
