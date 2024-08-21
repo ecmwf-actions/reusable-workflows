@@ -23,7 +23,7 @@ on:
         description: list of matrix jobs to skip
         type: string
         required: false
-        default: ~
+        default: foo
     secrets:
       url_debian_11:
         description: Use other than the default url for Debian 11.
