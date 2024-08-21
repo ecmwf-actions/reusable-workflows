@@ -96,7 +96,7 @@ jobs:
               ${{ inputs.cpack_options_rpm }}
             upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
             upload_url: NEXUS_TEST_REPO_URL_ROCKY_8
-       exclude: ${{ inputs.skip_matrix_jobs }}
+        exclude: ${{ inputs.skip_matrix_jobs }}
     runs-on: ${{ matrix.labels }}
     steps:
       - uses: actions/checkout@v3
