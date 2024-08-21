@@ -19,6 +19,10 @@ on:
         description: CPack options for RPM generator
         type: string
         required: false
+      skip_matrix_jobs:
+        description: list of matrix jobs to skip
+        type: string
+        required: false
     secrets:
       url_debian_11:
         description: Use other than the default url for Debian 11.
@@ -92,6 +96,7 @@ jobs:
               ${{ inputs.cpack_options_rpm }}
             upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
             upload_url: NEXUS_TEST_REPO_URL_ROCKY_8
+       exclude: ${{ inputs.skip_matrix_jobs }}
     runs-on: ${{ matrix.labels }}
     steps:
       - uses: actions/checkout@v3
