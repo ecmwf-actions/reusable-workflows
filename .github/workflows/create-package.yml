@@ -72,8 +72,7 @@ jobs:
               cpack_options: >
                 -D CPACK_DEBIAN_PACKAGE_MAINTAINER=software@ecmwf.int 
                 -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf 
-                ${{ inputs.cpack_options_deb }} 
-                -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON
+                -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON ${{ inputs.cpack_options_deb }} 
               upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
               upload_url: NEXUS_TEST_REPO_URL_DEBIAN_11
             # - name: gnu-8@centos-7.9
