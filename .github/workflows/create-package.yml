@@ -112,6 +112,8 @@ jobs:
           SELECT_INCLUDE_COND="1 != 1"
           for restrict_job in $RESTRICT_MATRIX_JOBS; do SELECT_NAME_COND="$SELECT_NAME_COND or . != \"$restrict_job\""; SELECT_INCLUDE_COND="$SELECT_INCLUDE_COND or .name != \"$restrict_job\""; done
           echo matrix=$(echo "$MATRIX" | yq eval "del(.name[] | select($SELECT_NAME_COND)) | del(.include[] | select($SELECT_INCLUDE_COND))" --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+          echo "GITHUB_OUTPUT:"
+          echo $GITHUB_OUTPUT
 
   deploy:
     if: ${{ github.ref_type == 'tag' || inputs.skip_checks }}
