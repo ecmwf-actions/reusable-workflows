@@ -108,6 +108,8 @@ jobs:
           ${{ inputs.restrict_matrix_jobs }}
           EOS
           )
+          echo "MATRIX:"
+          echo $MATRIX
           SELECT_NAME_COND="1 != 1"
           SELECT_INCLUDE_COND="1 != 1"
           for restrict_job in $RESTRICT_MATRIX_JOBS; do SELECT_NAME_COND="$SELECT_NAME_COND or . != \"$restrict_job\""; SELECT_INCLUDE_COND="$SELECT_INCLUDE_COND or .name != \"$restrict_job\""; done
