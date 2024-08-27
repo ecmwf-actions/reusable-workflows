@@ -17,6 +17,31 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: "0"
+
+      - name: Test tag name pattern
+        shell: python
+        run: |
+          import re
+          import sys
+
+          tag_pattern = r"${{ vars.TAG_REGEX_FOR_DEPLOYMENT }}"
+          ref = "${{ github.ref_name }}"
+
+          if not tag_pattern:
+            sys.exit(0)
+
+          if not re.match(tag_pattern, ref):
+            print(f"::error::{ref} does not match {tag_pattern}")
+            sys.exit(1)
+
+      - name: Test branch name pattern
+        if: ${{ vars.BRANCH_REGEX_FOR_DEPLOYMENT != '' }}
+        run: |
+          git branch --all --list --format "%(refname:lstrip=-1)" --contains "${{ github.ref_name }}" | grep -E "${{ vars.BRANCH_REGEX_FOR_DEPLOYMENT }}"
+
       - name: Setup Matrix
         id: matrix
         shell: python
