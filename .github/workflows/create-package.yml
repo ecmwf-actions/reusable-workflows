@@ -19,6 +19,10 @@ on:
         description: CPack options for RPM generator
         type: string
         required: false
+      restrict_matrix_jobs:
+        description: list of matrix jobs to restrict to
+        type: string
+        required: false
     secrets:
       url_debian_11:
         description: Use other than the default url for Debian 11.
@@ -68,59 +72,84 @@ jobs:
         run: |
           git branch --all --list --format "%(refname:lstrip=-1)" --contains "${{ github.ref_name }}" | grep -E "${{ vars.BRANCH_REGEX_FOR_DEPLOYMENT }}"
 
+  setup:
+    name: setup
+    runs-on: ubuntu-20.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Set Matrix
+        id: set-matrix
+        shell: bash -eux {0}
+        run: |
+          MATRIX=$(cat << 'EOS'
+          name:
+            - gnu@debian-11
+            # centos 7 is not compatible with node20
+            # - gnu-8@centos-7.9
+            - gnu@rocky-8.6
+          include:
+            - name: gnu@debian-11
+              labels: [self-hosted, platform-builder-debian-11]
+              os: debian-11
+              compiler: gnu
+              compiler_cc: gcc
+              compiler_cxx: g++
+              compiler_fc: gfortran
+              cpack_generator: DEB
+              cpack_options: >
+                -D CPACK_DEBIAN_PACKAGE_MAINTAINER=software@ecmwf.int 
+                -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf 
+                -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON ${{ inputs.cpack_options_deb }} 
+              upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
+              upload_url: NEXUS_TEST_REPO_URL_DEBIAN_11
+            # - name: gnu-8@centos-7.9
+            #   labels: [self-hosted, platform-builder-centos-7.9]
+            #   os: centos-7.9
+            #   compiler: gnu-8
+            #   compiler_cc: gcc-8
+            #   compiler_cxx: g++-8
+            #   compiler_fc: gfortran-8
+            #   cpack_generator: RPM
+            #   cpack_options: >
+            #     -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf
+            #     ${{ inputs.cpack_options_rpm }}
+            #   upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
+            #   upload_url: NEXUS_TEST_REPO_URL_CENTOS_7
+            - name: gnu@rocky-8.6
+              labels: [self-hosted, platform-builder-rocky-8.6]
+              os: rocky-8.6
+              compiler: gnu
+              compiler_cc: gcc
+              compiler_cxx: g++
+              compiler_fc: gfortran
+              cpack_generator: RPM
+              cpack_options: >
+                -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf 
+                ${{ inputs.cpack_options_rpm }}
+              upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
+              upload_url: NEXUS_TEST_REPO_URL_ROCKY_8
+          EOS
+          )
+          RESTRICT_MATRIX_JOBS=$(cat << 'EOS'
+          ${{ inputs.restrict_matrix_jobs }}
+          EOS
+          )
+          echo "MATRIX:"
+          echo $MATRIX
+          SELECT_NAME_COND="1 != 1"
+          SELECT_INCLUDE_COND="1 != 1"
+          for restrict_job in $RESTRICT_MATRIX_JOBS; do SELECT_NAME_COND="$SELECT_NAME_COND or . != \"$restrict_job\""; SELECT_INCLUDE_COND="$SELECT_INCLUDE_COND or .name != \"$restrict_job\""; done
+          echo matrix=$(echo "$MATRIX" | yq eval "del(.name[] | select($SELECT_NAME_COND)) | del(.include[] | select($SELECT_INCLUDE_COND))" --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+          echo "GITHUB_OUTPUT:"
+          echo $GITHUB_OUTPUT
+
   deploy:
     if: ${{ github.ref_type == 'tag' || inputs.skip_checks }}
-    needs: [check]
+    needs: [check,setup]
     strategy:
       fail-fast: false
-      matrix:
-        name:
-          - gnu@debian-11
-          # centos 7 is not compatible with node20
-          # - gnu-8@centos-7.9
-          - gnu@rocky-8.6
-        include:
-          - name: gnu@debian-11
-            labels: [self-hosted, platform-builder-debian-11]
-            os: debian-11
-            compiler: gnu
-            compiler_cc: gcc
-            compiler_cxx: g++
-            compiler_fc: gfortran
-            cpack_generator: DEB
-            cpack_options: >
-              -D CPACK_DEBIAN_PACKAGE_MAINTAINER=software@ecmwf.int 
-              -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf 
-              ${{ inputs.cpack_options_deb }} 
-              -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON
-            upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
-            upload_url: NEXUS_TEST_REPO_URL_DEBIAN_11
-          # - name: gnu-8@centos-7.9
-          #   labels: [self-hosted, platform-builder-centos-7.9]
-          #   os: centos-7.9
-          #   compiler: gnu-8
-          #   compiler_cc: gcc-8
-          #   compiler_cxx: g++-8
-          #   compiler_fc: gfortran-8
-          #   cpack_generator: RPM
-          #   cpack_options: >
-          #     -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf
-          #     ${{ inputs.cpack_options_rpm }}
-          #   upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
-          #   upload_url: NEXUS_TEST_REPO_URL_CENTOS_7
-          - name: gnu@rocky-8.6
-            labels: [self-hosted, platform-builder-rocky-8.6]
-            os: rocky-8.6
-            compiler: gnu
-            compiler_cc: gcc
-            compiler_cxx: g++
-            compiler_fc: gfortran
-            cpack_generator: RPM
-            cpack_options: >
-              -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf 
-              ${{ inputs.cpack_options_rpm }}
-            upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
-            upload_url: NEXUS_TEST_REPO_URL_ROCKY_8
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     runs-on: ${{ matrix.labels }}
     steps:
       - uses: actions/checkout@v3
