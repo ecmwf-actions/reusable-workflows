@@ -146,7 +146,7 @@ jobs:
 
   deploy:
     if: ${{ github.ref_type == 'tag' || inputs.skip_checks }}
-    needs: [check,setup]
+    needs: [setup]
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
