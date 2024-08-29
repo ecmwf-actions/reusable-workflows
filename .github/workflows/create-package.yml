@@ -30,6 +30,12 @@ on:
       token_debian_11:
         description: Use other than the default token for Debian 11.
         required: false
+      url_debian_12:
+        description: Use other than the default url for Debian 12.
+        required: false
+      token_debian_12:
+        description: Use other than the default token for Debian 12.
+        required: false
       url_centos_7:
         description: Use other than the default url for CentOS 7.
         required: false
@@ -52,6 +58,7 @@ jobs:
           fetch-depth: "0"
 
       - name: Test tag name pattern
+        if: ${{ ! inputs.skip_checks }}
         shell: python
         run: |
           import re
@@ -68,7 +75,7 @@ jobs:
             sys.exit(1)
 
       - name: Test branch name pattern
-        if: ${{ vars.BRANCH_REGEX_FOR_DEPLOYMENT != '' }}
+        if: ${{ vars.BRANCH_REGEX_FOR_DEPLOYMENT != '' && (! inputs.skip_checks) }}
         run: |
           git branch --all --list --format "%(refname:lstrip=-1)" --contains "${{ github.ref_name }}" | grep -E "${{ vars.BRANCH_REGEX_FOR_DEPLOYMENT }}"
 
@@ -85,6 +92,7 @@ jobs:
           MATRIX=$(cat << 'EOS'
           name:
             - gnu@debian-11
+            - gnu@debian-12
             # centos 7 is not compatible with node20
             # - gnu-8@centos-7.9
             - gnu@rocky-8.6
@@ -103,6 +111,21 @@ jobs:
                 -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON ${{ inputs.cpack_options_deb }} 
               upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
               upload_url: NEXUS_TEST_REPO_URL_DEBIAN_11
+            - name: gnu@debian-12
+              labels: [self-hosted, platform-builder-debian-12]
+              os: debian-12
+              compiler: gnu
+              compiler_cc: gcc
+              compiler_cxx: g++
+              compiler_fc: gfortran
+              cpack_generator: DEB
+              cpack_options: >
+                -D CPACK_DEBIAN_PACKAGE_MAINTAINER=software@ecmwf.int 
+                -D CPACK_PACKAGING_INSTALL_PREFIX=/opt/ecmwf 
+                -DCPACK_DEBIAN_PACKAGE_SHLIBDEPS=ON ${{ inputs.cpack_options_deb }} 
+              upload_token: NEXUS_TEST_REPO_UPLOAD_TOKEN
+              upload_url: NEXUS_TEST_REPO_URL_DEBIAN_12
+
             # - name: gnu-8@centos-7.9
             #   labels: [self-hosted, platform-builder-centos-7.9]
             #   os: centos-7.9
@@ -237,6 +260,11 @@ jobs:
             "debian-11")
               token=${{ secrets.token_debian_11 || secrets[matrix.upload_token] }}
               url=${{ secrets.url_debian_11 || secrets[matrix.upload_url] }}
+            ;;
+
+            "debian-12")
+              token=${{ secrets.token_debian_12 || secrets[matrix.upload_token] }}
+              url=${{ secrets.url_debian_12 || secrets[matrix.upload_url] }}
             ;;
 
             "centos-7.9")
