@@ -448,6 +448,24 @@ Expands in `pytest -v -m "${{ inputs.skip-tests }}"` to coordinate marked tests.
 **Type:** `string`
 **Example:** `'no gpu'`
 
+#### `job-summary`
+
+**Default:** `false`
+**Type:** `boolean`
+**Example:** `true`
+
+#### `emoji`
+
+**Default:** `true`
+**Type:** `boolean`
+**Example:** `false`
+
+#### `custom-pytest`
+
+**Default:** `'pytest'`
+**Type:** `string`
+**Example:** `'poetry run pytest'`
+
 ## sync.yml
 
 ### Usage

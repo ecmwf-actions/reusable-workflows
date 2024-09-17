@@ -18,6 +18,21 @@ on:
         required: false
         default: ''
         type: string
+      job-summary:
+        description: Print job summary on GitHub
+        required: false
+        default: 'true'
+        type: boolean
+      emoji:
+        description: Use Pytest emoji
+        required: false
+        default: 'true'
+        type: boolean
+      custom-pytest:
+        description: Custom command for `pytest` call. Custom executable like `poetry run pytest` or `micromamba run -n myenv pytest`.
+        required: false
+        default: 'pytest'
+        type: string
 
 jobs:
   tests:
@@ -37,27 +52,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install .[${{ inputs.optional-dependencies }}]
-          python -m pip install pytest-md pytest-emoji
-      - name: Test with pytest
-        id: pytest
-        run: |
-          REPORT=pytest_${{ inputs.python-version }}.md
-          echo "report-path=$REPORT" >> $GITHUB_OUTPUT
-          pytest -v -m "${{ inputs.skip-tests }}" --emoji --md $REPORT
-        shell: bash -el {0}
-      - name: Add report to summary
-        if: always()
-        run: |
-          echo "::group::..."
-          FINAL_REPORT=pytest_report_${{ inputs.python-version }}.md
-          echo "# Test report (python ${{ inputs.python-version }})" > "$FINAL_REPORT"
-          echo "<details><summary>Click to expand!</summary>" >> "$FINAL_REPORT"
-          report_variable=$(tail -n+2 ${{ steps.pytest.outputs.report-path }})
-          echo "$report_variable" >> "$FINAL_REPORT"
-          echo "</details>" >> "$FINAL_REPORT"
-          cat "$FINAL_REPORT" >> "$GITHUB_STEP_SUMMARY"
-          echo "::endgroup::"
-          echo
-          echo "====================================================================================="
-          echo Markdown summaries: "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          echo "====================================================================================="
+          python -m pip install pytest pytest-md pytest-emoji
+      - name: Run pytest
+        uses: pavelzw/pytest-action@v2
+        with:
+          verbose: true
+          emoji: ${{ inputs.emoji }}
+          job-summary: ${{ inputs.job-summary }}
+          custom-arguments: "-m ${{ inputs.skip-tests }}"
+          click-to-expand: true
+          report-title:  "Test report (python ${{ inputs.python-version }} on ${{ matrix.platform }})"
+          custom-pytest: ${{ inputs.custom-pytest }}
