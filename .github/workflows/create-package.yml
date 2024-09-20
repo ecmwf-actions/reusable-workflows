@@ -7,6 +7,13 @@ on:
         description: Value `true` will skip version checks, use for testing or in nightly builds.
         type: boolean
         required: false
+      build_config:
+        description:
+          Path to build configuration yaml. Relative path from the repository root,
+          e.g. `.github/build-config.yml`.
+        required: false
+        default: '.github/ci-config.yml'
+        type: string
       cpack_options:
         description: CPack options to be used on all platforms.
         type: string
@@ -236,7 +243,7 @@ jobs:
             recreate_cache: true
             save_cache: false
             self_test: false
-          build_config: .github/ci-config.yml
+          build_config: ${{ inputs.build_config }}
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3
