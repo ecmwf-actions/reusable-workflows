@@ -21,12 +21,12 @@ on:
       job-summary:
         description: Print job summary on GitHub
         required: false
-        default: 'true'
+        default: true
         type: boolean
       emoji:
         description: Use Pytest emoji
         required: false
-        default: 'true'
+        default: true
         type: boolean
       custom-pytest:
         description: Custom command for `pytest` call. Custom executable like `poetry run pytest` or `micromamba run -n myenv pytest`.
