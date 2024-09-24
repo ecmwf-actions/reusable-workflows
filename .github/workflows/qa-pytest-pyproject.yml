@@ -59,7 +59,7 @@ jobs:
           verbose: true
           emoji: ${{ inputs.emoji }}
           job-summary: ${{ inputs.job-summary }}
-          custom-arguments: "-m ${{ inputs.skip-tests }}"
+          custom-arguments: ${{ inputs.skip-tests != '' && '-m ' || '' }}${{ inputs.skip-tests }}
           click-to-expand: true
           report-title:  "Test report (python ${{ inputs.python-version }} on ${{ matrix.platform }})"
           custom-pytest: ${{ inputs.custom-pytest }}
