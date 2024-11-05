@@ -95,7 +95,7 @@ runs:
 
     - name: Install dependencies
       if: ${{ inputs.python_dependencies }}
-      shell: bash -e {0}
+      shell: bash -ex {0}
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda activate $RUNNER_TEMP/venv
