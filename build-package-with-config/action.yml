@@ -135,7 +135,7 @@ runs:
 
     - name: Build package
       id: build
-      uses: ecmwf-actions/build-package@v2
+      uses: ecmwf-actions/build-package@verbose
       with: ${{ fromJSON(steps.config.outputs.config) }}
 
     - name: Codecov Upload
