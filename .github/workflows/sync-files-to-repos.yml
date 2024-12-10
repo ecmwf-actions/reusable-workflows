@@ -1,0 +1,20 @@
+name: Sync Files to Different Repos
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'sync-files/**'  # Only trigger on changes in sync-files directory
+  workflow_dispatch:  # Keep manual trigger capability
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Run Repo File Sync Action
+        uses: BetaHuhn/repo-file-sync-action@v1
+        with:
+          GH_PAT: ${{ secrets.REPO_SYNC_ACTION_PAT }}
+          CONFIG_PATH: sync-files/sync.yml
