@@ -3,7 +3,7 @@ description: |
   A wrapper around build-package action to support reading build configuration from a file.
 inputs:
   repository:
-    description: Repository name in format owner/repo@ref.
+    description: Repository name in format packageName:owner/repo@ref.
     required: true
   build_package_inputs:
     description: build-package action inputs in yaml format.
@@ -46,7 +46,13 @@ runs:
       shell: python3 {0}
       run: |
         import os
-        repo, ref = "${{ inputs.repository }}".split("@")
+        repo = "${{ inputs.repository }}"
+        if ":" in repo:
+            _, repo = repo.split(":")
+        repo, ref = repo.split("@")
+        if repo.count("/") > 1:
+            owner, repo, _ = repo.split("/", maxsplit=2)
+            repo = f"{owner}/{repo}"
         with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
             print("repo", repo, sep="=", file=f)
             print("ref", ref, sep="=", file=f)

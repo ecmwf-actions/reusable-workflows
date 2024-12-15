@@ -27,6 +27,9 @@ runs:
             .split("\n")
             .filter((x) => x.length != 0)
             .map((x) => {
+              if (x.includes(":")) {
+                x = x.split(":")[1];
+              }
               if (x.includes("@")) {
                 x = x.split("@")[0];
               }

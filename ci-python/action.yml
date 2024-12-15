@@ -27,10 +27,10 @@ inputs:
     required: false
     default: ${{ github.token }}
   repository:
-    description: Repository name in format owner/repo@ref.
+    description: Repository name in format owner/repo@ref or name:owner/repo/subdir@ref or name:owner/repo@ref.
     required: false
   python_dependencies:
-    description: List of python packages to install from source as dependencies. In format owner/repo@ref, multiline for multiple packages.
+    description: List of python packages to install from source as dependencies. In format owner/repo@ref, or name:owner/repo/subdir@ref or name:owner/repo@ref, multiline for multiple packages.
     required: false
   env:
     description: List of environment variables in format `VAR=value`
@@ -55,7 +55,13 @@ runs:
       shell: python3 {0}
       run: |
         import os
-        repo, ref = "${{ inputs.repository }}".split("@")
+        repo = "${{ inputs.repository }}"
+        if ":" in repo:
+            _, repo = repo.split(":")
+        repo, ref = repo.split("@")
+        if repo.count("/") > 1:
+            owner, repo, _ = repo.split("/", maxsplit=2)
+            repo = f"{owner}/{repo}"
         with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
             print("repo", repo, sep="=", file=f)
             print("ref", ref, sep="=", file=f)
@@ -101,13 +107,31 @@ runs:
         conda activate $RUNNER_TEMP/venv
 
         while IFS= read -r line && [[ -n "$line" ]]; do
-          owner="${line%%/*}"
-          repo_ref="${line#*/}"
-          repo="${repo_ref%%@*}"
-          ref="${repo_ref#*@}"
+          vars=($(python <<HEREDOC
+        name = None
+        subdir = "."
+        repo = "$line"
+        if ":" in repo:
+            name, repo = repo.split(":", maxsplit=1)
+        repo, ref = repo.split("@", maxsplit=1)
+        if repo.count("/") > 1:
+            owner, repo, subdir = repo.split("/", maxsplit=2)
+        else:
+            owner, repo = repo.split("/", maxsplit=1)
+        if not name:
+            name = repo
+        print(f'"{name}"', f'"{owner}"', f'"{repo}"', f'"{subdir}"', f'"{ref}"')
+        HEREDOC ))
+
+          name=${vars[0]}
+          owner=${vars[1]}
+          repo=${vars[2]}
+          subdir=${vars[3]}
+          ref=${vars[4]}
+          echo $name $owner $repo $subdir $ref
           
-          mkdir -p $RUNNER_TEMP/ci-deps/$repo
-          cd $RUNNER_TEMP/ci-deps/$repo
+          mkdir -p $RUNNER_TEMP/ci-deps/$name/$subdir
+          cd $RUNNER_TEMP/ci-deps/$name/$subdir
           git init
           git remote add origin https://${{ inputs.github_token }}@github.com/$owner/$repo.git
           git fetch --depth 1 origin $ref
