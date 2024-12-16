@@ -107,7 +107,7 @@ runs:
         conda activate $RUNNER_TEMP/venv
 
         while IFS= read -r line && [[ -n "$line" ]]; do
-          vars=($(python <<HEREDOC
+          vars=$(python <<HEREDOC
         name = None
         subdir = "."
         repo = "$line"
@@ -121,7 +121,7 @@ runs:
         if not name:
             name = repo
         print(f'"{name}"', f'"{owner}"', f'"{repo}"', f'"{subdir}"', f'"{ref}"')
-        HEREDOC ))
+        HEREDOC )
 
           name=${vars[0]}
           owner=${vars[1]}
