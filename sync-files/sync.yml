@@ -1,0 +1,166 @@
+group:
+##################
+# Anemoi Files   #
+##################
+
+# Push common Anemoi actions
+- files:
+  - source: sync-files/workflows/changelog/
+    dest: .github/workflows/
+    deleteOrphaned: true
+  - source: sync-files/workflows/labels/
+    dest: .github/workflows/
+    deleteOrphaned: true
+  - source: sync-files/workflows/python/
+    dest: .github/workflows/
+    deleteOrphaned: true
+  - source: sync-files/configs/python-dependabot.yml
+    dest: .github/dependabot.yml
+  repos: |
+    ecmwf/anemoi-datasets@develop
+    ecmwf/anemoi-graphs@develop
+    ecmwf/anemoi-inference@develop
+    ecmwf/anemoi-models@develop
+    ecmwf/anemoi-registry@develop
+    ecmwf/anemoi-training@develop
+    ecmwf/anemoi-transform@develop
+    ecmwf/anemoi-utils@develop
+
+# Push common Anemoi configs
+- files:
+  - source: sync-files/configs/anemoi-license
+    dest: LICENSE
+  - source: sync-files/configs/anemoi-contributors
+    dest: CONTRIBUTORS.md
+  - source: sync-files/configs/anemoi-codeowners
+    dest: .github/CODEOWNERS
+  - source: sync-files/configs/anemoi-pre-commit.yml
+    dest: .pre-commit-config.yml
+  - source: sync-files/configs/anemoi-readthedocs.yml
+    dest: .readthedocs.yaml
+  - source: sync-files/configs/anemoi.gitignore
+    dest: .gitignore
+  - source: sync-files/template/anemoi-pull_request_template.md
+    dest: .github/pull_request_tempalte.md
+  repos: |
+    ecmwf/anemoi-datasets@develop
+    ecmwf/anemoi-docs@develop
+    ecmwf/anemoi-graphs@develop
+    ecmwf/anemoi-inference@develop
+    ecmwf/anemoi-models@develop
+    ecmwf/anemoi-registry@develop
+    ecmwf/anemoi-training@develop
+    ecmwf/anemoi-transform@develop
+    ecmwf/anemoi-utils@develop
+
+
+# Anemoi Datasets specific
+- files:
+  - source: sync-files/workflows/downstream/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-datasets
+  - source: sync-files/workflows/readthedocs/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-datasets
+  repos: |
+    ecmwf/anemoi-datasets@develop
+
+
+# Anemoi graphs specific
+- files:
+  - source: sync-files/workflows/downstream/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-graphs
+  - source: sync-files/workflows/readthedocs/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-graphs
+  repos: |
+    ecmwf/anemoi-graphs@develop
+
+
+# Anemoi inference specific
+- files:
+  - source: sync-files/workflows/downstream/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-inference
+  - source: sync-files/workflows/readthedocs/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-inference
+  repos: |
+    ecmwf/anemoi-inference@develop
+
+
+# Anemoi models specific
+- files:
+  - source: sync-files/workflows/downstream/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-models
+  - source: sync-files/workflows/readthedocs/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-models
+  repos: |
+    ecmwf/anemoi-models@develop
+
+
+# Anemoi registry specific
+- files:
+  - source: sync-files/workflows/downstream/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-registry
+  - source: sync-files/workflows/readthedocs/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-registry
+  repos: |
+    ecmwf/anemoi-registry@develop
+
+
+# Anemoi training specific
+- files:
+  - source: sync-files/workflows/downstream/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-training
+  - source: sync-files/workflows/readthedocs/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-training
+  repos: |
+    ecmwf/anemoi-training@develop
+
+
+# Anemoi transform specific
+- files:
+  - source: sync-files/workflows/downstream/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-transform
+  - source: sync-files/workflows/readthedocs/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-transform
+  repos: |
+    ecmwf/anemoi-transform@develop
+
+
+# Anemoi utils specific
+- files:
+  - source: sync-files/workflows/downstream/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-utils
+  - source: sync-files/workflows/readthedocs/
+    dest: .github/workflows/
+    template:
+      repo_name: anemoi-utils
+  repos: |
+    ecmwf/anemoi-utils@develop
