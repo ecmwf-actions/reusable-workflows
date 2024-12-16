@@ -12,7 +12,7 @@ inputs:
     description: User used to submit troika job.
     required: true
   repository:
-    description: Repository name in format owner/repo@ref.
+    description: Repository name in format owner/repo@ref or name:owner/repo/subdir@ref or name:owner/repo@ref.
     required: true
   build_config:
     description: |
@@ -20,10 +20,10 @@ inputs:
       e.g. `.github/build-config.yml`.
     required: true
   dependencies:
-    description: List of build dependencies in format `owner/repo@ref`. Adds to whatever is specified in the build configuration file, if the same owner/repo is present, the ref is overridden.
+    description: List of build dependencies in format owner/repo@ref or name:owner/repo/subdir@ref or name:owner/repo@ref. Adds to whatever is specified in the build configuration file, if the same owner/repo is present, the ref is overridden.
     required: false
   python_dependencies:
-    description: List of python dependencies to build from source in format `owner/repo@ref`
+    description: List of python dependencies to build from source in format owner/repo@ref, or name:owner/repo/subdir@ref or name:owner/repo@ref
     required: false
   python_requirements:
     description: Path to pip requirements file for python packages.
@@ -89,7 +89,13 @@ runs:
       shell: python3 {0}
       run: |
         import os
-        repo, ref = "${{ inputs.repository }}".split("@")
+        repo = "${{ inputs.repository }}"
+        if ":" in repo:
+            _, repo = repo.split(":")
+        repo, ref = repo.split("@")
+        if repo.count("/") > 1:
+            owner, repo, _ = repo.split("/", maxsplit=2)
+            repo = f"{owner}/{repo}"
         deps = ",".join("""${{ inputs.dependencies }}""".splitlines())
         py_deps = ",".join("""${{ inputs.python_dependencies }}""".splitlines())
         with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
