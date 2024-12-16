@@ -120,7 +120,7 @@ runs:
             owner, repo = repo.split("/", maxsplit=1)
         if not name:
             name = repo
-        print(f'"{name}"', f'"{owner}"', f'"{repo}"', f'"{subdir}"', f'"{ref}"')
+        print(f'{name} {owner} {repo} {subdir} {ref}')
         HEREDOC
         ))
 
