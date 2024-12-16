@@ -121,7 +121,8 @@ runs:
         if not name:
             name = repo
         print(f'"{name}"', f'"{owner}"', f'"{repo}"', f'"{subdir}"', f'"{ref}"')
-        HEREDOC )
+        HEREDOC
+        )
 
           name=${vars[0]}
           owner=${vars[1]}
