@@ -27,4 +27,4 @@ jobs:
       skip_matrix_jobs: |
         clang-12@ubuntu-20.04
         clang-14@ubuntu-22.04
-        clang-14@macos-12
+        clang-14@macos-latest
