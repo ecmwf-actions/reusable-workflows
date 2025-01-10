@@ -15,7 +15,7 @@ on:
           Defaults to root directory.
         type: string
         required: false
-        default: "/"
+        default: "./"
 
 jobs:
   deploy:
@@ -71,7 +71,7 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
-          cd ${{ inputs.working_directory }}
+          cd ${{ inputs.working-directory }}
           python -m build
           twine upload dist/*
 
@@ -81,6 +81,6 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TEST_API_TOKEN }}
         run: |
-          cd ${{ inputs.working_directory }}
+          cd ${{ inputs.working-directory }}
           python -m build
           twine upload --repository testpypi dist/*
