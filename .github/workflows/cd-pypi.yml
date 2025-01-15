@@ -10,7 +10,7 @@ on:
         type: boolean
         required: false
         default: false
-      work-directory:
+      working-directory:
         description: Working directory to build Python package (for monorepos).
           Defaults to root directory.
         type: string
@@ -21,6 +21,9 @@ jobs:
   deploy:
     if: ${{ github.ref_type == 'tag' || github.event_name == 'release' }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -71,7 +74,6 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
-          cd ${{ inputs.working-directory }}
           python -m build
           twine upload dist/*
 
@@ -81,6 +83,5 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TEST_API_TOKEN }}
         run: |
-          cd ${{ inputs.working-directory }}
           python -m build
           twine upload --repository testpypi dist/*
