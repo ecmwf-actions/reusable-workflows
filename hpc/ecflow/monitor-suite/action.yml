@@ -56,7 +56,7 @@ runs:
           TIME=0  # initialisation
 
           while [[ "$STATUS" != "$COMPLETE_STATUS" ]]; do
-              STATUS=$(ecflow_client --query state /${{ env.suite_name }})
+              STATUS=$(ecflow_client --query state /${{ inputs.suite_name }})
               # Check for errors
               if [ "$STATUS" == "$ABORTED_STATUS" ]; then
                   echo "Suite status is aborted. Exiting with an error."
