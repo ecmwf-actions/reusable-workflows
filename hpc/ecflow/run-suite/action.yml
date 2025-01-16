@@ -24,7 +24,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Remove suite from ecflow server
+    - name: Run suite from ecflow server
       uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@v2
       with:
         template: |
