@@ -1,0 +1,47 @@
+name: remove-ecflow-suite
+description: |
+  A Github action to remove a suite deployed on an ecflow server.
+inputs:
+  troika_user:
+    description: User used to submit troika job.
+    required: true
+  sbatch_options:
+    description: List of SBATCH directives
+    required: false
+  site:
+    description: HPC site name.
+    required: false
+    default: hpc-batch
+  suite_name:
+    description: Name of the suite.
+    required: true
+  ecflow_host:
+    description: ecflow server hostname.
+    required: true
+  ecflow_port:
+    description: ecflow server port.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Remove suite from ecflow server
+      uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@v2
+      with:
+        template: |
+          set -eux
+          echo "Job is running on ${{ runner.os }}"
+
+          # Load modules of interest
+          module load ecflow
+
+          # Set ecflow server variables
+          export ECF_HOST=${{ env.ecflow_server }}
+          export ECF_PORT=${{ env.ecflow_port }}
+
+          # Do some cleaning if the suite is complete
+          if [ $(ecflow_client --query state /${{ env.suite_name }}) == complete ]; then
+              ecflow_client --delete=force yes /${{ env.suite_name }}
+          fi
+        sbatch_options: ${{ inputs.sbatch_options }}
+        troika_user: ${{ inputs.troika_user }}
+        site: ${{ inputs.site }}
