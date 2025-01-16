@@ -35,7 +35,7 @@ runs:
           module load ecflow
 
           # Set ecflow server variables
-          export ECF_HOST=${{ inputs.ecflow_server }}
+          export ECF_HOST=${{ inputs.ecflow_host }}
           export ECF_PORT=${{ inputs.ecflow_port }}
 
           # Run the suite
