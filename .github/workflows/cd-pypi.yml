@@ -10,11 +10,20 @@ on:
         type: boolean
         required: false
         default: false
+      working-directory:
+        description: Working directory to build Python package (for monorepos).
+          Defaults to root directory.
+        type: string
+        required: false
+        default: "./"
 
 jobs:
   deploy:
     if: ${{ github.ref_type == 'tag' || github.event_name == 'release' }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
     steps:
       - uses: actions/checkout@v4
         with:

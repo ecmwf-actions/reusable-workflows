@@ -38,6 +38,12 @@ on:
         required: false
         default: 'pytest'
         type: string
+      working-directory:
+        description: Working directory to build Python package (for monorepos).
+          Defaults to root directory.
+        type: string
+        required: false
+        default: "./"
 
 jobs:
   tests:
@@ -54,6 +60,7 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
       - name: Install dependencies
+        working-directory: ${{ inputs.working-directory }}
         if: ${{ inputs.install-dependencies }}
         run: |
           python -m pip install --upgrade pip
@@ -68,4 +75,4 @@ jobs:
           custom-arguments: ${{ inputs.skip-tests != '' && '-m ' || '' }}${{ inputs.skip-tests }}
           click-to-expand: true
           report-title:  "Test report (python ${{ inputs.python-version }} on ${{ matrix.platform }})"
-          custom-pytest: ${{ inputs.custom-pytest }}
+          custom-pytest: cd ${{ inputs.work-directory }} && ${{ inputs.custom-pytest }}
