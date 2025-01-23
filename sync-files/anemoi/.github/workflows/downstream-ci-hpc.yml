@@ -1,4 +1,4 @@
-name: ci
+name: Test downstream dependent packages on HPC
 
 on:
   # Trigger the workflow on push to main or develop, except tag creation

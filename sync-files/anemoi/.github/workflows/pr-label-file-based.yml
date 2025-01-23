@@ -1,4 +1,4 @@
-name: "Pull Request Labeler"
+name: "Pull Request Labeler File-based"
 on:
 - pull_request_target
 
@@ -9,4 +9,5 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
+    - name: Assign labels from file changes
     - uses: actions/labeler@v5

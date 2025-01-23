@@ -1,4 +1,4 @@
-name: Code Quality checks for PRs
+name: Code Quality checks and Testing
 
 on:
   pull_request:
