@@ -1,9 +1,13 @@
-name: Code Quality checks for PRs
+{% raw %}name: Code Quality checks for PRs
 
 on:
-  push:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "9 2 * * 0" # at 9:02 on sunday
 
 jobs:
   quality:
@@ -12,4 +16,10 @@ jobs:
       skip-hooks: "no-commit-to-branch"
 
   checks:
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
     uses: ecmwf-actions/reusable-workflows/.github/workflows/qa-pytest-pyproject.yml@v2
+    with:
+      python-version: ${{ matrix.python-version }}
+{% endraw %}

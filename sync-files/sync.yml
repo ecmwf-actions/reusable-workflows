@@ -18,6 +18,18 @@ group:
     ecmwf/anemoi-transform
     ecmwf/anemoi-utils
 
+# Init specific files once
+- files:
+  - source: sync-files/anemoi/.release-please-manifest.json
+    dest: ./.release-please-manifest.json
+    replace: false
+  repos: |
+    ecmwf/anemoi-datasets
+    ecmwf/anemoi-inference
+    ecmwf/anemoi-registry
+    ecmwf/anemoi-transform
+    ecmwf/anemoi-utils
+
 
 # Anemoi Datasets specific
 - files:
@@ -25,6 +37,11 @@ group:
     dest: ./
     template:
       repo_name: anemoi-datasets
+      year: 2024-2025
+      authors: Anemoi Contributors
+      short_desc: "Datasets for training data-driven weather forecasts."
+    exclude: |
+      .release-please-manifest.json
   repos: |
     ecmwf/anemoi-datasets
 
@@ -35,6 +52,11 @@ group:
     dest: ./
     template:
       repo_name: anemoi-inference
+      year: 2024-2025
+      authors: Anemoi Contributors
+      short_desc: "Inference tools for data-driven weather forecasts."
+    exclude: |
+      .release-please-manifest.json
   repos: |
     ecmwf/anemoi-inference
 
@@ -45,6 +67,11 @@ group:
     dest: ./
     template:
       repo_name: anemoi-registry
+      year: 2024-2025
+      authors: Anemoi Contributors
+      short_desc: "Registry for data-driven weather forecasts."
+    exclude: |
+      .release-please-manifest.json
   repos: |
     ecmwf/anemoi-registry
 
@@ -55,6 +82,11 @@ group:
     dest: ./
     template:
       repo_name: anemoi-transform
+      year: 2024-2025
+      authors: Anemoi Contributors
+      short_desc: "Miscellanous data transformation functions for training data-driven weather forecasts."
+    exclude: |
+      .release-please-manifest.json
   repos: |
     ecmwf/anemoi-transform
 
@@ -65,6 +97,11 @@ group:
     dest: ./
     template:
       repo_name: anemoi-utils
+      year: 2024-2025
+      authors: Anemoi Contributors
+      short_desc: "Miscellanous tools for training data-driven weather forecasts."
+    exclude: |
+      .release-please-manifest.json
   repos: |
     ecmwf/anemoi-utils
 
@@ -118,7 +155,5 @@ group:
     dest: .github/workflows/label-public-pr.yml
   - source: sync-files/anemoi/.github/workflows/pr-conventional-commit.yml
     dest: .github/workflows/pr-conventional-commit.yml
-  - source: sync-files/anemoi/.github/workflows/python-publish.yml
-    dest: .github/workflows/python-publish.yml
   repos: |
     ecmwf/anemoi-core
