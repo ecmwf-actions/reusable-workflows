@@ -5,13 +5,11 @@ group:
 
 # Common Anemoi files
 - files:
-  - source: sync-files/general/apache-2-license
-    dest: LICENSE
+  - source: sync-files/general/python/
+    dest: ./
     template:
       year: 2024-2025
       authors: Anemoi Contributors
-  - source: sync-files/general/python-dependabot.yml
-    dest: .github/dependabot.yml
   repos: |
     ecmwf/anemoi-core
     ecmwf/anemoi-datasets
@@ -73,21 +71,27 @@ group:
 
 # Anemoi Core specific
 - files:
-  - source: sync-files/general/apache-2-license
-    dest: graphs/LICENSE
+  - source: sync-files/general/python/
+    dest: graphs/
     template:
       year: 2024-2025
       authors: Anemoi Contributors
-  - source: sync-files/general/apache-2-license
-    dest: models/LICENSE
+    exclude:
+      - .github
+  - source: sync-files/general/python/
+    dest: models/
     template:
       year: 2024-2025
       authors: Anemoi Contributors
-  - source: sync-files/general/apache-2-license
-    dest: training/LICENSE
+    exclude:
+      - .github
+  - source: sync-files/general/python/
+    dest: training/
     template:
       year: 2024-2025
       authors: Anemoi Contributors
+    exclude:
+      - .github
   - source: sync-files/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
@@ -108,7 +112,7 @@ group:
     dest: .github/pull_request_template.md
   - source: sync-files/anemoi/.gitignore
     dest: .gitignore
-  - source: sync-files/general/python-dependabot.yml
+  - source: sync-files/general/python/.github/dependabot.yml
     dest: .github/dependabot.yml
   - source: sync-files/anemoi/.github/workflows/label-public-pr.yml
     dest: .github/workflows/label-public-pr.yml
