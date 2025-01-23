@@ -3,92 +3,43 @@ group:
 # Anemoi Files   #
 ##################
 
-# Push common Anemoi actions
+# Push common Anemoi structure files to all Anemoi repositories
 - files:
-  - source: sync-files/workflows/pr-utilities/
-    dest: .github/workflows/
-    deleteOrphaned: true
-  - source: sync-files/workflows/python/
-    dest: .github/workflows/
-    deleteOrphaned: true
-  repos: |
-    ecmwf/anemoi-datasets
-    ecmwf/anemoi-inference
-    ecmwf/anemoi-registry
-    ecmwf/anemoi-transform
-    ecmwf/anemoi-utils
-
-
-# Push common Anemoi configs
-- files:
-  - source: sync-files/configs/anemoi/
+  - source: sync-files/anemoi/
     dest: ./
-  - source: sync-files/configs/general/apache-2-license
+    deleteOrphaned: true
+    ## Exclude files from being copied that are templated
+    exclude: |
+      sync-files/anemoi/workflows/downstream-ci-hpc.yml
+      sync-files/anemoi/workflows/readthedocs-pr-update.yml
+      sync-files/anemoi/CONTRIBUTORS.md
+  - source: sync-files/general/apache-2-license
     dest: LICENSE
     template:
       year: 2024-2025
       authors: Anemoi Contributors
-  - source: sync-files/configs/general/python-dependabot.yml
+  - source: sync-files/general/python-dependabot.yml
     dest: .github/dependabot.yml
   repos: |
     ecmwf/anemoi-datasets
-    ecmwf/anemoi-docs
     ecmwf/anemoi-inference
     ecmwf/anemoi-registry
     ecmwf/anemoi-transform
     ecmwf/anemoi-utils
-
-
-# Anemoi Core specific
-- files:
-  - source: sync-files/configs/general/apache-2-license
-    dest: LICENSE
-    template:
-      year: 2024-2025
-      authors: Anemoi Contributors
-  - source: sync-files/configs/general/apache-2-license
-    dest: graphs/LICENSE
-    template:
-      year: 2024-2025
-      authors: Anemoi Contributors
-  - source: sync-files/configs/general/apache-2-license
-    dest: models/LICENSE
-    template:
-      year: 2024-2025
-      authors: Anemoi Contributors
-  - source: sync-files/configs/general/apache-2-license
-    dest: training/LICENSE
-    template:
-      year: 2024-2025
-      authors: Anemoi Contributors
-  - source: sync-files/configs/anemoi/CONTRIBUTORS.md
-    dest: CONTRIBUTORS.md
-  - source: sync-files/configs/anemoi/.github/CODEOWNERS
-    dest: .github/CODEOWNERS
-  - source: sync-files/configs/anemoi/.github/pull_request_template.md
-    dest: .github/pull_request_template.md
-  - source: sync-files/configs/anemoi/.gitignore
-    dest: .gitignore
-  - source: sync-files/configs/python-dependabot.yml
-    dest: .github/dependabot.yml
-  - source: sync-files/workflows/pr-utilities/
-    dest: .github/workflows/
-  repos: |
-    ecmwf/anemoi-core
 
 
 # Anemoi Datasets specific
 - files:
-  - source: sync-files/configs/anemoi/CONTRIBUTORS.md
+  - source: sync-files/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
       repo_name: anemoi-datasets
-  - source: sync-files/workflows/downstream/
-    dest: .github/workflows/
+  - source: sync-files/anemoi/.github/workflows/downstream-ci-hpc.yml
+    dest: .github/workflows/downstream-ci-hpc.yml
     template:
       repo_name: anemoi-datasets
-  - source: sync-files/workflows/readthedocs/
-    dest: .github/workflows/
+  - source: sync-files/anemoi/.github/workflows/readthedocs-pr-update.yml
+    dest: .github/workflows/readthedocs-pr-update.yml
     template:
       repo_name: anemoi-datasets
   repos: |
@@ -97,16 +48,16 @@ group:
 
 # Anemoi inference specific
 - files:
-  - source: sync-files/configs/anemoi/CONTRIBUTORS.md
+  - source: sync-files/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
       repo_name: anemoi-inference
-  - source: sync-files/workflows/downstream/
-    dest: .github/workflows/
+  - source: sync-files/anemoi/.github/workflows/downstream-ci-hpc.yml
+    dest: .github/workflows/downstream-ci-hpc.yml
     template:
       repo_name: anemoi-inference
-  - source: sync-files/workflows/readthedocs/
-    dest: .github/workflows/
+  - source: sync-files/anemoi/.github/workflows/readthedocs-pr-update.yml
+    dest: .github/workflows/readthedocs-pr-update.yml
     template:
       repo_name: anemoi-inference
   repos: |
@@ -115,16 +66,16 @@ group:
 
 # Anemoi registry specific
 - files:
-  - source: sync-files/configs/anemoi/CONTRIBUTORS.md
+  - source: sync-files/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
       repo_name: anemoi-registry
-  - source: sync-files/workflows/downstream/
-    dest: .github/workflows/
+  - source: sync-files/anemoi/.github/workflows/downstream-ci-hpc.yml
+    dest: .github/workflows/downstream-ci-hpc.yml
     template:
       repo_name: anemoi-registry
-  - source: sync-files/workflows/readthedocs/
-    dest: .github/workflows/
+  - source: sync-files/anemoi/.github/workflows/readthedocs-pr-update.yml
+    dest: .github/workflows/readthedocs-pr-update.yml
     template:
       repo_name: anemoi-registry
   repos: |
@@ -133,16 +84,16 @@ group:
 
 # Anemoi transform specific
 - files:
-  - source: sync-files/configs/anemoi/CONTRIBUTORS.md
+  - source: sync-files/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
       repo_name: anemoi-transform
-  - source: sync-files/workflows/downstream/
-    dest: .github/workflows/
+  - source: sync-files/anemoi/.github/workflows/downstream-ci-hpc.yml
+    dest: .github/workflows/downstream-ci-hpc.yml
     template:
       repo_name: anemoi-transform
-  - source: sync-files/workflows/readthedocs/
-    dest: .github/workflows/
+  - source: sync-files/anemoi/.github/workflows/readthedocs-pr-update.yml
+    dest: .github/workflows/readthedocs-pr-update.yml
     template:
       repo_name: anemoi-transform
   repos: |
@@ -151,17 +102,71 @@ group:
 
 # Anemoi utils specific
 - files:
-  - source: sync-files/configs/anemoi/CONTRIBUTORS.md
+  - source: sync-files/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
       repo_name: anemoi-utils
-  - source: sync-files/workflows/downstream/
-    dest: .github/workflows/
+  - source: sync-files/anemoi/.github/workflows/downstream-ci-hpc.yml
+    dest: .github/workflows/downstream-ci-hpc.yml
     template:
       repo_name: anemoi-utils
-  - source: sync-files/workflows/readthedocs/
-    dest: .github/workflows/
+  - source: sync-files/anemoi/.github/workflows/readthedocs-pr-update.yml
+    dest: .github/workflows/readthedocs-pr-update.yml
     template:
       repo_name: anemoi-utils
   repos: |
     ecmwf/anemoi-utils
+
+
+# Anemoi Core specific
+- files:
+  - source: sync-files/general/apache-2-license
+    dest: LICENSE
+    template:
+      year: 2024-2025
+      authors: Anemoi Contributors
+  - source: sync-files/general/apache-2-license
+    dest: graphs/LICENSE
+    template:
+      year: 2024-2025
+      authors: Anemoi Contributors
+  - source: sync-files/general/apache-2-license
+    dest: models/LICENSE
+    template:
+      year: 2024-2025
+      authors: Anemoi Contributors
+  - source: sync-files/general/apache-2-license
+    dest: training/LICENSE
+    template:
+      year: 2024-2025
+      authors: Anemoi Contributors
+  - source: sync-files/anemoi/CONTRIBUTORS.md
+    dest: CONTRIBUTORS.md
+    template:
+      repo_name: anemoi-core
+  - source: sync-files/anemoi/CONTRIBUTORS.md
+    dest: graphs/CONTRIBUTORS.md
+    template:
+      repo_name: anemoi-graphs
+  - source: sync-files/anemoi/CONTRIBUTORS.md
+    dest: models/CONTRIBUTORS.md
+    template:
+      repo_name: anemoi-models
+  - source: sync-files/anemoi/CONTRIBUTORS.md
+    dest: training/CONTRIBUTORS.md
+    template:
+      repo_name: anemoi-training
+  - source: sync-files/configs/anemoi/.github/pull_request_template.md
+    dest: .github/pull_request_template.md
+  - source: sync-files/configs/anemoi/.gitignore
+    dest: .gitignore
+  - source: sync-files/configs/python-dependabot.yml
+    dest: .github/dependabot.yml
+  - source: sync-files/anemoi/.github/workflows/label-public-pr.yml
+    dest: .github/workflows/label-public-pr.yml
+  - source: sync-files/anemoi/.github/workflows/pr-conventional-commit.yml
+    dest: .github/workflows/pr-conventional-commit.yml
+  - source: sync-files/anemoi/.github/workflows/python-publish.yml
+    dest: .github/workflows/python-publish.yml
+  repos: |
+    ecmwf/anemoi-core
