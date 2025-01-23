@@ -438,6 +438,16 @@ Optional, optional dependencies to install from package to be tested.
 **Type:** `string`
 **Example:** `dev,tests,third_dependency_group`
 
+#### `install-dependencies`
+
+Optional, perform or skip dependency installation.
+
+This enables the external installation of dependencies.
+
+**Default:** `true`
+**Type:** `boolean`
+**Example:** `false`
+
 #### `skip-tests`
 
 Optional, the pytest marks to pass to the `-m` command flag.
