@@ -5,10 +5,7 @@ group:
 
 # Push common Anemoi actions
 - files:
-  - source: sync-files/workflows/changelog/
-    dest: .github/workflows/
-    deleteOrphaned: true
-  - source: sync-files/workflows/labels/
+  - source: sync-files/workflows/pr-utilities/
     dest: .github/workflows/
     deleteOrphaned: true
   - source: sync-files/workflows/python/
@@ -17,18 +14,16 @@ group:
   - source: sync-files/configs/python-dependabot.yml
     dest: .github/dependabot.yml
   repos: |
-    ecmwf/anemoi-datasets@develop
-    ecmwf/anemoi-inference@develop
-    ecmwf/anemoi-registry@develop
-    ecmwf/anemoi-transform@develop
-    ecmwf/anemoi-utils@develop
+    ecmwf/anemoi-datasets
+    ecmwf/anemoi-inference
+    ecmwf/anemoi-registry
+    ecmwf/anemoi-transform
+    ecmwf/anemoi-utils
 
 # Push common Anemoi configs
 - files:
   - source: sync-files/configs/anemoi-license
     dest: LICENSE
-  - source: sync-files/configs/anemoi-contributors
-    dest: CONTRIBUTORS.md
   - source: sync-files/configs/anemoi-codeowners
     dest: .github/CODEOWNERS
   - source: sync-files/configs/anemoi-pre-commit.yml
@@ -40,12 +35,12 @@ group:
   - source: sync-files/template/anemoi-pull_request_template.md
     dest: .github/pull_request_template.md
   repos: |
-    ecmwf/anemoi-datasets@develop
-    ecmwf/anemoi-docs@develop
-    ecmwf/anemoi-inference@develop
-    ecmwf/anemoi-registry@develop
-    ecmwf/anemoi-transform@develop
-    ecmwf/anemoi-utils@develop
+    ecmwf/anemoi-datasets
+    ecmwf/anemoi-docs
+    ecmwf/anemoi-inference
+    ecmwf/anemoi-registry
+    ecmwf/anemoi-transform
+    ecmwf/anemoi-utils
 
 # Anemoi Core specific
 - files:
@@ -67,13 +62,17 @@ group:
     dest: .github/pull_request_template.md
   - source: sync-files/configs/python-dependabot.yml
     dest: .github/dependabot.yml
-  - source: sync-files/workflows/labels/
+  - source: sync-files/workflows/pr-utilities/
     dest: .github/workflows/
   repos: |
-    ecmwf/anemoi-core@develop
+    ecmwf/anemoi-core
 
 # Anemoi Datasets specific
 - files:
+  - source: sync-files/configs/anemoi-contributors
+    dest: CONTRIBUTORS.md
+    template:
+      repo_name: anemoi-datasets
   - source: sync-files/workflows/downstream/
     dest: .github/workflows/
     template:
@@ -83,11 +82,15 @@ group:
     template:
       repo_name: anemoi-datasets
   repos: |
-    ecmwf/anemoi-datasets@develop
+    ecmwf/anemoi-datasets
 
 
 # Anemoi inference specific
 - files:
+  - source: sync-files/configs/anemoi-contributors
+    dest: CONTRIBUTORS.md
+    template:
+      repo_name: anemoi-inference
   - source: sync-files/workflows/downstream/
     dest: .github/workflows/
     template:
@@ -97,11 +100,15 @@ group:
     template:
       repo_name: anemoi-inference
   repos: |
-    ecmwf/anemoi-inference@develop
+    ecmwf/anemoi-inference
 
 
 # Anemoi registry specific
 - files:
+  - source: sync-files/configs/anemoi-contributors
+    dest: CONTRIBUTORS.md
+    template:
+      repo_name: anemoi-registry
   - source: sync-files/workflows/downstream/
     dest: .github/workflows/
     template:
@@ -111,11 +118,15 @@ group:
     template:
       repo_name: anemoi-registry
   repos: |
-    ecmwf/anemoi-registry@develop
+    ecmwf/anemoi-registry
 
 
 # Anemoi transform specific
 - files:
+  - source: sync-files/configs/anemoi-contributors
+    dest: CONTRIBUTORS.md
+    template:
+      repo_name: anemoi-transform
   - source: sync-files/workflows/downstream/
     dest: .github/workflows/
     template:
@@ -125,11 +136,15 @@ group:
     template:
       repo_name: anemoi-transform
   repos: |
-    ecmwf/anemoi-transform@develop
+    ecmwf/anemoi-transform
 
 
 # Anemoi utils specific
 - files:
+  - source: sync-files/configs/anemoi-contributors
+    dest: CONTRIBUTORS.md
+    template:
+      repo_name: anemoi-utils
   - source: sync-files/workflows/downstream/
     dest: .github/workflows/
     template:
@@ -139,4 +154,4 @@ group:
     template:
       repo_name: anemoi-utils
   repos: |
-    ecmwf/anemoi-utils@develop
+    ecmwf/anemoi-utils
