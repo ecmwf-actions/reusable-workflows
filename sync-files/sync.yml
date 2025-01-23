@@ -11,8 +11,6 @@ group:
   - source: sync-files/workflows/python/
     dest: .github/workflows/
     deleteOrphaned: true
-  - source: sync-files/configs/python-dependabot.yml
-    dest: .github/dependabot.yml
   repos: |
     ecmwf/anemoi-datasets
     ecmwf/anemoi-inference
@@ -20,20 +18,18 @@ group:
     ecmwf/anemoi-transform
     ecmwf/anemoi-utils
 
+
 # Push common Anemoi configs
 - files:
-  - source: sync-files/configs/anemoi-license
+  - source: sync-files/configs/anemoi/
+    dest: ./
+  - source: sync-files/configs/general/license
     dest: LICENSE
-  - source: sync-files/configs/anemoi-codeowners
-    dest: .github/CODEOWNERS
-  - source: sync-files/configs/anemoi-pre-commit.yml
-    dest: .pre-commit-config.yml
-  - source: sync-files/configs/anemoi-readthedocs.yml
-    dest: .readthedocs.yaml
-  - source: sync-files/configs/anemoi.gitignore
-    dest: .gitignore
-  - source: sync-files/template/anemoi-pull_request_template.md
-    dest: .github/pull_request_template.md
+    template:
+      year: 2024-2025
+      authors: Anemoi Contributors
+  - source: sync-files/configs/general/python-dependabot.yml
+    dest: .github/dependabot.yml
   repos: |
     ecmwf/anemoi-datasets
     ecmwf/anemoi-docs
@@ -42,24 +38,37 @@ group:
     ecmwf/anemoi-transform
     ecmwf/anemoi-utils
 
+
 # Anemoi Core specific
 - files:
-  - source: sync-files/configs/anemoi-license
+  - source: sync-files/configs/general/license
     dest: LICENSE
-  - source: sync-files/configs/anemoi-license
+    template:
+      year: 2024-2025
+      authors: Anemoi Contributors
+  - source: sync-files/configs/general/license
     dest: graphs/LICENSE
-  - source: sync-files/configs/anemoi-license
+    template:
+      year: 2024-2025
+      authors: Anemoi Contributors
+  - source: sync-files/configs/general/license
     dest: models/LICENSE
-  - source: sync-files/configs/anemoi-license
+    template:
+      year: 2024-2025
+      authors: Anemoi Contributors
+  - source: sync-files/configs/general/license
     dest: training/LICENSE
-  - source: sync-files/configs/anemoi-contributors
+    template:
+      year: 2024-2025
+      authors: Anemoi Contributors
+  - source: sync-files/configs/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
-  - source: sync-files/configs/anemoi-codeowners
+  - source: sync-files/configs/anemoi/.github/CODEOWNERS
     dest: .github/CODEOWNERS
-  - source: sync-files/configs/anemoi.gitignore
-    dest: .gitignore
-  - source: sync-files/template/anemoi-pull_request_template.md
+  - source: sync-files/configs/anemoi/.github/pull_request_template.md
     dest: .github/pull_request_template.md
+  - source: sync-files/configs/anemoi/.gitignore
+    dest: .gitignore
   - source: sync-files/configs/python-dependabot.yml
     dest: .github/dependabot.yml
   - source: sync-files/workflows/pr-utilities/
@@ -67,9 +76,10 @@ group:
   repos: |
     ecmwf/anemoi-core
 
+
 # Anemoi Datasets specific
 - files:
-  - source: sync-files/configs/anemoi-contributors
+  - source: sync-files/configs/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
       repo_name: anemoi-datasets
@@ -87,7 +97,7 @@ group:
 
 # Anemoi inference specific
 - files:
-  - source: sync-files/configs/anemoi-contributors
+  - source: sync-files/configs/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
       repo_name: anemoi-inference
@@ -105,7 +115,7 @@ group:
 
 # Anemoi registry specific
 - files:
-  - source: sync-files/configs/anemoi-contributors
+  - source: sync-files/configs/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
       repo_name: anemoi-registry
@@ -123,7 +133,7 @@ group:
 
 # Anemoi transform specific
 - files:
-  - source: sync-files/configs/anemoi-contributors
+  - source: sync-files/configs/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
       repo_name: anemoi-transform
@@ -141,7 +151,7 @@ group:
 
 # Anemoi utils specific
 - files:
-  - source: sync-files/configs/anemoi-contributors
+  - source: sync-files/configs/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
       repo_name: anemoi-utils
