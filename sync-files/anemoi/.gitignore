@@ -66,6 +66,9 @@ venv.bak/
 *.sublime-project
 *.sublime-workspace
 
+# Jupyter Notebook
+.ipynb_checkpoints
+
 # Type checking
 .mypy_cache/
 .dmypy.json
@@ -93,6 +96,7 @@ dmypy.json
 wandb/
 mlruns/
 lightning_logs/
+*.ckpt
 *.pt
 *.pth
 runs/
