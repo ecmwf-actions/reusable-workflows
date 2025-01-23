@@ -17,6 +17,7 @@ jobs:
         with:
           GH_PAT: ${{ secrets.REPO_SYNC_ACTION_PAT }}
           CONFIG_PATH: sync-files/sync.yml
+          IS_FINE_GRAINED: true
           COMMIT_PREFIX: "chore: "
           BRANCH_PREFIX: "chore/file-broadcast/"
           COMMIT_BODY: "Triggered from common files on https://github.com/ecmwf-actions/reusable-workflows"
