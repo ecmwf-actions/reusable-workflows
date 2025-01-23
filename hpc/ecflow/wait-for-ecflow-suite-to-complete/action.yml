@@ -1,6 +1,6 @@
-name: monitor-ecflow-suite
+name: wait-for-ecflow-suite-to-complete
 description: |
-  A Github action to monitor a suite status deployed on an ecflow server.
+  A Github action to check that the suite status is complete on an ecflow server.
 inputs:
   troika_user:
     description: User used to submit troika job.
