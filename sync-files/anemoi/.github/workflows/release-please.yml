@@ -1,4 +1,4 @@
-{% raw %}name: Run Release Please
+name: Run Release Please
 on:
   push:
     branches:
@@ -18,9 +18,8 @@ jobs:
           # this assumes that you have created a personal access token
           # (PAT) and configured it as a GitHub action secret named
           # `MY_RELEASE_PLEASE_TOKEN` (this secret name is not important).
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          token: {% raw %}${{ secrets.RELEASE_PLEASE_TOKEN }}{% endraw %}
           # optional. customize path to .release-please-config.json
           config-file: .release-please-config.json
           # Currently releases are done from main
-          target-branch: ${{ github.ref_name }}
-{% endraw %}
+          target-branch: {% raw %}${{ github.ref_name }}{% endraw %}

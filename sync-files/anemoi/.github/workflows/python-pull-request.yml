@@ -1,4 +1,4 @@
-{% raw %}name: Code Quality checks for PRs
+name: Code Quality checks for PRs
 
 on:
   pull_request:
@@ -21,5 +21,4 @@ jobs:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
     uses: ecmwf-actions/reusable-workflows/.github/workflows/qa-pytest-pyproject.yml@v2
     with:
-      python-version: ${{ matrix.python-version }}
-{% endraw %}
+      python-version: {% raw %}${{ matrix.python-version }}{% endraw %}

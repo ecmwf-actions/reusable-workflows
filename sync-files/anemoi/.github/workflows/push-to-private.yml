@@ -1,4 +1,4 @@
-{% raw %}name: Push to private repository
+name: Push to private repository
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   push_changes:
-    if: ${{ !contains(github.repository, 'private') }}{% endraw %}
+    if: {% raw %}${{ !contains(github.repository, 'private') }}{% endraw %}
     runs-on: ubuntu-latest
 
     steps:
@@ -25,10 +25,10 @@ jobs:
     - name: Setup SSH key
       uses: webfactory/ssh-agent@v0.5.0
       with:
-        ssh-private-key: ${{ secrets.KEY_TO_PRIVATE }}
+        ssh-private-key: {% raw %}${{ secrets.KEY_TO_PRIVATE }}{% endraw %}
 
     - name: Push changes to private repository
       run: |
-        git remote add private git@github.com:${{ github.repository }}-private.git
+        git remote add private git@github.com:{% raw %}${{ github.repository }}{% endraw %}-private.git
         git push --set-upstream private main
-{% endraw %}
+
