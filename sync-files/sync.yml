@@ -155,5 +155,7 @@ group:
     dest: .github/workflows/label-public-pr.yml
   - source: sync-files/anemoi/.github/workflows/pr-conventional-commit.yml
     dest: .github/workflows/pr-conventional-commit.yml
+    template:
+      repo_name: anemoi-core
   repos: |
     ecmwf/anemoi-core
