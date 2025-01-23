@@ -23,7 +23,7 @@ group:
 - files:
   - source: sync-files/configs/anemoi/
     dest: ./
-  - source: sync-files/configs/general/license
+  - source: sync-files/configs/general/apache-2-license
     dest: LICENSE
     template:
       year: 2024-2025
@@ -41,22 +41,22 @@ group:
 
 # Anemoi Core specific
 - files:
-  - source: sync-files/configs/general/license
+  - source: sync-files/configs/general/apache-2-license
     dest: LICENSE
     template:
       year: 2024-2025
       authors: Anemoi Contributors
-  - source: sync-files/configs/general/license
+  - source: sync-files/configs/general/apache-2-license
     dest: graphs/LICENSE
     template:
       year: 2024-2025
       authors: Anemoi Contributors
-  - source: sync-files/configs/general/license
+  - source: sync-files/configs/general/apache-2-license
     dest: models/LICENSE
     template:
       year: 2024-2025
       authors: Anemoi Contributors
-  - source: sync-files/configs/general/license
+  - source: sync-files/configs/general/apache-2-license
     dest: training/LICENSE
     template:
       year: 2024-2025
