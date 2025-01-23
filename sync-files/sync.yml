@@ -1,0 +1,124 @@
+group:
+##################
+# Anemoi Files   #
+##################
+
+# Common Anemoi files
+- files:
+  - source: sync-files/general/python/
+    dest: ./
+    template:
+      year: 2024-2025
+      authors: Anemoi Contributors
+  repos: |
+    ecmwf/anemoi-core
+    ecmwf/anemoi-datasets
+    ecmwf/anemoi-inference
+    ecmwf/anemoi-registry
+    ecmwf/anemoi-transform
+    ecmwf/anemoi-utils
+
+
+# Anemoi Datasets specific
+- files:
+  - source: sync-files/anemoi/
+    dest: ./
+    template:
+      repo_name: anemoi-datasets
+  repos: |
+    ecmwf/anemoi-datasets
+
+
+# Anemoi inference specific
+- files:
+  - source: sync-files/anemoi/
+    dest: ./
+    template:
+      repo_name: anemoi-inference
+  repos: |
+    ecmwf/anemoi-inference
+
+
+# Anemoi registry specific
+- files:
+  - source: sync-files/anemoi/
+    dest: ./
+    template:
+      repo_name: anemoi-registry
+  repos: |
+    ecmwf/anemoi-registry
+
+
+# Anemoi transform specific
+- files:
+  - source: sync-files/anemoi/
+    dest: ./
+    template:
+      repo_name: anemoi-transform
+  repos: |
+    ecmwf/anemoi-transform
+
+
+# Anemoi utils specific
+- files:
+  - source: sync-files/anemoi/
+    dest: ./
+    template:
+      repo_name: anemoi-utils
+  repos: |
+    ecmwf/anemoi-utils
+
+
+# Anemoi Core specific
+- files:
+  - source: sync-files/general/python/
+    dest: graphs/
+    template:
+      year: 2024-2025
+      authors: Anemoi Contributors
+    exclude:
+      - .github
+  - source: sync-files/general/python/
+    dest: models/
+    template:
+      year: 2024-2025
+      authors: Anemoi Contributors
+    exclude:
+      - .github
+  - source: sync-files/general/python/
+    dest: training/
+    template:
+      year: 2024-2025
+      authors: Anemoi Contributors
+    exclude:
+      - .github
+  - source: sync-files/anemoi/CONTRIBUTORS.md
+    dest: CONTRIBUTORS.md
+    template:
+      repo_name: anemoi-core
+  - source: sync-files/anemoi/CONTRIBUTORS.md
+    dest: graphs/CONTRIBUTORS.md
+    template:
+      repo_name: anemoi-graphs
+  - source: sync-files/anemoi/CONTRIBUTORS.md
+    dest: models/CONTRIBUTORS.md
+    template:
+      repo_name: anemoi-models
+  - source: sync-files/anemoi/CONTRIBUTORS.md
+    dest: training/CONTRIBUTORS.md
+    template:
+      repo_name: anemoi-training
+  - source: sync-files/anemoi/.github/pull_request_template.md
+    dest: .github/pull_request_template.md
+  - source: sync-files/anemoi/.gitignore
+    dest: .gitignore
+  - source: sync-files/general/python/.github/dependabot.yml
+    dest: .github/dependabot.yml
+  - source: sync-files/anemoi/.github/workflows/label-public-pr.yml
+    dest: .github/workflows/label-public-pr.yml
+  - source: sync-files/anemoi/.github/workflows/pr-conventional-commit.yml
+    dest: .github/workflows/pr-conventional-commit.yml
+  - source: sync-files/anemoi/.github/workflows/python-publish.yml
+    dest: .github/workflows/python-publish.yml
+  repos: |
+    ecmwf/anemoi-core
