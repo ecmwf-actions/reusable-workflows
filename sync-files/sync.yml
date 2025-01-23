@@ -3,16 +3,8 @@ group:
 # Anemoi Files   #
 ##################
 
-# Push common Anemoi structure files to all Anemoi repositories
+# Common Anemoi files
 - files:
-  - source: sync-files/anemoi/
-    dest: ./
-    deleteOrphaned: true
-    ## Exclude files from being copied that are templated
-    exclude: |
-      sync-files/anemoi/workflows/downstream-ci-hpc.yml
-      sync-files/anemoi/workflows/readthedocs-pr-update.yml
-      sync-files/anemoi/CONTRIBUTORS.md
   - source: sync-files/general/apache-2-license
     dest: LICENSE
     template:
@@ -21,6 +13,7 @@ group:
   - source: sync-files/general/python-dependabot.yml
     dest: .github/dependabot.yml
   repos: |
+    ecmwf/anemoi-core
     ecmwf/anemoi-datasets
     ecmwf/anemoi-inference
     ecmwf/anemoi-registry
@@ -30,16 +23,8 @@ group:
 
 # Anemoi Datasets specific
 - files:
-  - source: sync-files/anemoi/CONTRIBUTORS.md
-    dest: CONTRIBUTORS.md
-    template:
-      repo_name: anemoi-datasets
-  - source: sync-files/anemoi/.github/workflows/downstream-ci-hpc.yml
-    dest: .github/workflows/downstream-ci-hpc.yml
-    template:
-      repo_name: anemoi-datasets
-  - source: sync-files/anemoi/.github/workflows/readthedocs-pr-update.yml
-    dest: .github/workflows/readthedocs-pr-update.yml
+  - source: sync-files/anemoi/
+    dest: ./
     template:
       repo_name: anemoi-datasets
   repos: |
@@ -48,16 +33,8 @@ group:
 
 # Anemoi inference specific
 - files:
-  - source: sync-files/anemoi/CONTRIBUTORS.md
-    dest: CONTRIBUTORS.md
-    template:
-      repo_name: anemoi-inference
-  - source: sync-files/anemoi/.github/workflows/downstream-ci-hpc.yml
-    dest: .github/workflows/downstream-ci-hpc.yml
-    template:
-      repo_name: anemoi-inference
-  - source: sync-files/anemoi/.github/workflows/readthedocs-pr-update.yml
-    dest: .github/workflows/readthedocs-pr-update.yml
+  - source: sync-files/anemoi/
+    dest: ./
     template:
       repo_name: anemoi-inference
   repos: |
@@ -66,16 +43,8 @@ group:
 
 # Anemoi registry specific
 - files:
-  - source: sync-files/anemoi/CONTRIBUTORS.md
-    dest: CONTRIBUTORS.md
-    template:
-      repo_name: anemoi-registry
-  - source: sync-files/anemoi/.github/workflows/downstream-ci-hpc.yml
-    dest: .github/workflows/downstream-ci-hpc.yml
-    template:
-      repo_name: anemoi-registry
-  - source: sync-files/anemoi/.github/workflows/readthedocs-pr-update.yml
-    dest: .github/workflows/readthedocs-pr-update.yml
+  - source: sync-files/anemoi/
+    dest: ./
     template:
       repo_name: anemoi-registry
   repos: |
@@ -84,16 +53,8 @@ group:
 
 # Anemoi transform specific
 - files:
-  - source: sync-files/anemoi/CONTRIBUTORS.md
-    dest: CONTRIBUTORS.md
-    template:
-      repo_name: anemoi-transform
-  - source: sync-files/anemoi/.github/workflows/downstream-ci-hpc.yml
-    dest: .github/workflows/downstream-ci-hpc.yml
-    template:
-      repo_name: anemoi-transform
-  - source: sync-files/anemoi/.github/workflows/readthedocs-pr-update.yml
-    dest: .github/workflows/readthedocs-pr-update.yml
+  - source: sync-files/anemoi/
+    dest: ./
     template:
       repo_name: anemoi-transform
   repos: |
@@ -102,16 +63,8 @@ group:
 
 # Anemoi utils specific
 - files:
-  - source: sync-files/anemoi/CONTRIBUTORS.md
-    dest: CONTRIBUTORS.md
-    template:
-      repo_name: anemoi-utils
-  - source: sync-files/anemoi/.github/workflows/downstream-ci-hpc.yml
-    dest: .github/workflows/downstream-ci-hpc.yml
-    template:
-      repo_name: anemoi-utils
-  - source: sync-files/anemoi/.github/workflows/readthedocs-pr-update.yml
-    dest: .github/workflows/readthedocs-pr-update.yml
+  - source: sync-files/anemoi/
+    dest: ./
     template:
       repo_name: anemoi-utils
   repos: |
@@ -120,11 +73,6 @@ group:
 
 # Anemoi Core specific
 - files:
-  - source: sync-files/general/apache-2-license
-    dest: LICENSE
-    template:
-      year: 2024-2025
-      authors: Anemoi Contributors
   - source: sync-files/general/apache-2-license
     dest: graphs/LICENSE
     template:
@@ -156,11 +104,11 @@ group:
     dest: training/CONTRIBUTORS.md
     template:
       repo_name: anemoi-training
-  - source: sync-files/configs/anemoi/.github/pull_request_template.md
+  - source: sync-files/anemoi/.github/pull_request_template.md
     dest: .github/pull_request_template.md
-  - source: sync-files/configs/anemoi/.gitignore
+  - source: sync-files/anemoi/.gitignore
     dest: .gitignore
-  - source: sync-files/configs/python-dependabot.yml
+  - source: sync-files/general/python-dependabot.yml
     dest: .github/dependabot.yml
   - source: sync-files/anemoi/.github/workflows/label-public-pr.yml
     dest: .github/workflows/label-public-pr.yml
