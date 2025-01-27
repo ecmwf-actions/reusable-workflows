@@ -56,15 +56,17 @@ runs:
       run: |
         import os
         repo = "${{ inputs.repository }}"
+        subdir = "."
         if ":" in repo:
             _, repo = repo.split(":")
         repo, ref = repo.split("@")
         if repo.count("/") > 1:
-            owner, repo, _ = repo.split("/", maxsplit=2)
+            owner, repo, subdir = repo.split("/", maxsplit=2)
             repo = f"{owner}/{repo}"
         with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
             print("repo", repo, sep="=", file=f)
             print("ref", ref, sep="=", file=f)
+            print("subdir", subdir, sep="=", file=f)
 
     - name: Checkout repository
       if: ${{ inputs.checkout == 'true' }}
@@ -96,6 +98,7 @@ runs:
         fi
         # this is just to install the dependencies; the pkg will be overwritten later
         if [ -n "${{ inputs.toml_opt_dep_sections }}" ]; then
+          cd ${{ steps.inputs.outputs.subdir }}
           pip install -e .[${{ inputs.toml_opt_dep_sections }}]
         fi
 
@@ -146,6 +149,7 @@ runs:
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda activate $RUNNER_TEMP/venv
+        cd ${{ steps.inputs.outputs.subdir }}
         python -m build --sdist
         pip install dist/*
 
@@ -168,6 +172,7 @@ runs:
         conda list
         echo "pip list:"
         pip list
+        cd ${{ steps.inputs.outputs.subdir }}
         if [ -n "${{ inputs.test_cmd }}" ]; then
           echo "Running package-supplied test command"
           ${{ inputs.test_cmd }}
