@@ -9,7 +9,7 @@ Interfaces and functionality are likely to change, and the project itself may be
 
 ## Documentation
 
-The documentation can be found at https://{{ repo-name }}.readthedocs.io/.
+The documentation can be found at https://{{ repo_name }}.readthedocs.io/.
 
 ## Install
 

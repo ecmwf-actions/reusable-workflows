@@ -37,7 +37,7 @@ jobs:
                 nouns: ['build','rebuild','ci']
                 labels: ['CI/CD']
               - type: 'config'
-                nouns: ['config', 'conf', 'cofiguration']
+                nouns: ['config', 'conf', 'configuration']
                 labels: ['config']
           maintain-labels-not-matched: false
           apply-changes: true
