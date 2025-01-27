@@ -19,16 +19,12 @@ documentation:
 config:
 - changed-files:
   - any-glob-to-any-file:
-    - ".pre-commit-config.yaml"
-    - "config/**/*"
-    - "settings/**/*"
-    - "*.ini"
-    - "*.cfg"
-    - "*.conf"
+    - "src/**/config/**/*"
 
 CI/CD:
 - changed-files:
   - any-glob-to-any-file:
+    - ".pre-commit-config.yaml"
     - ".github/**/*"
     - "tox.ini"
     - ".coveragerc"
