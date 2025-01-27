@@ -1,30 +1,30 @@
 dependencies:
 - changed-files:
   - any-glob-to-any-file:
-    - "requirements.txt"
-    - "setup.py"
-    - "pyproject.toml"
-    - "Pipfile"
-    - "Pipfile.lock"
-    - "requirements/*.txt"
-    - "requirements/*.in"
+    - "**/requirements.txt"
+    - "**/setup.py"
+    - "**/pyproject.toml"
+    - "**/Pipfile"
+    - "**/Pipfile.lock"
+    - "**/requirements/*.txt"
+    - "**/requirements/*.in"
 
 documentation:
 - changed-files:
   - any-glob-to-any-file:
-    - "docs/**/*"
+    - "**/docs/**/*"
     - "*.md"
     - "*.rst"
 
 config:
 - changed-files:
   - any-glob-to-any-file:
-    - "src/**/config/**/*"
+    - "**/src/**/config/**/*"
 
 CI/CD:
 - changed-files:
   - any-glob-to-any-file:
-    - ".pre-commit-config.yaml"
+    - "**/.pre-commit-config.yaml"
     - ".github/**/*"
     - "tox.ini"
     - ".coveragerc"
