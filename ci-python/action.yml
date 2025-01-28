@@ -51,7 +51,7 @@ runs:
   steps:
     - name: Parse repository input
       id: inputs
-      if: ${{ inputs.checkout == 'true' }}
+      if: ${{ inputs.repository }}
       shell: python3 {0}
       run: |
         import os
