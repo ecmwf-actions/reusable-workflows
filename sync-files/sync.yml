@@ -158,7 +158,7 @@ group:
   - source: sync-files/general/python/.github/dependabot.yml
     dest: .github/dependabot.yml
   - source: sync-files/anemoi/.github/workflows/pr-label-public.yml
-    dest: .github/workflows/label-public-pr.yml
+    dest: .github/workflows/pr-label-public.yml
     template:
       repo_name: anemoi-core
   - source: sync-files/anemoi/.github/workflows/pr-label-conventional-commits.yml

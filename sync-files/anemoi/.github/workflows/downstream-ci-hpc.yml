@@ -1,3 +1,5 @@
+# This workflow triggers tests on dependent packages.
+# The dependency tree itself is defined in ecmwf-actions/downstream-ci/
 name: Test downstream dependent packages on HPC
 
 on:
