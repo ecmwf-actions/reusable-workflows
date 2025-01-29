@@ -1,3 +1,6 @@
+# This is the configuration file for the labeler action.
+# It assigns labels to pull requests based on the files changed in the PR.
+# See more here: https://github.com/actions/labeler
 dependencies:
 - changed-files:
   - any-glob-to-any-file:

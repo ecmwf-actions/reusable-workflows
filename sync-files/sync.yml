@@ -1,3 +1,7 @@
+# This configuration file is used by the file broadcasting infrastructure in .github/workflows/sync-files-to-repos.yml.
+# It defines the files to be copied to the repositories listed in the `repos` field.
+# You can use templating and fairly intricate logic to define the files to be copied and replaced.
+# Read more here: https://github.com/BetaHuhn/repo-file-sync-action/
 group:
 ##################
 # Anemoi Files   #
