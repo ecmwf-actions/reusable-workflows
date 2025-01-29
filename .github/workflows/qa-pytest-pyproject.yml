@@ -75,4 +75,4 @@ jobs:
           custom-arguments: ${{ inputs.skip-tests != '' && '-m ' || '' }}${{ inputs.skip-tests }}
           click-to-expand: true
           report-title:  "Test report (python ${{ inputs.python-version }} on ${{ matrix.platform }})"
-          custom-pytest: cd ${{ inputs.work-directory }} && ${{ inputs.custom-pytest }}
+          custom-pytest: cd ${{ inputs.working-directory }} && ${{ inputs.custom-pytest }}
