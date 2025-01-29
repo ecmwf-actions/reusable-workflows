@@ -3,7 +3,11 @@
 {% block testing %}
 -   [ ] I have tested the changes on a single GPU
 -   [ ] I have tested the changes on multiple GPUs / multi-node setups
--   [ ] I have run the Benchmark Profiler against the old version of the code
+-   [ ] I have run the [Benchmark Profiler](https://anemoi.readthedocs.io/projects/training/en/latest/user-guide/benchmarking.html) against the old version of the code
+
+{% endblock %}
+
+{% block documentation %}
 {% endblock %}
 
 {% block dependencies %}

@@ -22,7 +22,7 @@
 ### Code Performance and Testing
 
 -   [ ] I have added tests that prove my fix is effective or that my feature works
--   [ ] I ran the complete Pytest test suite locally, and they pass
+-   [ ] I ran the [complete Pytest test](https://anemoi.readthedocs.io/projects/training/en/latest/dev/testing.html) suite locally, and they pass
 {% block testing %}
 {% endblock %}
 
