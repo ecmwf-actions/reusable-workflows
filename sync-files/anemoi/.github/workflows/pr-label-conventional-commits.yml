@@ -1,4 +1,6 @@
-name: "Pull Request Labeler Conventional Commits"
+# This workflow assigns labels to a pull request based on the Conventional Commits format.
+# This is necessary for release-please to work properly.
+name: "[Pull Request] Label Conventional Commits"
 
 on:
   pull_request:
@@ -37,7 +39,7 @@ jobs:
                 nouns: ['build','rebuild','ci']
                 labels: ['CI/CD']
               - type: 'config'
-                nouns: ['config', 'conf', 'cofiguration']
+                nouns: ['config', 'conf', 'configuration']
                 labels: ['config']
           maintain-labels-not-matched: false
           apply-changes: true
