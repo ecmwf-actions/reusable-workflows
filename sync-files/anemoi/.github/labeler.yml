@@ -31,3 +31,12 @@ CI/CD:
     - ".github/**/*"
     - "tox.ini"
     - ".coveragerc"
+
+tests:
+- changed-files:
+  - any-glob-to-any-file:
+    - "**/tests/**/*"
+    - "**/test/**/*"
+    - "**/test_*.py"
+    - "**/test.py"
+    - "**/conftest.py"
