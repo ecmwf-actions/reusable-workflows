@@ -1,0 +1,76 @@
+name: wait-for-ecflow-suite-to-complete
+description: |
+  A Github action to check that the suite status is complete on an ecflow server.
+inputs:
+  troika_user:
+    description: User used to submit troika job.
+    required: true
+  sbatch_options:
+    description: List of SBATCH directives
+    required: false
+  site:
+    description: HPC site name.
+    required: false
+    default: hpc-batch
+  suite_name:
+    description: Name of the suite.
+    required: true
+  ecflow_host:
+    description: ecflow server hostname.
+    required: true
+  ecflow_port:
+    description: ecflow server port.
+    required: true
+  delay:
+    description: Delay in seconds between two ecflow client queries to check the status of the suite.
+    required: false
+    default: 60
+  timeout:
+    description: Timeout in seconds to consider the suite lost.
+    required: false
+    default: 3600
+runs:
+  using: composite
+  steps:
+    - name: Monitor suite from ecflow server
+      uses: ecmwf-actions/reusable-workflows/ci-hpc-generic@v2
+      with:
+        template: |
+          set -eux
+          # Load modules of interest
+          module load ecflow
+
+          # Set ecflow server variables
+          export ECF_HOST=${{ inputs.ecflow_host }}
+          export ECF_PORT=${{ inputs.ecflow_port }}
+
+          # Suite status
+          COMPLETE_STATUS=complete
+          ABORTED_STATUS=aborted
+          STATUS=""
+
+          # Check the suite status every DELAY seconds during at most TIMEOUT seconds.
+          # If the suite is not complete after TIMEOUT seconds, exit with an error.
+          TIMEOUT=${{ inputs.timeout }}  # seconds
+          DELAY=${{ inputs.delay }}  # seconds
+          TIME=0  # initialisation
+
+          while [[ "$STATUS" != "$COMPLETE_STATUS" ]]; do
+              STATUS=$(ecflow_client --query state /${{ inputs.suite_name }})
+              # Check for errors
+              if [ "$STATUS" == "$ABORTED_STATUS" ]; then
+                  echo "Suite status is aborted. Exiting with an error."
+                  exit 1
+              fi
+              # Sleep and check for timeout
+              if [ $TIME -lt $TIMEOUT ]; then
+                  sleep $DELAY
+                  TIME=$((TIME+$DELAY))
+              else
+                  echo "Timeout is reached. Exiting with an error."
+                  exit 1
+              fi
+          done
+        sbatch_options: ${{ inputs.sbatch_options }}
+        troika_user: ${{ inputs.troika_user }}
+        site: ${{ inputs.site }}
