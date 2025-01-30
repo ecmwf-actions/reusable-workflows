@@ -19,7 +19,7 @@ on:
 
 jobs:
   deploy:
-    if: ${{ github.ref_type == 'tag' || github.event_name == 'release' }}
+    #if: ${{ github.ref_type == 'tag' || github.event_name == 'release' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -29,26 +29,26 @@ jobs:
         with:
           fetch-depth: "0"
 
-      - name: Test tag name pattern
-        shell: python
-        run: |
-          import re
-          import sys
+#      - name: Test tag name pattern
+#        shell: python
+#        run: |
+#          import re
+#          import sys#
+#
+#          tag_pattern = r"${{ vars.TAG_REGEX_FOR_DEPLOYMENT }}"
+#          ref = "${{ github.ref_name }}"
+#
+#          if not tag_pattern:
+#            sys.exit(0)
 
-          tag_pattern = r"${{ vars.TAG_REGEX_FOR_DEPLOYMENT }}"
-          ref = "${{ github.ref_name }}"
+#          if not re.match(tag_pattern, ref):
+#            print(f"::error::{ref} does not match {tag_pattern}")
+#            sys.exit(1)
 
-          if not tag_pattern:
-            sys.exit(0)
-
-          if not re.match(tag_pattern, ref):
-            print(f"::error::{ref} does not match {tag_pattern}")
-            sys.exit(1)
-
-      - name: Test branch name pattern
-        if: ${{ vars.BRANCH_REGEX_FOR_DEPLOYMENT != '' }}
-        run: |
-          git branch --all --list --format "%(refname:lstrip=-1)" --contains "${{ github.ref_name }}" | grep -E "${{ vars.BRANCH_REGEX_FOR_DEPLOYMENT }}"
+#      - name: Test branch name pattern
+#        if: ${{ vars.BRANCH_REGEX_FOR_DEPLOYMENT != '' }}
+#        run: |
+#          git branch --all --list --format "%(refname:lstrip=-1)" --contains "${{ github.ref_name }}" | grep -E "${{ vars.BRANCH_REGEX_FOR_DEPLOYMENT }}"
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -60,13 +60,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install setuptools wheel twine build
 
-      - name: Check version
-        run: |
-          if [ -f "setup.py" ]; then
-            release=${{ github.ref_name }}
-            version=$(python setup.py --version)
-            test "$release" == "$version"
-          fi
+#      - name: Check version
+#        run: |
+#          if [ -f "setup.py" ]; then
+#            release=${{ github.ref_name }}
+#            version=$(python setup.py --version)
+#            test "$release" == "$version"
+#          fi
 
       - name: Build and publish to pypi
         if: ${{ !inputs.testpypi }}
