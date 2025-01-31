@@ -44,11 +44,11 @@ jobs:
       codecov_upload: true
     secrets: inherit
 
-   # Build downstream packages on HPC
-  downstream-ci-hpc:
-    name: downstream-ci-hpc
-    if: {% raw %}${{ !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}{% endraw %}
-    uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci-hpc.yml@main
-    with:
-      {{ repo_name }}: ecmwf/{{ repo_name }}{% raw %}@${{ github.event.pull_request.head.sha || github.sha }}{% endraw %}
-    secrets: inherit
+  # # Build downstream packages on HPC
+  # downstream-ci-hpc:
+  #   name: downstream-ci-hpc
+  #   if: {% raw %}${{ !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}{% endraw %}
+  #   uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci-hpc.yml@main
+  #   with:
+  #     {{ repo_name }}: ecmwf/{{ repo_name }}{% raw %}@${{ github.event.pull_request.head.sha || github.sha }}{% endraw %}
+  #   secrets: inherit

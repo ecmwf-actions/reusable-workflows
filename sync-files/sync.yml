@@ -63,6 +63,7 @@ group:
     exclude: |
       .release-please-manifest.json
       .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
+      .github/workflows/push-to-private.yml
   repos: |
     ecmwf/anemoi-inference
 
@@ -79,6 +80,7 @@ group:
     exclude: |
       .release-please-manifest.json
       .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
+      .github/workflows/push-to-private.yml
   repos: |
     ecmwf/anemoi-registry
 
@@ -95,6 +97,7 @@ group:
     exclude: |
       .release-please-manifest.json
       .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
+      .github/workflows/push-to-private.yml
   repos: |
     ecmwf/anemoi-transform
 
@@ -111,6 +114,7 @@ group:
     exclude: |
       .release-please-manifest.json
       .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
+      .github/workflows/push-to-private.yml
   repos: |
     ecmwf/anemoi-utils
 
