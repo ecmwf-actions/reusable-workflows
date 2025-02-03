@@ -127,21 +127,21 @@ group:
       year: 2024-2025
       authors: Anemoi Contributors
     exclude:
-      - .github
+      - .github/dependabot.yml
   - source: sync-files/general/python/
     dest: models/
     template:
       year: 2024-2025
       authors: Anemoi Contributors
     exclude:
-      - .github
+      - .github/dependabot.yml
   - source: sync-files/general/python/
     dest: training/
     template:
       year: 2024-2025
       authors: Anemoi Contributors
     exclude:
-      - .github
+      - .github/dependabot.yml
   - source: sync-files/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
