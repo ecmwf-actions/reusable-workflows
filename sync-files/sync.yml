@@ -37,111 +37,125 @@ group:
 
 # Anemoi Datasets specific
 - files:
-  - source: sync-files/anemoi/
+  - source: sync-files/anemoi/all/
     dest: ./
     template:
       repo_name: anemoi-datasets
       year: 2024-2025
       authors: Anemoi Contributors
       short_desc: "Datasets for training data-driven weather forecasts."
-    exclude: |
-      .release-please-manifest.json
-      .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
+    # exclude: |
+    #   .release-please-manifest.json
+    #   .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
+  - source: sync-files/anemoi/some/.github/workflows/downstream-ci-hpc.yml
+    dest: .github/workflows/downstream-ci-hpc.yml
+    template:
+      repo_name: anemoi-datasets
+  - source: sync-files/anemoi/some/.github/workflows/push-to-private.yml
+    dest: .github/workflows/push-to-private.yml
+    template:
+      repo_name: anemoi-datasets
   repos: |
     ecmwf/anemoi-datasets
 
-
 # Anemoi inference specific
 - files:
-  - source: sync-files/anemoi/
+  - source: sync-files/anemoi/all/
     dest: ./
     template:
       repo_name: anemoi-inference
       year: 2024-2025
       authors: Anemoi Contributors
       short_desc: "Inference tools for data-driven weather forecasts."
-    exclude: |
-      .release-please-manifest.json
-      .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
-      .github/workflows/push-to-private.yml
+    # exclude: |
+    #   .release-please-manifest.json
+    #   .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
+    #   .github/workflows/push-to-private.yml
+  - source: sync-files/anemoi/some/.github/workflows/downstream-ci-hpc.yml
+    dest: .github/workflows/downstream-ci-hpc.yml
+    template:
+      repo_name: anemoi-inference
   repos: |
     ecmwf/anemoi-inference
 
 
 # Anemoi registry specific
 - files:
-  - source: sync-files/anemoi/
+  - source: sync-files/anemoi/all/
     dest: ./
     template:
       repo_name: anemoi-registry
       year: 2024-2025
       authors: Anemoi Contributors
       short_desc: "Registry for data-driven weather forecasts."
-    exclude: |
-      .release-please-manifest.json
-      .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
-      .github/workflows/push-to-private.yml
+    # exclude: |
+    #   .release-please-manifest.json
+    #   .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
+    #   .github/workflows/push-to-private.yml
+    #   .github/workflows/downstream-ci-hpc.yml
   repos: |
     ecmwf/anemoi-registry
 
 
 # Anemoi transform specific
 - files:
-  - source: sync-files/anemoi/
+  - source: sync-files/anemoi/all/
     dest: ./
     template:
       repo_name: anemoi-transform
       year: 2024-2025
       authors: Anemoi Contributors
       short_desc: "Miscellanous data transformation functions for training data-driven weather forecasts."
-    exclude: |
-      .release-please-manifest.json
-      .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
-      .github/workflows/push-to-private.yml
+    # exclude: |
+    #   .release-please-manifest.json
+    #   .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
+    #   .github/workflows/push-to-private.yml
+  - source: sync-files/anemoi/some/.github/workflows/downstream-ci-hpc.yml
+    dest: .github/workflows/downstream-ci-hpc.yml
+    template:
+      repo_name: anemoi-transform
   repos: |
     ecmwf/anemoi-transform
 
 
 # Anemoi utils specific
 - files:
-  - source: sync-files/anemoi/
+  - source: sync-files/anemoi/all/
     dest: ./
     template:
       repo_name: anemoi-utils
       year: 2024-2025
       authors: Anemoi Contributors
       short_desc: "Miscellanous tools for training data-driven weather forecasts."
-    exclude: |
-      .release-please-manifest.json
-      .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
-      .github/workflows/push-to-private.yml
+    # exclude: |
+    #   .release-please-manifest.json
+    #   .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
+    #   .github/workflows/push-to-private.yml
+  - source: sync-files/anemoi/some/.github/workflows/downstream-ci-hpc.yml
+    dest: .github/workflows/downstream-ci-hpc.yml
+    template:
+      repo_name: anemoi-utils
   repos: |
     ecmwf/anemoi-utils
 
 
 # Anemoi Core specific
 - files:
-  - source: sync-files/general/python/
-    dest: graphs/
+  - source: sync-files/general/python/LICENSE
+    dest: graphs/LICENSE
     template:
       year: 2024-2025
       authors: Anemoi Contributors
-    exclude:
-      - .github
-  - source: sync-files/general/python/
-    dest: models/
+  - source: sync-files/general/python/LICENSE
+    dest: models/LICENSE
     template:
       year: 2024-2025
       authors: Anemoi Contributors
-    exclude:
-      - .github
-  - source: sync-files/general/python/
-    dest: training/
+  - source: sync-files/general/python/LICENSE
+    dest: training/LICENSE
     template:
       year: 2024-2025
       authors: Anemoi Contributors
-    exclude:
-      - .github
   - source: sync-files/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
