@@ -141,22 +141,22 @@ group:
 
 # Anemoi Core specific
 - files:
-  - source: sync-files/general/python/
-    dest: graphs/
+  - source: sync-files/general/python/LICENSE
+    dest: graphs/LICENSE
     template:
       year: 2024-2025
       authors: Anemoi Contributors
     exclude:
       - .github
-  - source: sync-files/general/python/
-    dest: models/
+  - source: sync-files/general/python/LICENSE
+    dest: models/LICENSE
     template:
       year: 2024-2025
       authors: Anemoi Contributors
     exclude:
       - .github
-  - source: sync-files/general/python/
-    dest: training/
+  - source: sync-files/general/python/LICENSE
+    dest: training/LICENSE
     template:
       year: 2024-2025
       authors: Anemoi Contributors
