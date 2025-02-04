@@ -13,7 +13,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
       - name: Run Repo File Sync Action
-        uses: BetaHuhn/repo-file-sync-action@v1.19
+        uses: BetaHuhn/repo-file-sync-action@v1.19.1
         with:
           GH_PAT: ${{ secrets.REPO_SYNC_ACTION_PAT }}
           GIT_EMAIL: "150700357+DeployDuck@users.noreply.github.com"
