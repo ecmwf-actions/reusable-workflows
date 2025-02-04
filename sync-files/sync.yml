@@ -81,6 +81,7 @@ group:
       .release-please-manifest.json
       .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
       .github/workflows/push-to-private.yml
+      .github/workflows/downstream-ci-hpc.yml
   repos: |
     ecmwf/anemoi-registry
 
@@ -127,21 +128,21 @@ group:
       year: 2024-2025
       authors: Anemoi Contributors
     exclude:
-      - .github
+      - .github/dependabot.yml
   - source: sync-files/general/python/
     dest: models/
     template:
       year: 2024-2025
       authors: Anemoi Contributors
     exclude:
-      - .github
+      - .github/dependabot.yml
   - source: sync-files/general/python/
     dest: training/
     template:
       year: 2024-2025
       authors: Anemoi Contributors
     exclude:
-      - .github
+      - .github/dependabot.yml
   - source: sync-files/anemoi/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
