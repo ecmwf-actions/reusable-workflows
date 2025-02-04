@@ -81,6 +81,7 @@ group:
       .release-please-manifest.json
       .github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
       .github/workflows/push-to-private.yml
+      .github/workflows/downstream-ci-hpc.yml
   repos: |
     ecmwf/anemoi-registry
 
