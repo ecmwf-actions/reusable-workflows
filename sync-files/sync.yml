@@ -156,42 +156,42 @@ group:
     template:
       year: 2024-2025
       authors: Anemoi Contributors
-  - source: sync-files/anemoi/CONTRIBUTORS.md
+  - source: sync-files/anemoi/all/CONTRIBUTORS.md
     dest: CONTRIBUTORS.md
     template:
       repo_name: anemoi-core
-  - source: sync-files/anemoi/CONTRIBUTORS.md
+  - source: sync-files/anemoi/all/CONTRIBUTORS.md
     dest: graphs/CONTRIBUTORS.md
     template:
       repo_name: anemoi-graphs
-  - source: sync-files/anemoi/CONTRIBUTORS.md
+  - source: sync-files/anemoi/all/CONTRIBUTORS.md
     dest: models/CONTRIBUTORS.md
     template:
       repo_name: anemoi-models
-  - source: sync-files/anemoi/CONTRIBUTORS.md
+  - source: sync-files/anemoi/all/CONTRIBUTORS.md
     dest: training/CONTRIBUTORS.md
     template:
       repo_name: anemoi-training
-  - source: sync-files/anemoi/.github/PULL_REQUEST_TEMPLATE/pull_request_template-core.md
-    dest: .github/PULL_REQUEST_TEMPLATE/pull_request_template.md
+  - source: sync-files/anemoi/some/.github/pull_request_template-core.md
+    dest: .github/pull_request_template.md
     template: true
-  - source: sync-files/anemoi/.gitignore
+  - source: sync-files/anemoi/all/.gitignore
     dest: .gitignore
   - source: sync-files/general/python/.github/dependabot.yml
     dest: .github/dependabot.yml
-  - source: sync-files/anemoi/.github/workflows/pr-label-public.yml
+  - source: sync-files/anemoi/all/.github/workflows/pr-label-public.yml
     dest: .github/workflows/pr-label-public.yml
     template:
       repo_name: anemoi-core
-  - source: sync-files/anemoi/.github/workflows/pr-label-conventional-commits.yml
+  - source: sync-files/anemoi/all/.github/workflows/pr-label-conventional-commits.yml
     dest: .github/workflows/pr-label-conventional-commits.yml
     template:
       repo_name: anemoi-core
-  - source: sync-files/anemoi/.github/workflows/pr-label-file-based.yml
+  - source: sync-files/anemoi/all/.github/workflows/pr-label-file-based.yml
     dest: .github/workflows/pr-label-file-based.yml
     template:
       repo_name: anemoi-core
-  - source: sync-files/anemoi/.github/workflows/pr-conventional-commit.yml
+  - source: sync-files/anemoi/all/.github/workflows/pr-conventional-commit.yml
     dest: .github/workflows/pr-conventional-commit.yml
     template:
       repo_name: anemoi-core
