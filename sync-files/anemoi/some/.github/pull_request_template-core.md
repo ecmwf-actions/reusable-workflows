@@ -1,4 +1,4 @@
-{% extends "sync-files/anemoi/.github/PULL_REQUEST_TEMPLATE/pull_request_template.md" %}
+{% extends "sync-files/anemoi/all/.github/pull_request_template.md" %}
 
 {% block testing %}
 -   [ ] I have tested the changes on a single GPU
