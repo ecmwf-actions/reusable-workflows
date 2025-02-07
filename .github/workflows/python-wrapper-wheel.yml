@@ -1,0 +1,89 @@
+# Releases a python-wrapper wheel: for an ecbuild-based compiled library,
+# runs the compilation and bundles all artifacts (libs, includes, ...) into
+# a binary wheel (manylinux/macos) along with findlibs-compatible instructions
+# about dependencies
+# Assumes that the project has the `python_wrapper` directory which configures
+# this action
+
+on:
+  workflow_call:
+    inputs:
+      use_test_pypi:
+        description: Use test pypi instead of the regular one
+        required: false
+        type: boolean
+        default: false # TODO actually use this
+
+jobs:
+  linux-wheel:
+    name: Build manylinux_2_28
+    strategy:
+      matrix:  
+        # TODO convert this to be matrix-friendly. Note it's a bit tricky since
+        # we'd ideally not reexecute the compile step multiple times, but it
+        # (non-essentially) depends on a matrix-based step. Add more pythons, possibly
+        # more manylinuxes
+        python_version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    runs-on: [self-hosted, Linux, platform-builder-Rocky-8.6]
+    container:
+      image: eccr.ecmwf.int/wheelmaker/2_28:latest
+      credentials:
+        username: ${{ secrets.ECMWF_DOCKER_REGISTRY_USERNAME }}
+        password: ${{ secrets.ECMWF_DOCKER_REGISTRY_ACCESS_TOKEN }}
+    steps:
+        # NOTE we dont use action checkout because it doesnt cleanup after itself correctly
+      - run: git clone --depth=1 --branch="${GITHUB_REF#refs/heads/}" https://github.com/$GITHUB_REPOSITORY /proj
+      - run: cd /proj && /buildscripts/prepare_deps.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
+      - run: cd /proj && if [[ -f ./python_wrapper/pre-compile.sh ]] ; then ./python_wrapper/pre-compile.sh ; fi
+      - run: cd /proj && /buildscripts/compile.sh ./python_wrapper/buildconfig
+      - run: cd /proj && PYTHONPATH=/buildscripts /buildscripts/wheel-linux.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
+      - run: cd /proj && if [[ -f ./python_wrapper/post-build.sh ]] ; then ./python_wrapper/post-build.sh ; fi
+      - run: cd /proj && /buildscripts/test-wheel.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
+      - run: cd /proj && /buildscripts/upload-pypi.sh ./python_wrapper/buildconfig
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TEST_API_TOKEN }}
+        # NOTE temporary thing until all the mess gets cleared
+      - run: rm -rf ./* ./.git ./.github
+  macos-wheel:
+    name: Build macos wheel
+    strategy:
+      matrix:
+        arch_type: [ARM64, X64]
+        python_version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    runs-on: [self-hosted, macOS, "${{ matrix.arch_type }}"]
+    steps:
+      # TODO convert this to be matrix-friendly for python versions. Note it's a bit tricky since
+      # we'd ideally not reexecute the compile step multiple times, but it
+      # (non-essentially) depends on a matrix-based step
+      # NOTE we dont use action checkout because it doesnt cleanup after itself correctly
+      - run: |
+          if [ -z "$(which uv)" ] ; then curl -LsSf https://astral.sh/uv/install.sh | sh ; fi
+          rm -rf ecbuild wheelmaker
+          git clone --depth=1 https://github.com/ecmwf/ecbuild ecbuild
+          # git clone --depth=1 --branch="wheelmaker" https://github.com/ecmwf/ci-utils wheelmaker # TODO use token here to get rid of the checkout action below
+      - uses: actions/checkout@v4
+        with:
+          repository: ecmwf/ci-utils
+          ref: develop
+          path: ci-utils
+          token: ${{ secrets.GH_REPO_READ_TOKEN }}
+      - run: rm -rf proj && git clone --depth=1 --branch="${GITHUB_REF#refs/heads/}" https://github.com/$GITHUB_REPOSITORY proj
+      - run: |
+          cd proj && $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/prepare_deps.sh ./python_wrapper/buildconfig 3.11
+      - run: |
+          cd proj
+          if [[ -f ./python_wrapper/pre-compile.sh ]] ; then ./python_wrapper/pre-compile.sh ; fi
+          PATH="$PATH:$GITHUB_WORKSPACE/ecbuild/bin/" $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/compile.sh ./python_wrapper/buildconfig
+      - run: |
+          cd proj
+          rm -rf /tmp/buildvenv && uv python install python3.11 && uv venv --python python3.11 /tmp/buildvenv && source /tmp/buildvenv/bin/activate && uv pip install build twine delocate
+          PYTHONPATH=$GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/wheel-linux.sh ./python_wrapper/buildconfig 3.11
+          if [[ -f ./python_wrapper/post-build.sh ]] ; then ./python_wrapper/post-build.sh ; fi
+          $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/test-wheel.sh ./python_wrapper/buildconfig 3.11
+          $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/upload-pypi.sh ./python_wrapper/buildconfig
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        # NOTE temporary thing until all the mess gets cleared
+      - run: rm -rf ./* ./.git ./.github

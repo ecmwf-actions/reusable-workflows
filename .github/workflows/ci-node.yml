@@ -65,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ inputs.repository }}
           ref: ${{ inputs.ref }}
@@ -95,7 +95,7 @@ jobs:
           os:
           - ubuntu-20.04
           - ubuntu-22.04
-          - macos-12
+          - macos-latest
           EOS
           )
           SKIP_MATRIX_JOBS=$(cat << 'EOS'
@@ -117,7 +117,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ inputs.repository }}
           ref: ${{ inputs.ref }}

@@ -1,3 +1,10 @@
+# ==============================================
+# This reusable workflow is DEPRECATED
+# Refer to downstream-ci instead
+# https://github.com/ecmwf-actions/downstream-ci
+# ==============================================
+
+
 name: ci
 
 # Controls when the workflow will run
@@ -87,7 +94,6 @@ jobs:
           MATRIX=$(cat << 'EOS'
           name:
           - gnu@debian-11
-          - gnu@centos-7.9
           - gnu@rocky-8.6
           - clang@rocky-8.6
           - gnu@ubuntu-22.04
@@ -96,13 +102,6 @@ jobs:
           - name: gnu@debian-11
             labels: [self-hosted, platform-builder-debian-11]
             os: debian-11
-            compiler: gnu
-            compiler_cc: gcc
-            compiler_cxx: g++
-            compiler_fc: gfortran
-          - name: gnu@centos-7.9
-            labels: [self-hosted, platform-builder-centos-7.9]
-            os: centos-7.9
             compiler: gnu
             compiler_cc: gcc
             compiler_cxx: g++
@@ -169,7 +168,7 @@ jobs:
     if: inputs.check_formatting
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ needs.setup.outputs.repository }}
           ref: ${{ needs.setup.outputs.ref }}
@@ -218,7 +217,7 @@ jobs:
     if: inputs.codecov_upload && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request'))
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ needs.setup.outputs.repository }}
           ref: ${{ needs.setup.outputs.ref }}
@@ -263,7 +262,7 @@ jobs:
     runs-on: ${{ matrix.labels }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ needs.setup.outputs.repository }}
           ref: ${{ needs.setup.outputs.ref }}

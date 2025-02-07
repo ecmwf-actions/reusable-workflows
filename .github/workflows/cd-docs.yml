@@ -1,0 +1,55 @@
+name: cd-docs
+on:
+  workflow_call: 
+    inputs:
+      config:
+        type: string
+        default: doc/doc-config.yml
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+    
+      - name: run build steps
+        id: setup
+        shell: python
+        run: |
+          import json
+          import os
+          import subprocess
+          import yaml
+
+          config_path = "${{ inputs.config }}"
+          with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+          
+          build_steps = config.get("build-steps", [])
+          for i, step in enumerate(build_steps):
+            print(f"::group::Step {i+1}")
+            result = subprocess.run("set -ex\n" + step, shell=True, executable="/bin/bash")
+            print(f"::endgroup::")
+            if result.returncode != 0:
+              print(f"::error::Step failed with return code {result.returncode}: {step}")
+              sys.exit(1)
+          
+          with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
+            print("config<<EOF", file=f)
+            print(json.dumps(config, separators=(",", ":")), file=f)
+            print("EOF", file=f)
+      
+      - name: check env
+        if: ${{ !env.DOC_BUILD_PATH }}
+        run: |
+          echo "::error::DOC_BUILD_PATH environment variable not set!"
+          exit 1
+
+      - name: publish to ecmwf-sites
+        if: fromJSON(steps.setup.outputs.config).hosts.ecmwf-sites
+        uses: ecmwf-actions/reusable-workflows/ecmwf-sites-upload@v2
+        with:
+          token: ${{ secrets.ECMWF_SITES_TOKEN }}
+          path: ${{ env.DOC_BUILD_PATH }} #has to be set by build step
+          space: ${{ fromJSON(steps.setup.outputs.config).hosts.ecmwf-sites.space }}
+          name: ${{ fromJSON(steps.setup.outputs.config).hosts.ecmwf-sites.name }}

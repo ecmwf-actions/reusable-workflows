@@ -3,7 +3,7 @@ description: |
   A wrapper around build-package action to support reading build configuration from a file.
 inputs:
   repository:
-    description: Repository name in format owner/repo@ref.
+    description: Repository name in format packageName:owner/repo@ref.
     required: true
   build_package_inputs:
     description: build-package action inputs in yaml format.
@@ -31,6 +31,12 @@ inputs:
     description: List of environment variables in format `VAR=value`
     required: false
     default: ${{ matrix.env }}
+  codecov_token:
+    description: codecov.io upload token
+    required: false
+  python_version:
+    description: Version of python to optionally setup. If not supplied, only system python is available.
+    required: false
 
 runs:
   using: composite
@@ -40,7 +46,13 @@ runs:
       shell: python3 {0}
       run: |
         import os
-        repo, ref = "${{ inputs.repository }}".split("@")
+        repo = "${{ inputs.repository }}"
+        if ":" in repo:
+            _, repo = repo.split(":")
+        repo, ref = repo.split("@")
+        if repo.count("/") > 1:
+            owner, repo, _ = repo.split("/", maxsplit=2)
+            repo = f"{owner}/{repo}"
         with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
             print("repo", repo, sep="=", file=f)
             print("ref", ref, sep="=", file=f)
@@ -99,12 +111,33 @@ runs:
 
         combined["self_coverage"] = "${{ inputs.codecov_upload == 'true' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request')) }}"
 
+        if "${{ inputs.python_version }}":
+          combined["cmake_options"] = f'{combined.get("cmake_options", "")} -DPython3_EXECUTABLE=$RUNNER_TEMP/bpvenv/bin/python'
+
         print("Combined inputs:\n", yaml.dump(combined, sort_keys=False), sep='')
 
         with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
           print(f"config<<EOF", file=f)
           print(json.dumps(combined, separators=(',', ':')), file=f)
           print("EOF", file=f)
+
+    - name: Check upstream build status
+      uses: ecmwf-actions/reusable-workflows/check-upstream-conclusion@v2
+      with:
+        deps: ${{ fromJSON(steps.config.outputs.config).dependencies }}
+        token: ${{ inputs.github_token }}
+
+    - name: Setup python
+      shell: bash -e {0}
+      if: ${{ inputs.python_version }}
+      run: |
+        source /opt/conda/etc/profile.d/conda.sh
+        conda create -y -p $RUNNER_TEMP/bpvenv python=${{ inputs.python_version }}
+        echo "Python3_EXECUTABLE=$RUNNER_TEMP/bpvenv/bin/python" >> "$GITHUB_ENV"
+        echo "Python3_ROOT_DIR=$RUNNER_TEMP/bpvenv/bin" >> "$GITHUB_ENV"
+        echo "pythonLocation=$RUNNER_TEMP/bpvenv/bin" >> "$GITHUB_ENV"
+        echo "Python_ROOT_DIR=$RUNNER_TEMP/bpvenv/bin" >> "$GITHUB_ENV"
+        echo "PATH=$RUNNER_TEMP/bpvenv/bin:$PATH" >> "$GITHUB_ENV"
 
     - name: Build package
       id: build
@@ -113,14 +146,18 @@ runs:
 
     - name: Codecov Upload
       if: ${{ inputs.codecov_upload == 'true' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request')) && steps.build.outputs.coverage_file }}
-      uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+      uses: codecov/codecov-action@v4
       with:
         files: ${{ steps.build.outputs.coverage_file }}
+        token: ${{ inputs.codecov_token }}
 
 outputs:
   lib_path:
     description: Library paths of all installed packages, delimited by colons (:).
     value: ${{ steps.build.outputs.lib_path }}
+  bin_paths:
+    description: Bin paths of all installed packages, delimited by colons (:).
+    value: ${{ steps.build.outputs.bin_paths }}
   package_path:
     description: Absolute path to generated package.
     value: ${{ steps.build.outputs.package_path }}

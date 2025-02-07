@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.ref }}
@@ -86,13 +86,13 @@ jobs:
         python -m pip install black flake8 isort
 
     - name: Check isort
-      run: isort --check .
+      run: isort --profile black --check .
 
     - name: Check black
       run: black --check .
 
     - name: Check flake8
-      run: flake8 .
+      run: flake8 --max-line-length 88 .
 
   setup:
     name: setup
@@ -112,7 +112,7 @@ jobs:
         - clang-12@ubuntu-20.04
         - gnu-11@ubuntu-22.04
         - clang-14@ubuntu-22.04
-        - clang-14@macos-12
+        - clang-14@macos-latest
         include:
         - name: gnu-10@ubuntu-20.04
           os: ubuntu-20.04
@@ -139,8 +139,8 @@ jobs:
           compiler_cxx: clang++-14
           compiler_fc: gfortran-11
         # Xcode compiler requires empty environment variables, so we pass null (~) here
-        - name: clang-14@macos-12
-          os: macos-12
+        - name: clang-14@macos-latest
+          os: macos-latest
           compiler: clang-14
           compiler_cc: ~
           compiler_cxx: ~
@@ -174,7 +174,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.ref }}
@@ -223,7 +223,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.ref }}

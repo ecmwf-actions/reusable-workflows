@@ -12,7 +12,7 @@ inputs:
     description: User used to submit troika job.
     required: true
   repository:
-    description: Repository name in format owner/repo@ref.
+    description: Repository name in format owner/repo@ref or name:owner/repo/subdir@ref or name:owner/repo@ref.
     required: true
   build_config:
     description: |
@@ -20,10 +20,19 @@ inputs:
       e.g. `.github/build-config.yml`.
     required: true
   dependencies:
-    description: List of build dependencies in format `owner/repo@ref`. Adds to whatever is specified in the build configuration file, if the same owner/repo is present, the ref is overridden.
+    description: List of build dependencies in format owner/repo@ref or name:owner/repo/subdir@ref or name:owner/repo@ref. Adds to whatever is specified in the build configuration file, if the same owner/repo is present, the ref is overridden.
     required: false
   python_dependencies:
-    description: List of python dependencies to build from source in format `owner/repo@ref`
+    description: List of python dependencies to build from source in format owner/repo@ref, or name:owner/repo/subdir@ref or name:owner/repo@ref
+    required: false
+  python_requirements:
+    description: Path to pip requirements file for python packages.
+    required: false
+  python_toml_opt_dep_sections:
+    description: List of optional dependency sections specified in pyproject.toml. ' ' to only install default deps.
+    required: false
+  conda_deps:
+    description: List of conda packages to be installed into the environment.
     required: false
   compiler:
     description: Compiler family.
@@ -45,6 +54,10 @@ inputs:
     description: List of compilers to be loaded as modules.
     required: false
     default: ${{ matrix.compiler_modules }}
+  site:
+    description: HPC site name.
+    required: false
+    default: ${{ matrix.site }}
   build_config_key:
     description: Config name in the build config file.
     required: false
@@ -53,16 +66,36 @@ inputs:
     description: Python version.
     required: false
     default: ${{ matrix.python_version }}
+  workdir:
+    description: Path to work directory on the remote host
+    required: false
+  output_dir:
+    description: Path to directory on the remote host where to store the output file.
+    required: false
 
 runs:
   using: composite
   steps:
+    - name: Check upstream build status
+      uses: ecmwf-actions/reusable-workflows/check-upstream-conclusion@v2
+      with:
+        token: ${{ inputs.github_token }}
+        deps: |
+          ${{ inputs.dependencies }}
+          ${{ inputs.python_dependencies }}
+
     - name: Parse inputs
       id: inputs
       shell: python3 {0}
       run: |
         import os
-        repo, ref = "${{ inputs.repository }}".split("@")
+        repo = "${{ inputs.repository }}"
+        if ":" in repo:
+            _, repo = repo.split(":")
+        repo, ref = repo.split("@")
+        if repo.count("/") > 1:
+            owner, repo, _ = repo.split("/", maxsplit=2)
+            repo = f"{owner}/{repo}"
         deps = ",".join("""${{ inputs.dependencies }}""".splitlines())
         py_deps = ",".join("""${{ inputs.python_dependencies }}""".splitlines())
         with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
@@ -82,8 +115,10 @@ runs:
       shell: bash
       run: |
         cd ~/build-package-hpc
+        rm -f cancel-job.sh
         poetry run python -m build_package_hpc --config=$GITHUB_WORKSPACE/${{ inputs.build_config }} \
-        --config-name=${{ inputs.build_config_key }} \
+        --config-name=${{ inputs.build_config_key || inputs.compiler }} \
+        --site=${{ inputs.site }} \
         build --package=${{ inputs.repository }} \
         --dependencies=${{ steps.inputs.outputs.deps }} \
         --github-user=${{ inputs.github_user }} \
@@ -95,4 +130,20 @@ runs:
         --compiler-fc=${{ inputs.compiler_fc }} \
         --compiler-modules=${{ inputs.compiler_modules }} \
         --python=${{ inputs.python_version }} \
-        --python-dependencies=${{ steps.inputs.outputs.py_deps }}
+        --conda-deps="${{ inputs.conda_deps }}" \
+        ${{ inputs.python_requirements && format('--requirements={0}', inputs.python_requirements) }} \
+        ${{ inputs.python_toml_opt_dep_sections && format('--toml-opt-dep-sections={0}', inputs.python_toml_opt_dep_sections) }} \
+        --python-dependencies=${{ steps.inputs.outputs.py_deps }} \
+        --workdir=${{ inputs.workdir }} \
+        --output-dir=${{ inputs.output_dir }}
+
+    - name: Cancel HPC job
+      if: ${{ cancelled() }}
+      shell: bash
+      run: |
+        cd ~/build-package-hpc
+        if [ -f "cancel-job.sh" ]; then
+            bash cancel-job.sh
+        else
+          echo "Job cancel script not found!"
+        fi

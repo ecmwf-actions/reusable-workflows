@@ -1,0 +1,78 @@
+name: Run pytest tests installation from pyproject toml with report
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        description: The version of Python binary to use.
+        required: false
+        default: '3.x'
+        type: string
+      optional-dependencies:
+        description: The optional dependencies to install.
+        required: false
+        default: 'all,tests'
+        type: string
+      skip-tests:
+        description: The pytest marks to pass to `-m` command.
+        required: false
+        default: ''
+        type: string
+      install-dependencies:
+        description: Install dependencies unless was done setup externally.
+        required: false
+        default: true
+        type: boolean
+      job-summary:
+        description: Print job summary on GitHub
+        required: false
+        default: true
+        type: boolean
+      emoji:
+        description: Use Pytest emoji
+        required: false
+        default: true
+        type: boolean
+      custom-pytest:
+        description: Custom command for `pytest` call. Custom executable like `poetry run pytest` or `micromamba run -n myenv pytest`.
+        required: false
+        default: 'pytest'
+        type: string
+      working-directory:
+        description: Working directory to build Python package (for monorepos).
+          Defaults to root directory.
+        type: string
+        required: false
+        default: "./"
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ["ubuntu-latest", "macos-latest"]
+    name: Run pytest with Python ${{ inputs.python-version }} on ${{ matrix.platform }}
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Install dependencies
+        working-directory: ${{ inputs.working-directory }}
+        if: ${{ inputs.install-dependencies }}
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[${{ inputs.optional-dependencies }}]
+          python -m pip install pytest pytest-md pytest-emoji
+      - name: Run pytest
+        uses: pavelzw/pytest-action@v2
+        with:
+          verbose: true
+          emoji: ${{ inputs.emoji }}
+          job-summary: ${{ inputs.job-summary }}
+          custom-arguments: ${{ inputs.skip-tests != '' && '-m ' || '' }}${{ inputs.skip-tests }}
+          click-to-expand: true
+          report-title:  "Test report (python ${{ inputs.python-version }} on ${{ matrix.platform }})"
+          custom-pytest: cd ${{ inputs.working-directory }} && ${{ inputs.custom-pytest }}

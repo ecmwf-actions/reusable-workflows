@@ -4,8 +4,14 @@ inputs:
   requirements_path:
     description: Path to pip requirements file.
     default: requirements.txt
+  toml_opt_dep_sections:
+    description: List of optional dependency sections specified in pyproject.toml. ' ' to only install default deps.
+    required: false
   lib_path:
     description: LD_LIBRARY_PATH containing paths to depedency libraries.
+    required: false
+  bin_paths:
+    description: List of paths to bin directories of dependency libraries.
     required: false
   python_version:
     description: The version of python used to test the package
@@ -21,29 +27,46 @@ inputs:
     required: false
     default: ${{ github.token }}
   repository:
-    description: Repository name in format owner/repo@ref.
+    description: Repository name in format owner/repo@ref or name:owner/repo/subdir@ref or name:owner/repo@ref.
     required: false
   python_dependencies:
-    description: List of python packages to install from source as dependencies. In format owner/repo@ref, multiline for multiple packages.
+    description: List of python packages to install from source as dependencies. In format owner/repo@ref, or name:owner/repo/subdir@ref or name:owner/repo@ref, multiline for multiple packages.
     required: false
   env:
     description: List of environment variables in format `VAR=value`
     required: false
     default: ${{ matrix.env }}
+  test_cmd:
+    description: Custom test command.
+    required: false
+  codecov_upload:
+    description: Whether to upload code coverage to codecov service, only for master, develop and PRs.
+    required: false
+  codecov_token:
+    description: codecov.io upload token
+    required: false
 
 runs:
   using: composite
   steps:
     - name: Parse repository input
       id: inputs
-      if: ${{ inputs.checkout == 'true' }}
+      if: ${{ inputs.repository }}
       shell: python3 {0}
       run: |
         import os
-        repo, ref = "${{ inputs.repository }}".split("@")
+        repo = "${{ inputs.repository }}"
+        subdir = "."
+        if ":" in repo:
+            _, repo = repo.split(":")
+        repo, ref = repo.split("@")
+        if repo.count("/") > 1:
+            owner, repo, subdir = repo.split("/", maxsplit=2)
+            repo = f"{owner}/{repo}"
         with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
             print("repo", repo, sep="=", file=f)
             print("ref", ref, sep="=", file=f)
+            print("subdir", subdir, sep="=", file=f)
 
     - name: Checkout repository
       if: ${{ inputs.checkout == 'true' }}
@@ -60,39 +83,64 @@ runs:
 
     - name: Setup python env
       shell: bash -e {0}
+      # include openldap to provide a consistent environment with conda's openssl
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda create -y -p $RUNNER_TEMP/venv
         conda activate $RUNNER_TEMP/venv
-        conda install -y python=${{ inputs.python_version }}
+        conda install -y python=${{ inputs.python_version }} openldap
         if [ -n "${{ inputs.conda_install }}" ]; then
           conda install -y ${{ inputs.conda_install }}
         fi
-        pip install pytest pytest-cov
+        pip install pytest pytest-cov build
         if [ -f ${{ inputs.requirements_path }} ]; then
           pip install -r ${{ inputs.requirements_path }} 
+        fi
+        # this is just to install the dependencies; the pkg will be overwritten later
+        if [ -n "${{ inputs.toml_opt_dep_sections }}" ]; then
+          cd ${{ steps.inputs.outputs.subdir }}
+          pip install -e .[${{ inputs.toml_opt_dep_sections }}]
         fi
 
     - name: Install dependencies
       if: ${{ inputs.python_dependencies }}
-      shell: bash -e {0}
+      shell: bash -ex {0}
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda activate $RUNNER_TEMP/venv
 
         while IFS= read -r line && [[ -n "$line" ]]; do
-          owner="${line%%/*}"
-          repo_ref="${line#*/}"
-          repo="${repo_ref%%@*}"
-          ref="${repo_ref#*@}"
+          vars=($(python <<HEREDOC
+        name = None
+        subdir = "."
+        repo = "$line"
+        if ":" in repo:
+            name, repo = repo.split(":", maxsplit=1)
+        repo, ref = repo.split("@", maxsplit=1)
+        if repo.count("/") > 1:
+            owner, repo, subdir = repo.split("/", maxsplit=2)
+        else:
+            owner, repo = repo.split("/", maxsplit=1)
+        if not name:
+            name = repo
+        print(f'{name} {owner} {repo} {subdir} {ref}')
+        HEREDOC
+        ))
+
+          name=${vars[0]}
+          owner=${vars[1]}
+          repo=${vars[2]}
+          subdir=${vars[3]}
+          ref=${vars[4]}
+          echo $name $owner $repo $subdir $ref
           
-          mkdir -p $RUNNER_TEMP/ci-deps/$repo
-          cd $RUNNER_TEMP/ci-deps/$repo
+          mkdir -p $RUNNER_TEMP/ci-deps/$name/$subdir
+          cd $RUNNER_TEMP/ci-deps/$name/$subdir
           git init
           git remote add origin https://${{ inputs.github_token }}@github.com/$owner/$repo.git
           git fetch --depth 1 origin $ref
           git checkout FETCH_HEAD
-          python setup.py sdist
+          python -m build --sdist
           pip install dist/*
         done <<< "${{ inputs.python_dependencies }}"
 
@@ -101,8 +149,16 @@ runs:
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda activate $RUNNER_TEMP/venv
-        python setup.py sdist
+        cd ${{ steps.inputs.outputs.subdir }}
+        python -m build --sdist
         pip install dist/*
+
+    - name: Add dependency bin dirs to PATH
+      shell: bash -ex {0}
+      run: |
+        if [ -n "${{ inputs.bin_paths }}" ]; then
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        fi
 
     - name: Run tests
       env:
@@ -112,5 +168,21 @@ runs:
       run: |
         source /opt/conda/etc/profile.d/conda.sh
         conda activate $RUNNER_TEMP/venv
-        pytest --cov=./ --cov-report=xml
-        python -m coverage report
+        echo "conda list:"
+        conda list
+        echo "pip list:"
+        pip list
+        cd ${{ steps.inputs.outputs.subdir }}
+        if [ -n "${{ inputs.test_cmd }}" ]; then
+          echo "Running package-supplied test command"
+          ${{ inputs.test_cmd }}
+        else
+          pytest --cov=./ --cov-report=xml
+          python -m coverage report
+        fi
+
+    - name: Codecov Upload
+      if: ${{ inputs.codecov_upload == 'true' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request')) }}
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ inputs.codecov_token }}

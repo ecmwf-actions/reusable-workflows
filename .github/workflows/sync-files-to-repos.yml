@@ -1,0 +1,24 @@
+name: Sync Files to Different Repos
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'sync-files/**'  # Only trigger on changes in sync-files directory
+  workflow_dispatch:  # Keep manual trigger capability
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Run Repo File Sync Action
+        uses: BetaHuhn/repo-file-sync-action@v1
+        with:
+          GH_PAT: ${{ secrets.REPO_SYNC_ACTION_PAT }}
+          GIT_EMAIL: "150700357+DeployDuck@users.noreply.github.com"
+          CONFIG_PATH: sync-files/sync.yml
+          IS_FINE_GRAINED: true
+          COMMIT_PREFIX: "chore: "
+          BRANCH_PREFIX: "chore/file-broadcast/"
+          COMMIT_BODY: "Triggered from common files on https://github.com/ecmwf-actions/reusable-workflows"

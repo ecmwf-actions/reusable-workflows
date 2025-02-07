@@ -17,6 +17,16 @@ inputs:
   path:
     description: Path to build-package-hpc directory
     default: ~/build-package-hpc
+  site:
+    description: HPC site name.
+    required: false
+    default: hpc-batch
+  workdir:
+    description: Path to work directory on the remote host, defaults to build-package-hpc site config
+    required: false
+  output_dir:
+    description: Path to directory on the remote host where to store the output file, defaults to build-package-hpc site config
+    required: false
 runs:
   using: composite
   steps:
@@ -28,4 +38,6 @@ runs:
         TEMPLATE_DATA: ${{ inputs.template_data }}
       run: |
         cd ${{ inputs.path }}
-        poetry run python -m build_package_hpc generic --troika-user=${{ inputs.troika_user }}
+        poetry run python -m build_package_hpc generic --troika-user=${{ inputs.troika_user }} --site=${{ inputs.site }} \
+        --workdir=${{ inputs.workdir }} \
+        --output-dir=${{ inputs.output_dir }}
