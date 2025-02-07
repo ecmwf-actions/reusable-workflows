@@ -23,7 +23,7 @@ jobs:
         # we'd ideally not reexecute the compile step multiple times, but it
         # (non-essentially) depends on a matrix-based step. Add more pythons, possibly
         # more manylinuxes
-        python_version: ["3.11", "3.13"]
+        python_version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     runs-on: [self-hosted, Linux, platform-builder-Rocky-8.6]
     container:
       image: eccr.ecmwf.int/wheelmaker/2_28:latest
@@ -50,7 +50,7 @@ jobs:
     strategy:
       matrix:
         arch_type: [ARM64, X64]
-        python_version: ["3.11", "3.13"]
+        python_version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     runs-on: [self-hosted, macOS, "${{ matrix.arch_type }}"]
     steps:
       # TODO convert this to be matrix-friendly for python versions. Note it's a bit tricky since
