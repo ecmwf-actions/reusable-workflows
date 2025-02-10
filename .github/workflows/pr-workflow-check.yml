@@ -1,40 +1,16 @@
 name: PR Workflow Check
 
 on:
-  pull_request_target: ~
+  pull_request_target:
+    paths:
+      - ".github/**"
 
 jobs:
   check:
+    if: ${{ github.event.pull_request.head.repo.fork }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout merge commit
-        uses: actions/checkout@v4
-        with:
-          ref: "refs/pull/${{ github.event.number }}/merge"
-          fetch-depth: 2
-
-      - name: Check changes to .github
-        if: ${{ github.event.pull_request.head.repo.fork }}
-        id: check
-        run: |
-          echo "==> Changed files:"
-          git diff --name-only HEAD^1 HEAD
-          count=$(git diff --name-only HEAD^1 HEAD | grep -c '^\.github/') || count=0
-
-          if [[ $count -gt 0 ]]; then
-              echo "==> Found $count violations!"
-              echo "==> Violating files"
-              git diff --name-only HEAD^1 HEAD | grep '^\.github/' || echo "--None--"
-              echo "::error::PR is trying to change a workflow!"
-              echo "bad=true" >> "$GITHUB_OUTPUT"
-              exit 1
-          else
-            echo "All OK"
-            echo "bad=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Comment PR
-        if: ${{ always() && github.event.pull_request.head.repo.fork && steps.check.outputs.bad == 'true' }}
         uses: actions/github-script@v7
         with:
           script: |
@@ -47,6 +23,6 @@ jobs:
               > Proceed with caution and if not sure, contact your GitHub admin.`
             })
 
-      - if: ${{ !github.event.pull_request.head.repo.fork }}
-        run: |
-          echo "Not a PR from fork."
+      - run: |
+          ::error::PR originating from a fork changes a Github workflow!
+          exit 1
