@@ -8,6 +8,9 @@
 
 {% endblock %}
 
-{% block documentation %} {% endblock %}
+{% block documentation %} 
+{% endblock %}
 
-{% block dependencies %} - [ ] I have not introduced new dependencies in the inference portion of the pipeline {% endblock %}
+{% block dependencies %} 
+- [ ] I have not introduced new dependencies in the inference portion of the pipeline
+{% endblock %}
