@@ -12,5 +12,5 @@
 {% endblock %}
 
 {% block dependencies %}
-- [ ] I have not introduced new dependencies in the inference portion of the pipeline
+-   [ ] I have not introduced new dependencies in the inference portion of the pipeline
 {% endblock %}
