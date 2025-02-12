@@ -93,7 +93,7 @@ jobs:
         run: |
           MATRIX=$(cat << 'EOS'
           os:
-          - ubuntu-20.04
+          - ubuntu-24.04
           - ubuntu-22.04
           - macos-latest
           EOS

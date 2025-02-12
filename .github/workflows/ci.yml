@@ -81,7 +81,7 @@ on:
 jobs:
   setup:
     name: ${{ inputs.name_prefix }}setup
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       repository: ${{ steps.parse-repo.outputs.repo }}
@@ -302,7 +302,7 @@ jobs:
 
   notify:
     name: ${{ inputs.name_prefix }}notify
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs:
       - setup
       - test

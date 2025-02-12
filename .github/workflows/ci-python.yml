@@ -67,7 +67,7 @@ on:
 jobs:
   qa:
     name: qa
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -96,7 +96,7 @@ jobs:
 
   setup:
     name: setup
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       inputs: ${{ steps.prepare-inputs.outputs.inputs }}
@@ -108,24 +108,24 @@ jobs:
       run: |
         MATRIX=$(cat << 'EOS'
         name:
-        - gnu-10@ubuntu-20.04
-        - clang-12@ubuntu-20.04
+        - gnu-12@ubuntu-24.04
+        - clang-16@ubuntu-24.04
         - gnu-11@ubuntu-22.04
         - clang-14@ubuntu-22.04
         - clang-14@macos-latest
         include:
-        - name: gnu-10@ubuntu-20.04
-          os: ubuntu-20.04
-          compiler: gnu-10
-          compiler_cc: gcc-10
-          compiler_cxx: g++-10
-          compiler_fc: gfortran-10
-        - name: clang-12@ubuntu-20.04
-          os: ubuntu-20.04
-          compiler: clang-12
-          compiler_cc: clang-12
-          compiler_cxx: clang++-12
-          compiler_fc: gfortran-10
+        - name: gnu-12@ubuntu-24.04
+          os: ubuntu-24.04
+          compiler: gnu-12
+          compiler_cc: gcc-12
+          compiler_cxx: g++-12
+          compiler_fc: gfortran-12
+        - name: clang-16@ubuntu-24.04
+          os: ubuntu-24.04
+          compiler: clang-16
+          compiler_cc: clang-16
+          compiler_cxx: clang++-16
+          compiler_fc: gfortran-12
         - name: gnu-11@ubuntu-22.04
           os: ubuntu-22.04
           compiler: gnu-11
@@ -161,7 +161,7 @@ jobs:
       shell: bash -eux {0}
       run: |
         echo inputs=$(echo "${{ inputs.build_package_inputs || '{}' }}" | yq eval '.' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
-        echo inputs-for-ubuntu=$(echo "${{ inputs.build_package_inputs || '{}' }}" | yq eval '. * {"os":"ubuntu-20.04","compiler":"gnu-10","compiler_cc":"gcc-10","compiler_cxx":"g++-10","compiler_fc":"gfortran-10"}' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
+        echo inputs-for-ubuntu=$(echo "${{ inputs.build_package_inputs || '{}' }}" | yq eval '. * {"os":"ubuntu-24.04","compiler":"gnu-12","compiler_cc":"gcc-12","compiler_cxx":"g++-12","compiler_fc":"gfortran-12"}' --output-format json --indent 0 -) >> $GITHUB_OUTPUT
 
   test:
     name: test
@@ -220,7 +220,7 @@ jobs:
     - qa
     - setup
     - test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -279,7 +279,7 @@ jobs:
 
   notify:
     name: notify
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs:
     - qa
     - setup
