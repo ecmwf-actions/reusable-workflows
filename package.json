@@ -20,7 +20,7 @@
   "devDependencies": {
     "@vercel/git-hooks": "^1.0.0",
     "auto-changelog": "^2.4.0",
-    "eslint": "^8.41.0",
+    "eslint": "^9.20.1",
     "eslint-plugin-json-schema-validator": "^4.7.0",
     "eslint-plugin-jsonc": "^2.9.0"
   },
