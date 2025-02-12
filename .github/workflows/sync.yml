@@ -34,7 +34,7 @@ on:
 jobs:
   sync:
     name: sync
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Prepare sync-repository Inputs
       id: prepare-inputs
