@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "description": "A collection of reusable GitHub workflows for ECMWF repositories",
   "scripts": {
-    "lint": "eslint --ext .yml --fix .github",
+    "lint": "eslint --fix .github",
     "lint-no-fix": "npm run lint -- --no-fix",
     "version": "auto-changelog && git add CHANGELOG.md"
   },
@@ -22,7 +22,8 @@
     "auto-changelog": "^2.4.0",
     "eslint": "^9.20.1",
     "eslint-plugin-json-schema-validator": "^4.7.0",
-    "eslint-plugin-jsonc": "^2.9.0"
+    "eslint-plugin-jsonc": "^2.9.0",
+    "eslint-plugin-yaml": "^1.0.3"
   },
   "eslintConfig": {
     "extends": [
@@ -42,5 +43,6 @@
     "hideCredit": true,
     "package": true,
     "template": "keepachangelog"
-  }
+  },
+  "type": "module"
 }
