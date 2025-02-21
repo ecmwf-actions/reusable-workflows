@@ -6,16 +6,6 @@ on:
         required: false
         default: '3.x'
         type: string
-      optional-dependencies:
-        description: The optional dependencies to install.
-        required: false
-        default: 'all,tests'
-        type: string
-      custom-pytest:
-        description: Custom command for `pytest` call. Custom executable like `poetry run pytest` or `micromamba run -n myenv pytest`.
-        required: false
-        default: 'pytest'
-        type: string
       repository:
         description: The source repository name, in case it differs from the current one. Repository names should
           follow the standard Github `owner/name` format.
@@ -27,12 +17,11 @@ on:
         required: false
         default: ${{ github.ref }}
         type: string
-      working-directory:
-        description: Working directory to build Python package (for monorepos).
-          Defaults to root directory.
-        type: string
+      install_package:
+        description: Install package before running tests.
         required: false
-        default: "./"
+        default: "-e .[all, tests]" 
+        type: string
   
 jobs:
   check_date:
@@ -66,17 +55,20 @@ jobs:
         
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
+          fetch-tags: true
           repository: ${{ inputs.repository }}
           ref: ${{ inputs.ref }}
       - name: Set up Python ${{ inputs.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ inputs.python-version }}
+          cache: 'pip'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip         
-          python -m pip install .[${{ inputs.optional-dependencies }}]
-          python -m pip install pytest pytest-cov
+          pip install pytest pytest-md pytest-emoji
+          python -m pip install ${{ inputs.install_package}}
       - name: Run integration tests
         run: |
           python -m pytest tests/integration --cov=src --cov-report=xml
