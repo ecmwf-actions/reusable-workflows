@@ -71,6 +71,6 @@ jobs:
           python -m pip install ${{ inputs.install-package}}
       - name: Run integration tests
         run: |
-          python -m pytest tests/integration --cov=src --cov-report=xml
+          python -m pytest tests/integration 
  
 
