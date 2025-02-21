@@ -25,6 +25,6 @@ jobs:
     uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@v1
     with:
       skip_matrix_jobs: |
-        clang-12@ubuntu-20.04
+        clang-16@ubuntu-24.04
         clang-14@ubuntu-22.04
         clang-14@macos-latest

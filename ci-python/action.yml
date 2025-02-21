@@ -140,6 +140,7 @@ runs:
           git remote add origin https://${{ inputs.github_token }}@github.com/$owner/$repo.git
           git fetch --depth 1 origin $ref
           git checkout FETCH_HEAD
+          cd $subdir
           python -m build --sdist
           pip install dist/*
         done <<< "${{ inputs.python_dependencies }}"
