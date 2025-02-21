@@ -60,7 +60,7 @@ runs:
               # Check for errors
               if [ "$STATUS" == "$ABORTED_STATUS" ]; then
                   echo "Suite status is aborted. Exiting with an error."
-                  exit 1
+                  false
               fi
               # Sleep and check for timeout
               if [ $TIME -lt $TIMEOUT ]; then
@@ -68,7 +68,7 @@ runs:
                   TIME=$((TIME+$DELAY))
               else
                   echo "Timeout is reached. Exiting with an error."
-                  exit 1
+                  false
               fi
           done
         sbatch_options: ${{ inputs.sbatch_options }}
