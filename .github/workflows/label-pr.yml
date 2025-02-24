@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Add label `contributor`
         if: ${{ github.event.action == 'opened' }}
-        uses: ecmwf-actions/labeler@v1
+        uses: ecmwf/labeler@v1
         with:
           issue: ${{ github.event.number }}
           label: contributor
@@ -18,7 +18,7 @@ jobs:
 
       - name: Remove label `approved-for-ci`
         if: ${{ github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'approved-for-ci') }}
-        uses: ecmwf-actions/labeler@v1
+        uses: ecmwf/labeler@v1
         with:
           issue: ${{ github.event.number }}
           label: approved-for-ci
