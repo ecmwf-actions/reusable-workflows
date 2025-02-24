@@ -577,4 +577,4 @@ In applying this licence, ECMWF does not waive the privileges and immunities gra
 [Samples]: https://github.com/ecmwf-actions/reusable-workflows/tree/develop/samples
 [codecov service]: https://codecov.io
 [inputs for the build-package]: https://github.com/ecmwf-actions/build-package#inputs
-[inputs for the sync-repository]: https://github.com/ecmwf-actions/sync-repository#inputs
+[inputs for the sync-repository]: https://github.com/ecmwf/sync-repository#inputs
