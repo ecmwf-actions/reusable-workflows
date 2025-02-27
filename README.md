@@ -1,3 +1,6 @@
+> [!CAUTION]
+> This repository was moved to https://github.com/ecmwf/reusable-workflows. Do not update!
+
 # reusable-workflows
 
 [![Changelog](https://img.shields.io/github/package-json/v/ecmwf-actions/reusable-workflows)](CHANGELOG.md)
