@@ -76,7 +76,7 @@ jobs:
       - run: |
           cd proj
           if [[ -f ./python_wrapper/pre-compile.sh ]] ; then ./python_wrapper/pre-compile.sh ; fi
-          PATH="$PATH:$GITHUB_WORKSPACE/ecbuild/bin/" $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/compile.sh ./python_wrapper/buildconfig
+          PATH="$GITHUB_WORKSPACE/ecbuild/bin/:$PATH" $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/compile.sh ./python_wrapper/buildconfig
           if [[ -f ./python_wrapper/post-compile.sh ]] ; then ./python_wrapper/post-compile.sh ; fi
       - run: |
           cd proj
