@@ -28,25 +28,23 @@ jobs:
     runs-on: [self-hosted, Linux, platform-builder-Rocky-8.6]
     container:
       image: eccr.ecmwf.int/wheelmaker/2_28:latest
+      options: --user github-actions
       credentials:
         username: ${{ secrets.ECMWF_DOCKER_REGISTRY_USERNAME }}
         password: ${{ secrets.ECMWF_DOCKER_REGISTRY_ACCESS_TOKEN }}
     steps:
         # NOTE we dont use action checkout because it doesnt cleanup after itself correctly
-      - run: git clone --depth=1 --branch="${GITHUB_REF#refs/heads/}" https://github.com/$GITHUB_REPOSITORY /proj
-      - run: cd /proj && /buildscripts/prepare_deps.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
-      - run: cd /proj && if [[ -f ./python_wrapper/pre-compile.sh ]] ; then ./python_wrapper/pre-compile.sh ; fi
-      - run: cd /proj && /buildscripts/compile.sh ./python_wrapper/buildconfig
-      - run: cd /proj && if [[ -f ./python_wrapper/post-compile.sh ]] ; then ./python_wrapper/post-compile.sh ; fi
-      - run: cd /proj && GITHUB_BRANCH="${GITHUB_REF}" PYTHONPATH=/buildscripts /buildscripts/wheel-linux.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
-      - run: cd /proj && if [[ -f ./python_wrapper/post-build.sh ]] ; then ./python_wrapper/post-build.sh ; fi
-      - run: cd /proj && /buildscripts/test-wheel.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
-      - run: cd /proj && PYTHONPATH=/buildscripts /buildscripts/upload-pypi.sh ./python_wrapper/buildconfig
+      - run: git clone --depth=1 --branch="${GITHUB_REF#refs/heads/}" https://github.com/$GITHUB_REPOSITORY /src/proj
+      - run: cd /src/proj && /buildscripts/prepare_deps.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
+      - run: cd /src/proj && if [[ -f ./python_wrapper/pre-compile.sh ]] ; then ./python_wrapper/pre-compile.sh ; fi
+      - run: cd /src/proj && /buildscripts/compile.sh ./python_wrapper/buildconfig
+      - run: cd /src/proj && GITHUB_BRANCH="${GITHUB_REF}" PYTHONPATH=/buildscripts /buildscripts/wheel-linux.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
+      - run: cd /src/proj && if [[ -f ./python_wrapper/post-build.sh ]] ; then ./python_wrapper/post-build.sh ; fi
+      - run: cd /src/proj && /buildscripts/test-wheel.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
+      - run: cd /src/proj && PYTHONPATH=/buildscripts /buildscripts/upload-pypi.sh ./python_wrapper/buildconfig
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        # NOTE temporary thing until all the mess gets cleared
-      - run: rm -rf ./* ./.git ./.github
   macos-wheel:
     name: Build macos wheel
     strategy:
@@ -82,7 +80,7 @@ jobs:
           if [[ -f ./python_wrapper/post-compile.sh ]] ; then ./python_wrapper/post-compile.sh ; fi
       - run: |
           cd proj
-          rm -rf /tmp/buildvenv && uv venv --python python"${{ matrix.python_version }}" /tmp/buildvenv && source /tmp/buildvenv/bin/activate && uv pip install build twine delocate setuptools requests
+          rm -rf /tmp/buildvenv && uv venv --python python"${{ matrix.python_version }}" /tmp/buildvenv && source /tmp/buildvenv/bin/activate && uv pip install build twine==6.0.1 delocate setuptools requests # NOTE twine version forced due to metadata issue, cf wheelmaker Dockerfile
           GITHUB_BRANCH="${GITHUB_REF}" PYTHONPATH=$GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/wheel-linux.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
           if [[ -f ./python_wrapper/post-build.sh ]] ; then ./python_wrapper/post-build.sh ; fi
           $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/test-wheel.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
@@ -90,5 +88,3 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        # NOTE temporary thing until all the mess gets cleared
-      - run: rm -rf ./* ./.git ./.github
