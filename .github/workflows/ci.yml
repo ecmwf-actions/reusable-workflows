@@ -270,7 +270,7 @@ jobs:
 
       - name: Restore Dependency Cache
         id: deps-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         if: inputs.deps_cache_key
         with:
           path: ${{ inputs.deps_cache_path || format('{0}/deps', runner.temp) }}
