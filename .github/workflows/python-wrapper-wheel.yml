@@ -40,7 +40,7 @@ jobs:
       - run: cd /src/proj && /buildscripts/compile.sh ./python_wrapper/buildconfig
       - run: cd /src/proj && GITHUB_BRANCH="${GITHUB_REF}" PYTHONPATH=/buildscripts /buildscripts/wheel-linux.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
       - run: cd /src/proj && if [[ -f ./python_wrapper/post-build.sh ]] ; then ./python_wrapper/post-build.sh ; fi
-      - run: cd /src/proj && /buildscripts/test-wheel.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
+      - run: cd /src/proj && GITHUB_BRANCH="${GITHUB_REF}" /buildscripts/test-wheel.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
       - run: cd /src/proj && PYTHONPATH=/buildscripts /buildscripts/upload-pypi.sh ./python_wrapper/buildconfig
         env:
           TWINE_USERNAME: __token__
@@ -83,7 +83,7 @@ jobs:
           rm -rf /tmp/buildvenv && uv venv --python python"${{ matrix.python_version }}" /tmp/buildvenv && source /tmp/buildvenv/bin/activate && uv pip install build twine==6.0.1 delocate setuptools requests # NOTE twine version forced due to metadata issue, cf wheelmaker Dockerfile
           GITHUB_BRANCH="${GITHUB_REF}" PYTHONPATH=$GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/wheel-linux.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
           if [[ -f ./python_wrapper/post-build.sh ]] ; then ./python_wrapper/post-build.sh ; fi
-          $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/test-wheel.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
+          GITHUB_BRANCH="${GITHUB_REF}" $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/test-wheel.sh ./python_wrapper/buildconfig "${{ matrix.python_version }}"
           PYTHONPATH=$GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/upload-pypi.sh ./python_wrapper/buildconfig
         env:
           TWINE_USERNAME: __token__
