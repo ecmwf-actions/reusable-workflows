@@ -22,6 +22,11 @@ on:
         required: false
         default: "-e .[all, tests]" 
         type: string
+      test_directory:
+        description: The working directory to run the tests from.
+        required: false
+        default: "."
+        type: string
   
 jobs:
   check_date:
@@ -71,6 +76,6 @@ jobs:
           python -m pip install ${{ inputs.install-package}}
       - name: Run integration tests
         run: |
-          python -m pytest tests/integration 
+          python -m pytest ${{ inputs.test_directory }} 
  
 
