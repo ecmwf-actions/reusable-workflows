@@ -76,6 +76,6 @@ jobs:
           python -m pip install ${{ inputs.install-package}}
       - name: Run integration tests
         run: |
-          python -m pytest ${{ inputs.test_directory }} 
+          python -m pytest ${{ inputs.test_directory }} --longtests
  
 
