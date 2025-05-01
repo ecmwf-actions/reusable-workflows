@@ -140,7 +140,7 @@ jobs:
 
       - name: Codecov Upload
         if: inputs.self_test && inputs.codecov_upload && matrix.os == 'ubuntu-22.04' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || contains(github.event_name, 'pull_request'))
-        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+        uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d
 
   notify:
     name: notify
